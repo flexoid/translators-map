@@ -20,6 +20,7 @@ type Translator struct {
 	Address    string
 	Contacts   string
 	DetailsURL string
+	Language
 }
 
 type Language struct {
@@ -49,7 +50,7 @@ func ScrapeTranslators(logger *zap.SugaredLogger, language Language) (translator
 
 		for i, element := range rows[1:] {
 			logger.Debugf("Parsing translator #%d", i+1)
-			translator := Translator{}
+			translator := Translator{Language: language}
 
 			address, err := extractAddress(element)
 			if err != nil {
