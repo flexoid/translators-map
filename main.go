@@ -7,14 +7,18 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/translator"
+	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/scraper"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
 var CLI struct {
-	DatabaseURL string `required:"" env:"DATABASE_URL" help:"Postgres database URL."`
+	DatabaseURL       string `required:"" env:"DATABASE_URL" help:"Postgres database URL."`
+	MapsBackendAPIKey string `required:"" env:"MAPS_BACKEND_API_KEY" help:"Key for Google Maps backend API."`
 }
+
+var geocoding *maps.Geocoding
 
 func main() {
 	_ = kong.Parse(&CLI)
@@ -31,14 +35,18 @@ func main() {
 		logger.Fatalf("failed to setup database: %v", err)
 	}
 
+	geocoding, err = maps.NewGeocoding(CLI.MapsBackendAPIKey)
+	if err != nil {
+		logger.Fatalf("failed to setup geocoding client: %v", err)
+	}
+
 	languages, err := scraper.ScrapeLanguages(logger)
 	if err != nil {
 		logger.Fatalf("Failed to scrape languages: %v", err)
 		return
 	}
 
-	// TODO: Scrape not only first 2 languages.
-	for _, language := range languages[:2] {
+	for _, language := range languages {
 		translators, err := scraper.ScrapeTranslators(logger, language)
 		if err != nil {
 			logger.Fatalf("Failed to scrape translators: %v", err)
@@ -101,6 +109,19 @@ func createTranslator(logger *zap.SugaredLogger, entClient *ent.Client, trans sc
 	creator.SetLanguage(trans.Language.Name)
 	setModelAttrs(creator.Mutation(), trans)
 
+	geocodingResult, err := geocoding.GetCoordinatesForAddress(context.TODO(), trans.Address)
+	if err != nil {
+		return nil, fmt.Errorf("geocoding error: %v", err)
+	}
+
+	lat := geocodingResult.Geometry.Location.Lat
+	lng := geocodingResult.Geometry.Location.Lng
+	logger.Debugw("Got location for address", "address", trans.Address, "latitude", lat, "longitude", lng)
+
+	creator.
+		SetLatitude(lat).
+		SetLongitude(lng)
+
 	model, err := creator.Save(context.TODO())
 
 	if err != nil {
@@ -132,6 +153,7 @@ func updateTranslator(logger *zap.SugaredLogger, model *ent.Translator, trans sc
 
 func setModelAttrs(m *ent.TranslatorMutation, trans scraper.Translator) {
 	m.SetAddress(trans.Address)
+
 	m.SetContacts(trans.Contacts)
 	m.SetDetailsURL(trans.DetailsURL)
 }

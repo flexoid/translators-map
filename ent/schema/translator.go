@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -19,6 +20,12 @@ func (Translator) Fields() []ent.Field {
 		field.String("address"),
 		field.String("contacts"),
 		field.String("details_url"),
+		field.Float("latitude").Optional().SchemaType(map[string]string{
+			dialect.Postgres: "numeric",
+		}),
+		field.Float("longitude").Optional().SchemaType(map[string]string{
+			dialect.Postgres: "numeric",
+		}),
 	}
 }
 

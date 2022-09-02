@@ -113,6 +113,20 @@ func DetailsURL(v string) predicate.Translator {
 	})
 }
 
+// Latitude applies equality check predicate on the "latitude" field. It's identical to LatitudeEQ.
+func Latitude(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLatitude), v))
+	})
+}
+
+// Longitude applies equality check predicate on the "longitude" field. It's identical to LongitudeEQ.
+func Longitude(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLongitude), v))
+	})
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
@@ -605,6 +619,162 @@ func DetailsURLEqualFold(v string) predicate.Translator {
 func DetailsURLContainsFold(v string) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDetailsURL), v))
+	})
+}
+
+// LatitudeEQ applies the EQ predicate on the "latitude" field.
+func LatitudeEQ(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLatitude), v))
+	})
+}
+
+// LatitudeNEQ applies the NEQ predicate on the "latitude" field.
+func LatitudeNEQ(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLatitude), v))
+	})
+}
+
+// LatitudeIn applies the In predicate on the "latitude" field.
+func LatitudeIn(vs ...float64) predicate.Translator {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldLatitude), v...))
+	})
+}
+
+// LatitudeNotIn applies the NotIn predicate on the "latitude" field.
+func LatitudeNotIn(vs ...float64) predicate.Translator {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldLatitude), v...))
+	})
+}
+
+// LatitudeGT applies the GT predicate on the "latitude" field.
+func LatitudeGT(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLatitude), v))
+	})
+}
+
+// LatitudeGTE applies the GTE predicate on the "latitude" field.
+func LatitudeGTE(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLatitude), v))
+	})
+}
+
+// LatitudeLT applies the LT predicate on the "latitude" field.
+func LatitudeLT(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLatitude), v))
+	})
+}
+
+// LatitudeLTE applies the LTE predicate on the "latitude" field.
+func LatitudeLTE(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLatitude), v))
+	})
+}
+
+// LatitudeIsNil applies the IsNil predicate on the "latitude" field.
+func LatitudeIsNil() predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLatitude)))
+	})
+}
+
+// LatitudeNotNil applies the NotNil predicate on the "latitude" field.
+func LatitudeNotNil() predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLatitude)))
+	})
+}
+
+// LongitudeEQ applies the EQ predicate on the "longitude" field.
+func LongitudeEQ(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLongitude), v))
+	})
+}
+
+// LongitudeNEQ applies the NEQ predicate on the "longitude" field.
+func LongitudeNEQ(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLongitude), v))
+	})
+}
+
+// LongitudeIn applies the In predicate on the "longitude" field.
+func LongitudeIn(vs ...float64) predicate.Translator {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldLongitude), v...))
+	})
+}
+
+// LongitudeNotIn applies the NotIn predicate on the "longitude" field.
+func LongitudeNotIn(vs ...float64) predicate.Translator {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldLongitude), v...))
+	})
+}
+
+// LongitudeGT applies the GT predicate on the "longitude" field.
+func LongitudeGT(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLongitude), v))
+	})
+}
+
+// LongitudeGTE applies the GTE predicate on the "longitude" field.
+func LongitudeGTE(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLongitude), v))
+	})
+}
+
+// LongitudeLT applies the LT predicate on the "longitude" field.
+func LongitudeLT(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLongitude), v))
+	})
+}
+
+// LongitudeLTE applies the LTE predicate on the "longitude" field.
+func LongitudeLTE(v float64) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLongitude), v))
+	})
+}
+
+// LongitudeIsNil applies the IsNil predicate on the "longitude" field.
+func LongitudeIsNil() predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLongitude)))
+	})
+}
+
+// LongitudeNotNil applies the NotNil predicate on the "longitude" field.
+func LongitudeNotNil() predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLongitude)))
 	})
 }
 

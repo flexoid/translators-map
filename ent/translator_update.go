@@ -57,6 +57,60 @@ func (tu *TranslatorUpdate) SetDetailsURL(s string) *TranslatorUpdate {
 	return tu
 }
 
+// SetLatitude sets the "latitude" field.
+func (tu *TranslatorUpdate) SetLatitude(f float64) *TranslatorUpdate {
+	tu.mutation.ResetLatitude()
+	tu.mutation.SetLatitude(f)
+	return tu
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (tu *TranslatorUpdate) SetNillableLatitude(f *float64) *TranslatorUpdate {
+	if f != nil {
+		tu.SetLatitude(*f)
+	}
+	return tu
+}
+
+// AddLatitude adds f to the "latitude" field.
+func (tu *TranslatorUpdate) AddLatitude(f float64) *TranslatorUpdate {
+	tu.mutation.AddLatitude(f)
+	return tu
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (tu *TranslatorUpdate) ClearLatitude() *TranslatorUpdate {
+	tu.mutation.ClearLatitude()
+	return tu
+}
+
+// SetLongitude sets the "longitude" field.
+func (tu *TranslatorUpdate) SetLongitude(f float64) *TranslatorUpdate {
+	tu.mutation.ResetLongitude()
+	tu.mutation.SetLongitude(f)
+	return tu
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (tu *TranslatorUpdate) SetNillableLongitude(f *float64) *TranslatorUpdate {
+	if f != nil {
+		tu.SetLongitude(*f)
+	}
+	return tu
+}
+
+// AddLongitude adds f to the "longitude" field.
+func (tu *TranslatorUpdate) AddLongitude(f float64) *TranslatorUpdate {
+	tu.mutation.AddLongitude(f)
+	return tu
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (tu *TranslatorUpdate) ClearLongitude() *TranslatorUpdate {
+	tu.mutation.ClearLongitude()
+	return tu
+}
+
 // Mutation returns the TranslatorMutation object of the builder.
 func (tu *TranslatorUpdate) Mutation() *TranslatorMutation {
 	return tu.mutation
@@ -169,6 +223,46 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: translator.FieldDetailsURL,
 		})
 	}
+	if value, ok := tu.mutation.Latitude(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLatitude,
+		})
+	}
+	if value, ok := tu.mutation.AddedLatitude(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLatitude,
+		})
+	}
+	if tu.mutation.LatitudeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: translator.FieldLatitude,
+		})
+	}
+	if value, ok := tu.mutation.Longitude(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLongitude,
+		})
+	}
+	if value, ok := tu.mutation.AddedLongitude(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLongitude,
+		})
+	}
+	if tu.mutation.LongitudeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: translator.FieldLongitude,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{translator.Label}
@@ -215,6 +309,60 @@ func (tuo *TranslatorUpdateOne) SetContacts(s string) *TranslatorUpdateOne {
 // SetDetailsURL sets the "details_url" field.
 func (tuo *TranslatorUpdateOne) SetDetailsURL(s string) *TranslatorUpdateOne {
 	tuo.mutation.SetDetailsURL(s)
+	return tuo
+}
+
+// SetLatitude sets the "latitude" field.
+func (tuo *TranslatorUpdateOne) SetLatitude(f float64) *TranslatorUpdateOne {
+	tuo.mutation.ResetLatitude()
+	tuo.mutation.SetLatitude(f)
+	return tuo
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (tuo *TranslatorUpdateOne) SetNillableLatitude(f *float64) *TranslatorUpdateOne {
+	if f != nil {
+		tuo.SetLatitude(*f)
+	}
+	return tuo
+}
+
+// AddLatitude adds f to the "latitude" field.
+func (tuo *TranslatorUpdateOne) AddLatitude(f float64) *TranslatorUpdateOne {
+	tuo.mutation.AddLatitude(f)
+	return tuo
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (tuo *TranslatorUpdateOne) ClearLatitude() *TranslatorUpdateOne {
+	tuo.mutation.ClearLatitude()
+	return tuo
+}
+
+// SetLongitude sets the "longitude" field.
+func (tuo *TranslatorUpdateOne) SetLongitude(f float64) *TranslatorUpdateOne {
+	tuo.mutation.ResetLongitude()
+	tuo.mutation.SetLongitude(f)
+	return tuo
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (tuo *TranslatorUpdateOne) SetNillableLongitude(f *float64) *TranslatorUpdateOne {
+	if f != nil {
+		tuo.SetLongitude(*f)
+	}
+	return tuo
+}
+
+// AddLongitude adds f to the "longitude" field.
+func (tuo *TranslatorUpdateOne) AddLongitude(f float64) *TranslatorUpdateOne {
+	tuo.mutation.AddLongitude(f)
+	return tuo
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (tuo *TranslatorUpdateOne) ClearLongitude() *TranslatorUpdateOne {
+	tuo.mutation.ClearLongitude()
 	return tuo
 }
 
@@ -358,6 +506,46 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 			Type:   field.TypeString,
 			Value:  value,
 			Column: translator.FieldDetailsURL,
+		})
+	}
+	if value, ok := tuo.mutation.Latitude(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLatitude,
+		})
+	}
+	if value, ok := tuo.mutation.AddedLatitude(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLatitude,
+		})
+	}
+	if tuo.mutation.LatitudeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: translator.FieldLatitude,
+		})
+	}
+	if value, ok := tuo.mutation.Longitude(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLongitude,
+		})
+	}
+	if value, ok := tuo.mutation.AddedLongitude(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLongitude,
+		})
+	}
+	if tuo.mutation.LongitudeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: translator.FieldLongitude,
 		})
 	}
 	_node = &Translator{config: tuo.config}

@@ -25,6 +25,10 @@ type Translator struct {
 	Contacts string `json:"contacts,omitempty"`
 	// DetailsURL holds the value of the "details_url" field.
 	DetailsURL string `json:"details_url,omitempty"`
+	// Latitude holds the value of the "latitude" field.
+	Latitude float64 `json:"latitude,omitempty"`
+	// Longitude holds the value of the "longitude" field.
+	Longitude float64 `json:"longitude,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -32,6 +36,8 @@ func (*Translator) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case translator.FieldLatitude, translator.FieldLongitude:
+			values[i] = new(sql.NullFloat64)
 		case translator.FieldID:
 			values[i] = new(sql.NullInt64)
 		case translator.FieldName, translator.FieldLanguage, translator.FieldAddress, translator.FieldContacts, translator.FieldDetailsURL:
@@ -87,6 +93,18 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				t.DetailsURL = value.String
 			}
+		case translator.FieldLatitude:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field latitude", values[i])
+			} else if value.Valid {
+				t.Latitude = value.Float64
+			}
+		case translator.FieldLongitude:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field longitude", values[i])
+			} else if value.Valid {
+				t.Longitude = value.Float64
+			}
 		}
 	}
 	return nil
@@ -129,6 +147,12 @@ func (t *Translator) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("details_url=")
 	builder.WriteString(t.DetailsURL)
+	builder.WriteString(", ")
+	builder.WriteString("latitude=")
+	builder.WriteString(fmt.Sprintf("%v", t.Latitude))
+	builder.WriteString(", ")
+	builder.WriteString("longitude=")
+	builder.WriteString(fmt.Sprintf("%v", t.Longitude))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -17,6 +17,10 @@ const (
 	FieldContacts = "contacts"
 	// FieldDetailsURL holds the string denoting the details_url field in the database.
 	FieldDetailsURL = "details_url"
+	// FieldLatitude holds the string denoting the latitude field in the database.
+	FieldLatitude = "latitude"
+	// FieldLongitude holds the string denoting the longitude field in the database.
+	FieldLongitude = "longitude"
 	// Table holds the table name of the translator in the database.
 	Table = "translators"
 )
@@ -29,6 +33,8 @@ var Columns = []string{
 	FieldAddress,
 	FieldContacts,
 	FieldDetailsURL,
+	FieldLatitude,
+	FieldLongitude,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

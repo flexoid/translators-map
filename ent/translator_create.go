@@ -49,6 +49,34 @@ func (tc *TranslatorCreate) SetDetailsURL(s string) *TranslatorCreate {
 	return tc
 }
 
+// SetLatitude sets the "latitude" field.
+func (tc *TranslatorCreate) SetLatitude(f float64) *TranslatorCreate {
+	tc.mutation.SetLatitude(f)
+	return tc
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableLatitude(f *float64) *TranslatorCreate {
+	if f != nil {
+		tc.SetLatitude(*f)
+	}
+	return tc
+}
+
+// SetLongitude sets the "longitude" field.
+func (tc *TranslatorCreate) SetLongitude(f float64) *TranslatorCreate {
+	tc.mutation.SetLongitude(f)
+	return tc
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableLongitude(f *float64) *TranslatorCreate {
+	if f != nil {
+		tc.SetLongitude(*f)
+	}
+	return tc
+}
+
 // Mutation returns the TranslatorMutation object of the builder.
 func (tc *TranslatorCreate) Mutation() *TranslatorMutation {
 	return tc.mutation
@@ -206,6 +234,22 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 			Column: translator.FieldDetailsURL,
 		})
 		_node.DetailsURL = value
+	}
+	if value, ok := tc.mutation.Latitude(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLatitude,
+		})
+		_node.Latitude = value
+	}
+	if value, ok := tc.mutation.Longitude(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: translator.FieldLongitude,
+		})
+		_node.Longitude = value
 	}
 	return _node, _spec
 }

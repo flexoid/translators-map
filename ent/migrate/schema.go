@@ -16,6 +16,8 @@ var (
 		{Name: "address", Type: field.TypeString},
 		{Name: "contacts", Type: field.TypeString},
 		{Name: "details_url", Type: field.TypeString},
+		{Name: "latitude", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "numeric"}},
+		{Name: "longitude", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "numeric"}},
 	}
 	// TranslatorsTable holds the schema information for the "translators" table.
 	TranslatorsTable = &schema.Table{

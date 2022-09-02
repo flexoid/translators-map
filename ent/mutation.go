@@ -37,6 +37,10 @@ type TranslatorMutation struct {
 	address       *string
 	contacts      *string
 	details_url   *string
+	latitude      *float64
+	addlatitude   *float64
+	longitude     *float64
+	addlongitude  *float64
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Translator, error)
@@ -321,6 +325,146 @@ func (m *TranslatorMutation) ResetDetailsURL() {
 	m.details_url = nil
 }
 
+// SetLatitude sets the "latitude" field.
+func (m *TranslatorMutation) SetLatitude(f float64) {
+	m.latitude = &f
+	m.addlatitude = nil
+}
+
+// Latitude returns the value of the "latitude" field in the mutation.
+func (m *TranslatorMutation) Latitude() (r float64, exists bool) {
+	v := m.latitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatitude returns the old "latitude" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldLatitude(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatitude: %w", err)
+	}
+	return oldValue.Latitude, nil
+}
+
+// AddLatitude adds f to the "latitude" field.
+func (m *TranslatorMutation) AddLatitude(f float64) {
+	if m.addlatitude != nil {
+		*m.addlatitude += f
+	} else {
+		m.addlatitude = &f
+	}
+}
+
+// AddedLatitude returns the value that was added to the "latitude" field in this mutation.
+func (m *TranslatorMutation) AddedLatitude() (r float64, exists bool) {
+	v := m.addlatitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (m *TranslatorMutation) ClearLatitude() {
+	m.latitude = nil
+	m.addlatitude = nil
+	m.clearedFields[translator.FieldLatitude] = struct{}{}
+}
+
+// LatitudeCleared returns if the "latitude" field was cleared in this mutation.
+func (m *TranslatorMutation) LatitudeCleared() bool {
+	_, ok := m.clearedFields[translator.FieldLatitude]
+	return ok
+}
+
+// ResetLatitude resets all changes to the "latitude" field.
+func (m *TranslatorMutation) ResetLatitude() {
+	m.latitude = nil
+	m.addlatitude = nil
+	delete(m.clearedFields, translator.FieldLatitude)
+}
+
+// SetLongitude sets the "longitude" field.
+func (m *TranslatorMutation) SetLongitude(f float64) {
+	m.longitude = &f
+	m.addlongitude = nil
+}
+
+// Longitude returns the value of the "longitude" field in the mutation.
+func (m *TranslatorMutation) Longitude() (r float64, exists bool) {
+	v := m.longitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLongitude returns the old "longitude" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldLongitude(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLongitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLongitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLongitude: %w", err)
+	}
+	return oldValue.Longitude, nil
+}
+
+// AddLongitude adds f to the "longitude" field.
+func (m *TranslatorMutation) AddLongitude(f float64) {
+	if m.addlongitude != nil {
+		*m.addlongitude += f
+	} else {
+		m.addlongitude = &f
+	}
+}
+
+// AddedLongitude returns the value that was added to the "longitude" field in this mutation.
+func (m *TranslatorMutation) AddedLongitude() (r float64, exists bool) {
+	v := m.addlongitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (m *TranslatorMutation) ClearLongitude() {
+	m.longitude = nil
+	m.addlongitude = nil
+	m.clearedFields[translator.FieldLongitude] = struct{}{}
+}
+
+// LongitudeCleared returns if the "longitude" field was cleared in this mutation.
+func (m *TranslatorMutation) LongitudeCleared() bool {
+	_, ok := m.clearedFields[translator.FieldLongitude]
+	return ok
+}
+
+// ResetLongitude resets all changes to the "longitude" field.
+func (m *TranslatorMutation) ResetLongitude() {
+	m.longitude = nil
+	m.addlongitude = nil
+	delete(m.clearedFields, translator.FieldLongitude)
+}
+
 // Where appends a list predicates to the TranslatorMutation builder.
 func (m *TranslatorMutation) Where(ps ...predicate.Translator) {
 	m.predicates = append(m.predicates, ps...)
@@ -340,7 +484,7 @@ func (m *TranslatorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TranslatorMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 7)
 	if m.name != nil {
 		fields = append(fields, translator.FieldName)
 	}
@@ -355,6 +499,12 @@ func (m *TranslatorMutation) Fields() []string {
 	}
 	if m.details_url != nil {
 		fields = append(fields, translator.FieldDetailsURL)
+	}
+	if m.latitude != nil {
+		fields = append(fields, translator.FieldLatitude)
+	}
+	if m.longitude != nil {
+		fields = append(fields, translator.FieldLongitude)
 	}
 	return fields
 }
@@ -374,6 +524,10 @@ func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 		return m.Contacts()
 	case translator.FieldDetailsURL:
 		return m.DetailsURL()
+	case translator.FieldLatitude:
+		return m.Latitude()
+	case translator.FieldLongitude:
+		return m.Longitude()
 	}
 	return nil, false
 }
@@ -393,6 +547,10 @@ func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldContacts(ctx)
 	case translator.FieldDetailsURL:
 		return m.OldDetailsURL(ctx)
+	case translator.FieldLatitude:
+		return m.OldLatitude(ctx)
+	case translator.FieldLongitude:
+		return m.OldLongitude(ctx)
 	}
 	return nil, fmt.Errorf("unknown Translator field %s", name)
 }
@@ -437,6 +595,20 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDetailsURL(v)
 		return nil
+	case translator.FieldLatitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatitude(v)
+		return nil
+	case translator.FieldLongitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLongitude(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Translator field %s", name)
 }
@@ -444,13 +616,26 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *TranslatorMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addlatitude != nil {
+		fields = append(fields, translator.FieldLatitude)
+	}
+	if m.addlongitude != nil {
+		fields = append(fields, translator.FieldLongitude)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *TranslatorMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case translator.FieldLatitude:
+		return m.AddedLatitude()
+	case translator.FieldLongitude:
+		return m.AddedLongitude()
+	}
 	return nil, false
 }
 
@@ -459,6 +644,20 @@ func (m *TranslatorMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *TranslatorMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case translator.FieldLatitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLatitude(v)
+		return nil
+	case translator.FieldLongitude:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLongitude(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Translator numeric field %s", name)
 }
@@ -466,7 +665,14 @@ func (m *TranslatorMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *TranslatorMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(translator.FieldLatitude) {
+		fields = append(fields, translator.FieldLatitude)
+	}
+	if m.FieldCleared(translator.FieldLongitude) {
+		fields = append(fields, translator.FieldLongitude)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -479,6 +685,14 @@ func (m *TranslatorMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *TranslatorMutation) ClearField(name string) error {
+	switch name {
+	case translator.FieldLatitude:
+		m.ClearLatitude()
+		return nil
+	case translator.FieldLongitude:
+		m.ClearLongitude()
+		return nil
+	}
 	return fmt.Errorf("unknown Translator nullable field %s", name)
 }
 
@@ -500,6 +714,12 @@ func (m *TranslatorMutation) ResetField(name string) error {
 		return nil
 	case translator.FieldDetailsURL:
 		m.ResetDetailsURL()
+		return nil
+	case translator.FieldLatitude:
+		m.ResetLatitude()
+		return nil
+	case translator.FieldLongitude:
+		m.ResetLongitude()
 		return nil
 	}
 	return fmt.Errorf("unknown Translator field %s", name)
