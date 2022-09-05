@@ -32,6 +32,9 @@ func (s *Server) setupRouter() *chi.Mux {
 		apiRouter.Use(middleware.Recoverer)
 		apiRouter.Use(middleware.SetHeader("Content-Type", "application/json"))
 
+		translatorsController := &TranslatorController{Server: s}
+		apiRouter.Get("/api/translators", translatorsController.GetTranslators)
+
 		configController := &ConfigController{Server: s}
 		apiRouter.Get("/api/config", configController.GetConfig)
 	})
