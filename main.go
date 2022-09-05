@@ -7,28 +7,25 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/translator"
+	"github.com/flexoid/translators-map-go/internal/config"
 	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/scraper"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
-var CLI struct {
-	DatabaseURL       string `required:"" env:"DATABASE_URL" help:"Postgres database URL."`
-	MapsBackendAPIKey string `required:"" env:"MAPS_BACKEND_API_KEY" help:"Key for Google Maps backend API."`
-}
-
+// TODO: remove from global scope.
 var geocoding *maps.Geocoding
 
 func main() {
-	_ = kong.Parse(&CLI)
-
 	logCfg := zap.NewDevelopmentConfig()
 	logCfg.Level.SetLevel(zap.DebugLevel)
 
 	zapLogger := zap.Must(logCfg.Build())
 	defer zapLogger.Sync() // flushes buffer, if any
 	logger := zapLogger.Sugar()
+
+	kongCtx := kong.Parse(&config.CLI)
 
 	entClient, err := setupDatabase()
 	if err != nil {
@@ -65,7 +62,7 @@ func main() {
 }
 
 func setupDatabase() (*ent.Client, error) {
-	client, err := ent.Open("postgres", CLI.DatabaseURL)
+	client, err := ent.Open("postgres", config.CLI.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed opening connection to postgres: %w", err)
 	}
