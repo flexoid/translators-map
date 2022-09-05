@@ -5,8 +5,11 @@ go 1.18
 require (
 	entgo.io/ent v0.11.2
 	github.com/alecthomas/kong v0.6.1
+	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gocolly/colly v1.2.0
 	github.com/lib/pq v1.10.6
+	github.com/pkg/errors v0.8.1
 	go.uber.org/zap v1.23.0
 	googlemaps.github.io/maps v1.3.2
 )

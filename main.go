@@ -7,6 +7,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/translator"
+	"github.com/flexoid/translators-map-go/internal/api"
 	"github.com/flexoid/translators-map-go/internal/config"
 	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/scraper"
@@ -32,7 +33,19 @@ func main() {
 		logger.Fatalf("failed to setup database: %v", err)
 	}
 
-	geocoding, err = maps.NewGeocoding(CLI.MapsBackendAPIKey)
+	switch kongCtx.Command() {
+	case "server":
+		startServer(entClient, logger, config.CLI.BindAddr)
+	case "scraper":
+		startScraper(entClient, logger)
+	default:
+		panic(kongCtx.Command())
+	}
+}
+
+func startScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
+	var err error
+	geocoding, err = maps.NewGeocoding(config.CLI.MapsBackendAPIKey)
 	if err != nil {
 		logger.Fatalf("failed to setup geocoding client: %v", err)
 	}
@@ -153,4 +166,15 @@ func setModelAttrs(m *ent.TranslatorMutation, trans scraper.Translator) {
 
 	m.SetContacts(trans.Contacts)
 	m.SetDetailsURL(trans.DetailsURL)
+}
+
+func startServer(entClient *ent.Client, logger *zap.SugaredLogger, bindAddr string) {
+	logger.Info("Starting server")
+
+	server := api.Server{EntDB: entClient, Logger: logger}
+
+	err := server.Start(bindAddr)
+	if err != nil {
+		logger.Error(err)
+	}
 }
