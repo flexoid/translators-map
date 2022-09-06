@@ -37,6 +37,9 @@ func (s *Server) setupRouter() *chi.Mux {
 
 		configController := &ConfigController{Server: s}
 		apiRouter.Get("/api/config", configController.GetConfig)
+
+		languagesController := &LanguageController{Server: s}
+		apiRouter.Get("/api/languages", languagesController.GetLanguages)
 	})
 
 	s.setupFileServer(router, "web")
