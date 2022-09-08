@@ -1,11 +1,6 @@
 import { useRef, useState, useEffect } from "react"
+import { MarkerClusterer } from "@googlemaps/markerclusterer"
 import { Translator } from "../lib/api"
-
-declare global {
-  interface Window {
-    markerClusterer: any
-  }
-}
 
 interface MapProps extends google.maps.MapOptions {
   translators: Translator[]
@@ -22,7 +17,7 @@ function Map({ center, zoom, style, translators, ...options }: MapProps) {
   useEffect(() => {
     if (ref.current && !map) {
       const map = new google.maps.Map(ref.current, { center, zoom })
-      setClusterer(new window.markerClusterer.MarkerClusterer({ map }))
+      setClusterer(new MarkerClusterer({ map }))
       setMap(map)
     }
   }, [ref, map])
