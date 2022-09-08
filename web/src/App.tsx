@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import { Flex, Box, Heading, Spacer, VStack } from "@chakra-ui/react"
+import { Flex, Box, Heading, Text, Spacer, Link } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
 
 import Map from "./components/Map"
@@ -61,19 +62,46 @@ function App() {
 
   return (
     <Flex
-      minWidth="max-content"
       h={{ base: "auto", md: "100vh" }}
       direction={{ base: "column", md: "row" }}
     >
-      <VStack p={2} minWidth="max-content" padding={4}>
-        <Heading size="md">Translators</Heading>
-
+      <Flex
+        direction="column"
+        p="4"
+        alignItems="center"
+        // minWidth="align-content"
+        maxWidth={{ base: "auto", md: "md" }}
+      >
+        <Heading size="md" pt={4}>
+          Polish sworn translators map
+        </Heading>
+        <Text p="4" align="center">
+          Find sworn translator from any language to Polish and vice versa.
+        </Text>
         <Form
           currentLanguage={currentLanguage}
           languages={languages}
           onLangChange={handleLangChange}
         />
-      </VStack>
+        <Spacer />
+
+        <Text fontSize="sm" align="center">
+          All data used on this site is taken from the{" "}
+          <Link
+            color="teal.500"
+            href="https://arch-bip.ms.gov.pl/pl/rejestry-i-ewidencje/tlumacze-przysiegli/lista-tlumaczy-przysieglych/search.html"
+            isExternal
+          >
+            <span style={{ whiteSpace: "nowrap" }}>
+              Bulletin of Public information archive{" "}
+              <ExternalLinkIcon mx="2px" />
+            </span>
+          </Link>{" "}
+          of the Ministry of Justice of the Republic of Poland. The data is
+          provided "as is" without warranty of any kind for informational
+          purposes only.
+        </Text>
+      </Flex>
       <Spacer />
       <Box w="full" h={{ base: "xl", md: "full" }}>
         {config && (
