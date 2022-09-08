@@ -48,6 +48,7 @@ function App() {
 
   useEffect(() => {
     if (!currentLanguage) {
+      setTranslators([])
       return
     }
 
