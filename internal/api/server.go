@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/flexoid/translators-map-go/ent"
-	"github.com/go-chi/chi/middleware"
+	"github.com/flexoid/translators-map-go/internal/logging"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -27,9 +28,11 @@ func (s *Server) Start(bindAddr string) error {
 func (s *Server) setupRouter() *chi.Mux {
 	router := chi.NewRouter()
 
+	router.Use(middleware.RequestID)
+	router.Use(logging.NewRequestLogger(s.Logger.Desugar()))
+	router.Use(middleware.Recoverer)
+
 	router.Group(func(apiRouter chi.Router) {
-		apiRouter.Use(middleware.RealIP)
-		apiRouter.Use(middleware.Recoverer)
 		apiRouter.Use(middleware.SetHeader("Content-Type", "application/json"))
 
 		translatorsController := &TranslatorController{Server: s}
