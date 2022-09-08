@@ -2,13 +2,17 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
+	"entgo.io/ent/dialect"
+	entsql "entgo.io/ent/dialect/sql"
 	"github.com/alecthomas/kong"
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/translator"
 	"github.com/flexoid/translators-map-go/internal/api"
 	"github.com/flexoid/translators-map-go/internal/config"
+	"github.com/flexoid/translators-map-go/internal/logging"
 	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/scraper"
 	_ "github.com/lib/pq"
@@ -24,6 +28,8 @@ func main() {
 
 	zapLogger := zap.Must(logCfg.Build())
 	defer zapLogger.Sync() // flushes buffer, if any
+	zap.ReplaceGlobals(zapLogger)
+
 	logger := zapLogger.Sugar()
 
 	kongCtx := kong.Parse(&config.CLI)
@@ -75,10 +81,17 @@ func startScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
 }
 
 func setupDatabase() (*ent.Client, error) {
-	client, err := ent.Open("postgres", config.CLI.DatabaseURL)
+	db, err := sql.Open("postgres", config.CLI.DatabaseURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed opening connection to postgres: %w", err)
+		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
+
+	drv := entsql.OpenDB("postgres", db)
+	drvWithContext := dialect.DebugWithContext(drv, func(ctx context.Context, args ...interface{}) {
+		logging.Ctx(ctx).Debug(args...)
+	})
+
+	client := ent.NewClient(ent.Driver(drvWithContext))
 
 	// Run the auto migration tool.
 	if err := client.Schema.Create(context.Background()); err != nil {
