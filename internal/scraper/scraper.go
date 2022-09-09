@@ -129,12 +129,11 @@ func processTable(logger *zap.SugaredLogger, e *colly.HTMLElement, language Lang
 		// Having sequential number in logs is useful for debugging.
 		logger := logger.With("seq_num", seqNum)
 
-		address, err := extractAddress(element)
+		err = parseAddressCell(element, &translator)
 		if err != nil {
-			logger.Errorf("Failed to extract address: %v", err)
+			logger.Errorf("Failed to parse address cell: %v", err)
 			continue
 		}
-		translator.Address = address
 
 		name, err := extractName(element)
 		if err != nil {
@@ -149,13 +148,6 @@ func processTable(logger *zap.SugaredLogger, e *colly.HTMLElement, language Lang
 			continue
 		}
 		translator.DetailsURL = link
-
-		contacts, err := extractContacts(element)
-		if err != nil {
-			logger.Errorf("Failed to extract contacts: %v", err)
-			continue
-		}
-		translator.Contacts = contacts
 
 		cb(translator)
 	}
@@ -189,45 +181,43 @@ func extractLink(tr *colly.HTMLElement) (string, error) {
 	return baseUrl + link, nil
 }
 
-func extractAddress(tr *colly.HTMLElement) (string, error) {
+func parseAddressCell(tr *colly.HTMLElement, t *Translator) error {
 	text := tr.ChildText("td:nth-child(7)")
 	if text == "" {
-		return "", errors.New("could not find address cell")
+		return errors.New("could not find address cell")
 	}
 
-	parts := strings.Split(text, "\n")
-	if len(parts) < 3 {
-		return "", errors.New("not enough address parts")
+	addrLines := []string{}
+	contactLines := []string{}
+	stillAddr := true
+
+	for _, rawLine := range strings.Split(text, "\n") {
+		line := strings.Join(strings.Fields(rawLine), " ")
+		if line == "" {
+			continue
+		}
+
+		if strings.HasPrefix(strings.ToLower(line), "tel:") ||
+			strings.HasPrefix(strings.ToLower(line), "fax:") ||
+			strings.HasPrefix(strings.ToLower(line), "email:") {
+			stillAddr = false
+		}
+
+		if stillAddr {
+			addrLines = append(addrLines, line)
+		} else {
+			contactLines = append(contactLines, line)
+		}
 	}
 
-	// Extract important part of address cell.
-	addr := separatorOtherRegex.ReplaceAllString(strings.Join(parts[:3], ""), " ")
-
-	// Strip whitespaces.
-	addr = strings.Join(strings.Fields(addr), " ")
-
-	return addr, nil
-}
-
-func extractContacts(tr *colly.HTMLElement) (string, error) {
-	text := tr.ChildText("td:nth-child(7)")
-	if text == "" {
-		return "", errors.New("could not extract contacts")
+	t.Address = strings.Join(addrLines, " ")
+	if t.Address == "" {
+		return errors.New("address is empty")
 	}
 
-	parts := strings.Split(text, "\n")
-	if len(parts) < 4 {
-		// No contact details.
-		return "", nil
-	}
+	t.Contacts = strings.Join(contactLines, " ")
 
-	// Extract important part of address cell.
-	contacts := separatorOtherRegex.ReplaceAllString(strings.Join(parts[3:], ""), " ")
-
-	// Strip whitespaces.
-	contacts = strings.Join(strings.Fields(contacts), " ")
-
-	return contacts, nil
+	return nil
 }
 
 func nextPageLink(e *colly.HTMLElement) string {
