@@ -36,19 +36,14 @@ func (s *Scraper) Run() {
 	}
 
 	for _, language := range languages {
-		translators, err := scraper.ScrapeTranslators(s.logger, language)
-		if err != nil {
-			s.logger.Fatalf("Failed to scrape translators: %v", err)
-		}
-
-		s.logger.Debugf("Scraped %d translators", len(translators))
-
-		for _, translator := range translators {
-			_, err := s.handleTranslator(translator)
+		err := scraper.ScrapeTranslators(s.logger, language, func(t scraper.Translator) {
+			_, err := s.handleTranslator(t)
 			if err != nil {
 				s.logger.Errorf("Failed to save translator to db: %v", err)
-				continue
 			}
+		})
+		if err != nil {
+			s.logger.Fatalf("Error while scraping translators: %v", err)
 		}
 	}
 }

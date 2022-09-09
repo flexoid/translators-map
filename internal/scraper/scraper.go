@@ -28,7 +28,7 @@ type Language struct {
 	Code int
 }
 
-func ScrapeTranslators(logger *zap.SugaredLogger, language Language) (translators []Translator, outerErr error) {
+func ScrapeTranslators(logger *zap.SugaredLogger, language Language, cb func(Translator)) (outerErr error) {
 	c := colly.NewCollector()
 
 	logger = logger.With("language", language.Name)
@@ -40,48 +40,7 @@ func ScrapeTranslators(logger *zap.SugaredLogger, language Language) (translator
 	})
 
 	c.OnHTML("table.tabelkaszara", func(e *colly.HTMLElement) {
-		var rows []*colly.HTMLElement
-		e.ForEach("tr", func(i int, h *colly.HTMLElement) {
-			rows = append(rows, h)
-		})
-		if len(rows) < 2 {
-			return
-		}
-
-		for i, element := range rows[1:] {
-			logger.Debugf("Parsing translator #%d", i+1)
-			translator := Translator{Language: language}
-
-			address, err := extractAddress(element)
-			if err != nil {
-				logger.Errorf("Failed to extract address: %v", err)
-				continue
-			}
-			translator.Address = address
-
-			name, err := extractName(element)
-			if err != nil {
-				logger.Errorf("Failed to extract name: %v", err)
-				continue
-			}
-			translator.Name = name
-
-			link, err := extractLink(element)
-			if err != nil {
-				logger.Errorf("Failed to extract link: %v", err)
-				continue
-			}
-			translator.DetailsURL = link
-
-			contacts, err := extractContacts(element)
-			if err != nil {
-				logger.Errorf("Failed to extract contacts: %v", err)
-				continue
-			}
-			translator.Contacts = contacts
-
-			translators = append(translators, translator)
-		}
+		processTable(logger, e, language, cb)
 	})
 
 	c.OnRequest(func(r *colly.Request) {
@@ -106,7 +65,7 @@ func ScrapeTranslators(logger *zap.SugaredLogger, language Language) (translator
 		c.Visit(url)
 	}
 
-	return translators, nil
+	return outerErr
 }
 
 func ScrapeLanguages(logger *zap.SugaredLogger) (languages []Language, outerErr error) {
@@ -144,6 +103,71 @@ func ScrapeLanguages(logger *zap.SugaredLogger) (languages []Language, outerErr 
 	c.Wait()
 
 	return languages, nil
+}
+
+func processTable(logger *zap.SugaredLogger, e *colly.HTMLElement, language Language, cb func(Translator)) {
+	logger = logger.With("page", e.Request.URL)
+
+	var rows []*colly.HTMLElement
+	e.ForEach("tr", func(i int, h *colly.HTMLElement) {
+		rows = append(rows, h)
+	})
+	if len(rows) < 2 {
+		return
+	}
+
+	for i, element := range rows[1:] {
+		logger.Debugf("Parsing translator from table row %d", i+1)
+		translator := Translator{Language: language}
+
+		seqNum, err := extractSeqNumber(element)
+		if err != nil {
+			logger.Errorf("Failed to extract sequential number: %v", err)
+			continue
+		}
+
+		// Having sequential number in logs is useful for debugging.
+		logger := logger.With("seq_num", seqNum)
+
+		address, err := extractAddress(element)
+		if err != nil {
+			logger.Errorf("Failed to extract address: %v", err)
+			continue
+		}
+		translator.Address = address
+
+		name, err := extractName(element)
+		if err != nil {
+			logger.Errorf("Failed to extract name: %v", err)
+			continue
+		}
+		translator.Name = name
+
+		link, err := extractLink(element)
+		if err != nil {
+			logger.Errorf("Failed to extract link: %v", err)
+			continue
+		}
+		translator.DetailsURL = link
+
+		contacts, err := extractContacts(element)
+		if err != nil {
+			logger.Errorf("Failed to extract contacts: %v", err)
+			continue
+		}
+		translator.Contacts = contacts
+
+		cb(translator)
+	}
+}
+
+func extractSeqNumber(tr *colly.HTMLElement) (string, error) {
+	text := tr.ChildText("td:nth-child(1)")
+	if text == "" {
+		return "", errors.New("could not find number")
+	}
+
+	return text, nil
 }
 
 func extractName(tr *colly.HTMLElement) (string, error) {
