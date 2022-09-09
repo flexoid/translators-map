@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/flexoid/translators-map-go/ent/predicate"
 	"github.com/flexoid/translators-map-go/ent/translator"
@@ -41,6 +42,8 @@ type TranslatorMutation struct {
 	addlatitude   *float64
 	longitude     *float64
 	addlongitude  *float64
+	created_at    *time.Time
+	updated_at    *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Translator, error)
@@ -465,6 +468,104 @@ func (m *TranslatorMutation) ResetLongitude() {
 	delete(m.clearedFields, translator.FieldLongitude)
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (m *TranslatorMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TranslatorMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *TranslatorMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[translator.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *TranslatorMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[translator.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TranslatorMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, translator.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TranslatorMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TranslatorMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *TranslatorMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[translator.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *TranslatorMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[translator.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TranslatorMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, translator.FieldUpdatedAt)
+}
+
 // Where appends a list predicates to the TranslatorMutation builder.
 func (m *TranslatorMutation) Where(ps ...predicate.Translator) {
 	m.predicates = append(m.predicates, ps...)
@@ -484,7 +585,7 @@ func (m *TranslatorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TranslatorMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, translator.FieldName)
 	}
@@ -505,6 +606,12 @@ func (m *TranslatorMutation) Fields() []string {
 	}
 	if m.longitude != nil {
 		fields = append(fields, translator.FieldLongitude)
+	}
+	if m.created_at != nil {
+		fields = append(fields, translator.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, translator.FieldUpdatedAt)
 	}
 	return fields
 }
@@ -528,6 +635,10 @@ func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 		return m.Latitude()
 	case translator.FieldLongitude:
 		return m.Longitude()
+	case translator.FieldCreatedAt:
+		return m.CreatedAt()
+	case translator.FieldUpdatedAt:
+		return m.UpdatedAt()
 	}
 	return nil, false
 }
@@ -551,6 +662,10 @@ func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldLatitude(ctx)
 	case translator.FieldLongitude:
 		return m.OldLongitude(ctx)
+	case translator.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case translator.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Translator field %s", name)
 }
@@ -608,6 +723,20 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLongitude(v)
+		return nil
+	case translator.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case translator.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Translator field %s", name)
@@ -672,6 +801,12 @@ func (m *TranslatorMutation) ClearedFields() []string {
 	if m.FieldCleared(translator.FieldLongitude) {
 		fields = append(fields, translator.FieldLongitude)
 	}
+	if m.FieldCleared(translator.FieldCreatedAt) {
+		fields = append(fields, translator.FieldCreatedAt)
+	}
+	if m.FieldCleared(translator.FieldUpdatedAt) {
+		fields = append(fields, translator.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -691,6 +826,12 @@ func (m *TranslatorMutation) ClearField(name string) error {
 		return nil
 	case translator.FieldLongitude:
 		m.ClearLongitude()
+		return nil
+	case translator.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case translator.FieldUpdatedAt:
+		m.ClearUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Translator nullable field %s", name)
@@ -720,6 +861,12 @@ func (m *TranslatorMutation) ResetField(name string) error {
 		return nil
 	case translator.FieldLongitude:
 		m.ResetLongitude()
+		return nil
+	case translator.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case translator.FieldUpdatedAt:
+		m.ResetUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Translator field %s", name)

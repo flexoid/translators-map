@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
@@ -26,6 +28,8 @@ func (Translator) Fields() []ent.Field {
 		field.Float("longitude").Optional().SchemaType(map[string]string{
 			dialect.Postgres: "numeric",
 		}),
+		field.Time("created_at").Default(time.Now).Immutable().Optional(),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now).Optional(),
 	}
 }
 

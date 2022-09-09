@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -77,6 +78,34 @@ func (tc *TranslatorCreate) SetNillableLongitude(f *float64) *TranslatorCreate {
 	return tc
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (tc *TranslatorCreate) SetCreatedAt(t time.Time) *TranslatorCreate {
+	tc.mutation.SetCreatedAt(t)
+	return tc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableCreatedAt(t *time.Time) *TranslatorCreate {
+	if t != nil {
+		tc.SetCreatedAt(*t)
+	}
+	return tc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tc *TranslatorCreate) SetUpdatedAt(t time.Time) *TranslatorCreate {
+	tc.mutation.SetUpdatedAt(t)
+	return tc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableUpdatedAt(t *time.Time) *TranslatorCreate {
+	if t != nil {
+		tc.SetUpdatedAt(*t)
+	}
+	return tc
+}
+
 // Mutation returns the TranslatorMutation object of the builder.
 func (tc *TranslatorCreate) Mutation() *TranslatorMutation {
 	return tc.mutation
@@ -88,6 +117,7 @@ func (tc *TranslatorCreate) Save(ctx context.Context) (*Translator, error) {
 		err  error
 		node *Translator
 	)
+	tc.defaults()
 	if len(tc.hooks) == 0 {
 		if err = tc.check(); err != nil {
 			return nil, err
@@ -148,6 +178,18 @@ func (tc *TranslatorCreate) Exec(ctx context.Context) error {
 func (tc *TranslatorCreate) ExecX(ctx context.Context) {
 	if err := tc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (tc *TranslatorCreate) defaults() {
+	if _, ok := tc.mutation.CreatedAt(); !ok {
+		v := translator.DefaultCreatedAt()
+		tc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := tc.mutation.UpdatedAt(); !ok {
+		v := translator.DefaultUpdatedAt()
+		tc.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -251,6 +293,22 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 		})
 		_node.Longitude = value
 	}
+	if value, ok := tc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: translator.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := tc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: translator.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
+	}
 	return _node, _spec
 }
 
@@ -268,6 +326,7 @@ func (tcb *TranslatorCreateBulk) Save(ctx context.Context) ([]*Translator, error
 	for i := range tcb.builders {
 		func(i int, root context.Context) {
 			builder := tcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*TranslatorMutation)
 				if !ok {

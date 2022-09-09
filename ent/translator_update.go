@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -111,6 +112,18 @@ func (tu *TranslatorUpdate) ClearLongitude() *TranslatorUpdate {
 	return tu
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (tu *TranslatorUpdate) SetUpdatedAt(t time.Time) *TranslatorUpdate {
+	tu.mutation.SetUpdatedAt(t)
+	return tu
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (tu *TranslatorUpdate) ClearUpdatedAt() *TranslatorUpdate {
+	tu.mutation.ClearUpdatedAt()
+	return tu
+}
+
 // Mutation returns the TranslatorMutation object of the builder.
 func (tu *TranslatorUpdate) Mutation() *TranslatorMutation {
 	return tu.mutation
@@ -122,6 +135,7 @@ func (tu *TranslatorUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	tu.defaults()
 	if len(tu.hooks) == 0 {
 		affected, err = tu.sqlSave(ctx)
 	} else {
@@ -167,6 +181,14 @@ func (tu *TranslatorUpdate) Exec(ctx context.Context) error {
 func (tu *TranslatorUpdate) ExecX(ctx context.Context) {
 	if err := tu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (tu *TranslatorUpdate) defaults() {
+	if _, ok := tu.mutation.UpdatedAt(); !ok && !tu.mutation.UpdatedAtCleared() {
+		v := translator.UpdateDefaultUpdatedAt()
+		tu.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -261,6 +283,25 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Column: translator.FieldLongitude,
+		})
+	}
+	if tu.mutation.CreatedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: translator.FieldCreatedAt,
+		})
+	}
+	if value, ok := tu.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: translator.FieldUpdatedAt,
+		})
+	}
+	if tu.mutation.UpdatedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: translator.FieldUpdatedAt,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
@@ -366,6 +407,18 @@ func (tuo *TranslatorUpdateOne) ClearLongitude() *TranslatorUpdateOne {
 	return tuo
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (tuo *TranslatorUpdateOne) SetUpdatedAt(t time.Time) *TranslatorUpdateOne {
+	tuo.mutation.SetUpdatedAt(t)
+	return tuo
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (tuo *TranslatorUpdateOne) ClearUpdatedAt() *TranslatorUpdateOne {
+	tuo.mutation.ClearUpdatedAt()
+	return tuo
+}
+
 // Mutation returns the TranslatorMutation object of the builder.
 func (tuo *TranslatorUpdateOne) Mutation() *TranslatorMutation {
 	return tuo.mutation
@@ -384,6 +437,7 @@ func (tuo *TranslatorUpdateOne) Save(ctx context.Context) (*Translator, error) {
 		err  error
 		node *Translator
 	)
+	tuo.defaults()
 	if len(tuo.hooks) == 0 {
 		node, err = tuo.sqlSave(ctx)
 	} else {
@@ -435,6 +489,14 @@ func (tuo *TranslatorUpdateOne) Exec(ctx context.Context) error {
 func (tuo *TranslatorUpdateOne) ExecX(ctx context.Context) {
 	if err := tuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (tuo *TranslatorUpdateOne) defaults() {
+	if _, ok := tuo.mutation.UpdatedAt(); !ok && !tuo.mutation.UpdatedAtCleared() {
+		v := translator.UpdateDefaultUpdatedAt()
+		tuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -546,6 +608,25 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Column: translator.FieldLongitude,
+		})
+	}
+	if tuo.mutation.CreatedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: translator.FieldCreatedAt,
+		})
+	}
+	if value, ok := tuo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: translator.FieldUpdatedAt,
+		})
+	}
+	if tuo.mutation.UpdatedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: translator.FieldUpdatedAt,
 		})
 	}
 	_node = &Translator{config: tuo.config}

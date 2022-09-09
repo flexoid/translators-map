@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/flexoid/translators-map-go/ent/translator"
@@ -29,6 +30,10 @@ type Translator struct {
 	Latitude float64 `json:"latitude,omitempty"`
 	// Longitude holds the value of the "longitude" field.
 	Longitude float64 `json:"longitude,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -42,6 +47,8 @@ func (*Translator) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case translator.FieldName, translator.FieldLanguage, translator.FieldAddress, translator.FieldContacts, translator.FieldDetailsURL:
 			values[i] = new(sql.NullString)
+		case translator.FieldCreatedAt, translator.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Translator", columns[i])
 		}
@@ -105,6 +112,18 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				t.Longitude = value.Float64
 			}
+		case translator.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				t.CreatedAt = value.Time
+			}
+		case translator.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				t.UpdatedAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -153,6 +172,12 @@ func (t *Translator) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("longitude=")
 	builder.WriteString(fmt.Sprintf("%v", t.Longitude))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
