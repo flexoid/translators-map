@@ -1,5 +1,7 @@
 import { useRef, useState, useEffect } from "react"
 import { MarkerClusterer } from "@googlemaps/markerclusterer"
+import { renderToString } from "react-dom/server"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Translator } from "../lib/api"
 
 interface MapProps extends google.maps.MapOptions {
@@ -16,6 +18,8 @@ function Map({ center, zoom, style, translators, ...options }: MapProps) {
   const [infoWindow, setInfoWindow] = useState<google.maps.InfoWindow | null>(
     null
   )
+
+  const externalLinkIconStr = renderToString(<ExternalLinkIcon mx="2px" />)
 
   useEffect(() => {
     if (ref.current && !map) {
@@ -42,8 +46,7 @@ function Map({ center, zoom, style, translators, ...options }: MapProps) {
       marker.addListener("click", () => {
         const infoContent = `
           <div class="info-window">
-            <b>${translator.name}</b><br>${translator.address}<br>${translator.contacts}<br>
-            <a href="${translator.details_url}" target="_blank">Open details in BIP (new tab)</a>
+            <a href="${translator.details_url}" target="_blank">See details ${externalLinkIconStr}</a>
           </div>
         `
 

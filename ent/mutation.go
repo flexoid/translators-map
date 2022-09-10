@@ -33,10 +33,9 @@ type TranslatorMutation struct {
 	op            Op
 	typ           string
 	id            *int
-	name          *string
+	name_sha      *[]byte
 	language      *string
-	address       *string
-	contacts      *string
+	address_sha   *[]byte
 	details_url   *string
 	latitude      *float64
 	addlatitude   *float64
@@ -148,40 +147,40 @@ func (m *TranslatorMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetName sets the "name" field.
-func (m *TranslatorMutation) SetName(s string) {
-	m.name = &s
+// SetNameSha sets the "name_sha" field.
+func (m *TranslatorMutation) SetNameSha(b []byte) {
+	m.name_sha = &b
 }
 
-// Name returns the value of the "name" field in the mutation.
-func (m *TranslatorMutation) Name() (r string, exists bool) {
-	v := m.name
+// NameSha returns the value of the "name_sha" field in the mutation.
+func (m *TranslatorMutation) NameSha() (r []byte, exists bool) {
+	v := m.name_sha
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the Translator entity.
+// OldNameSha returns the old "name_sha" field's value of the Translator entity.
 // If the Translator object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TranslatorMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *TranslatorMutation) OldNameSha(ctx context.Context) (v []byte, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
+		return v, errors.New("OldNameSha is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
+		return v, errors.New("OldNameSha requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
+		return v, fmt.Errorf("querying old value for OldNameSha: %w", err)
 	}
-	return oldValue.Name, nil
+	return oldValue.NameSha, nil
 }
 
-// ResetName resets all changes to the "name" field.
-func (m *TranslatorMutation) ResetName() {
-	m.name = nil
+// ResetNameSha resets all changes to the "name_sha" field.
+func (m *TranslatorMutation) ResetNameSha() {
+	m.name_sha = nil
 }
 
 // SetLanguage sets the "language" field.
@@ -220,76 +219,40 @@ func (m *TranslatorMutation) ResetLanguage() {
 	m.language = nil
 }
 
-// SetAddress sets the "address" field.
-func (m *TranslatorMutation) SetAddress(s string) {
-	m.address = &s
+// SetAddressSha sets the "address_sha" field.
+func (m *TranslatorMutation) SetAddressSha(b []byte) {
+	m.address_sha = &b
 }
 
-// Address returns the value of the "address" field in the mutation.
-func (m *TranslatorMutation) Address() (r string, exists bool) {
-	v := m.address
+// AddressSha returns the value of the "address_sha" field in the mutation.
+func (m *TranslatorMutation) AddressSha() (r []byte, exists bool) {
+	v := m.address_sha
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAddress returns the old "address" field's value of the Translator entity.
+// OldAddressSha returns the old "address_sha" field's value of the Translator entity.
 // If the Translator object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TranslatorMutation) OldAddress(ctx context.Context) (v string, err error) {
+func (m *TranslatorMutation) OldAddressSha(ctx context.Context) (v []byte, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+		return v, errors.New("OldAddressSha is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAddress requires an ID field in the mutation")
+		return v, errors.New("OldAddressSha requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+		return v, fmt.Errorf("querying old value for OldAddressSha: %w", err)
 	}
-	return oldValue.Address, nil
+	return oldValue.AddressSha, nil
 }
 
-// ResetAddress resets all changes to the "address" field.
-func (m *TranslatorMutation) ResetAddress() {
-	m.address = nil
-}
-
-// SetContacts sets the "contacts" field.
-func (m *TranslatorMutation) SetContacts(s string) {
-	m.contacts = &s
-}
-
-// Contacts returns the value of the "contacts" field in the mutation.
-func (m *TranslatorMutation) Contacts() (r string, exists bool) {
-	v := m.contacts
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldContacts returns the old "contacts" field's value of the Translator entity.
-// If the Translator object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TranslatorMutation) OldContacts(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldContacts is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldContacts requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldContacts: %w", err)
-	}
-	return oldValue.Contacts, nil
-}
-
-// ResetContacts resets all changes to the "contacts" field.
-func (m *TranslatorMutation) ResetContacts() {
-	m.contacts = nil
+// ResetAddressSha resets all changes to the "address_sha" field.
+func (m *TranslatorMutation) ResetAddressSha() {
+	m.address_sha = nil
 }
 
 // SetDetailsURL sets the "details_url" field.
@@ -585,18 +548,15 @@ func (m *TranslatorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TranslatorMutation) Fields() []string {
-	fields := make([]string, 0, 9)
-	if m.name != nil {
-		fields = append(fields, translator.FieldName)
+	fields := make([]string, 0, 8)
+	if m.name_sha != nil {
+		fields = append(fields, translator.FieldNameSha)
 	}
 	if m.language != nil {
 		fields = append(fields, translator.FieldLanguage)
 	}
-	if m.address != nil {
-		fields = append(fields, translator.FieldAddress)
-	}
-	if m.contacts != nil {
-		fields = append(fields, translator.FieldContacts)
+	if m.address_sha != nil {
+		fields = append(fields, translator.FieldAddressSha)
 	}
 	if m.details_url != nil {
 		fields = append(fields, translator.FieldDetailsURL)
@@ -621,14 +581,12 @@ func (m *TranslatorMutation) Fields() []string {
 // schema.
 func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case translator.FieldName:
-		return m.Name()
+	case translator.FieldNameSha:
+		return m.NameSha()
 	case translator.FieldLanguage:
 		return m.Language()
-	case translator.FieldAddress:
-		return m.Address()
-	case translator.FieldContacts:
-		return m.Contacts()
+	case translator.FieldAddressSha:
+		return m.AddressSha()
 	case translator.FieldDetailsURL:
 		return m.DetailsURL()
 	case translator.FieldLatitude:
@@ -648,14 +606,12 @@ func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case translator.FieldName:
-		return m.OldName(ctx)
+	case translator.FieldNameSha:
+		return m.OldNameSha(ctx)
 	case translator.FieldLanguage:
 		return m.OldLanguage(ctx)
-	case translator.FieldAddress:
-		return m.OldAddress(ctx)
-	case translator.FieldContacts:
-		return m.OldContacts(ctx)
+	case translator.FieldAddressSha:
+		return m.OldAddressSha(ctx)
 	case translator.FieldDetailsURL:
 		return m.OldDetailsURL(ctx)
 	case translator.FieldLatitude:
@@ -675,12 +631,12 @@ func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Val
 // type.
 func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case translator.FieldName:
-		v, ok := value.(string)
+	case translator.FieldNameSha:
+		v, ok := value.([]byte)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetName(v)
+		m.SetNameSha(v)
 		return nil
 	case translator.FieldLanguage:
 		v, ok := value.(string)
@@ -689,19 +645,12 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLanguage(v)
 		return nil
-	case translator.FieldAddress:
-		v, ok := value.(string)
+	case translator.FieldAddressSha:
+		v, ok := value.([]byte)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAddress(v)
-		return nil
-	case translator.FieldContacts:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetContacts(v)
+		m.SetAddressSha(v)
 		return nil
 	case translator.FieldDetailsURL:
 		v, ok := value.(string)
@@ -841,17 +790,14 @@ func (m *TranslatorMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *TranslatorMutation) ResetField(name string) error {
 	switch name {
-	case translator.FieldName:
-		m.ResetName()
+	case translator.FieldNameSha:
+		m.ResetNameSha()
 		return nil
 	case translator.FieldLanguage:
 		m.ResetLanguage()
 		return nil
-	case translator.FieldAddress:
-		m.ResetAddress()
-		return nil
-	case translator.FieldContacts:
-		m.ResetContacts()
+	case translator.FieldAddressSha:
+		m.ResetAddressSha()
 		return nil
 	case translator.FieldDetailsURL:
 		m.ResetDetailsURL()

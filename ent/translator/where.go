@@ -80,10 +80,10 @@ func IDLTE(id int) predicate.Translator {
 	})
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.Translator {
+// NameSha applies equality check predicate on the "name_sha" field. It's identical to NameShaEQ.
+func NameSha(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
+		s.Where(sql.EQ(s.C(FieldNameSha), v))
 	})
 }
 
@@ -94,17 +94,10 @@ func Language(v string) predicate.Translator {
 	})
 }
 
-// Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
-func Address(v string) predicate.Translator {
+// AddressSha applies equality check predicate on the "address_sha" field. It's identical to AddressShaEQ.
+func AddressSha(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
-	})
-}
-
-// Contacts applies equality check predicate on the "contacts" field. It's identical to ContactsEQ.
-func Contacts(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContacts), v))
+		s.Where(sql.EQ(s.C(FieldAddressSha), v))
 	})
 }
 
@@ -143,102 +136,67 @@ func UpdatedAt(v time.Time) predicate.Translator {
 	})
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.Translator {
+// NameShaEQ applies the EQ predicate on the "name_sha" field.
+func NameShaEQ(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
+		s.Where(sql.EQ(s.C(FieldNameSha), v))
 	})
 }
 
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.Translator {
+// NameShaNEQ applies the NEQ predicate on the "name_sha" field.
+func NameShaNEQ(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
+		s.Where(sql.NEQ(s.C(FieldNameSha), v))
 	})
 }
 
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.Translator {
+// NameShaIn applies the In predicate on the "name_sha" field.
+func NameShaIn(vs ...[]byte) predicate.Translator {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
+		s.Where(sql.In(s.C(FieldNameSha), v...))
 	})
 }
 
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.Translator {
+// NameShaNotIn applies the NotIn predicate on the "name_sha" field.
+func NameShaNotIn(vs ...[]byte) predicate.Translator {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
+		s.Where(sql.NotIn(s.C(FieldNameSha), v...))
 	})
 }
 
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.Translator {
+// NameShaGT applies the GT predicate on the "name_sha" field.
+func NameShaGT(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
+		s.Where(sql.GT(s.C(FieldNameSha), v))
 	})
 }
 
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.Translator {
+// NameShaGTE applies the GTE predicate on the "name_sha" field.
+func NameShaGTE(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
+		s.Where(sql.GTE(s.C(FieldNameSha), v))
 	})
 }
 
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.Translator {
+// NameShaLT applies the LT predicate on the "name_sha" field.
+func NameShaLT(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
+		s.Where(sql.LT(s.C(FieldNameSha), v))
 	})
 }
 
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.Translator {
+// NameShaLTE applies the LTE predicate on the "name_sha" field.
+func NameShaLTE(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
+		s.Where(sql.LTE(s.C(FieldNameSha), v))
 	})
 }
 
@@ -341,201 +299,67 @@ func LanguageContainsFold(v string) predicate.Translator {
 	})
 }
 
-// AddressEQ applies the EQ predicate on the "address" field.
-func AddressEQ(v string) predicate.Translator {
+// AddressShaEQ applies the EQ predicate on the "address_sha" field.
+func AddressShaEQ(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAddress), v))
+		s.Where(sql.EQ(s.C(FieldAddressSha), v))
 	})
 }
 
-// AddressNEQ applies the NEQ predicate on the "address" field.
-func AddressNEQ(v string) predicate.Translator {
+// AddressShaNEQ applies the NEQ predicate on the "address_sha" field.
+func AddressShaNEQ(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAddress), v))
+		s.Where(sql.NEQ(s.C(FieldAddressSha), v))
 	})
 }
 
-// AddressIn applies the In predicate on the "address" field.
-func AddressIn(vs ...string) predicate.Translator {
+// AddressShaIn applies the In predicate on the "address_sha" field.
+func AddressShaIn(vs ...[]byte) predicate.Translator {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAddress), v...))
+		s.Where(sql.In(s.C(FieldAddressSha), v...))
 	})
 }
 
-// AddressNotIn applies the NotIn predicate on the "address" field.
-func AddressNotIn(vs ...string) predicate.Translator {
+// AddressShaNotIn applies the NotIn predicate on the "address_sha" field.
+func AddressShaNotIn(vs ...[]byte) predicate.Translator {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAddress), v...))
+		s.Where(sql.NotIn(s.C(FieldAddressSha), v...))
 	})
 }
 
-// AddressGT applies the GT predicate on the "address" field.
-func AddressGT(v string) predicate.Translator {
+// AddressShaGT applies the GT predicate on the "address_sha" field.
+func AddressShaGT(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAddress), v))
+		s.Where(sql.GT(s.C(FieldAddressSha), v))
 	})
 }
 
-// AddressGTE applies the GTE predicate on the "address" field.
-func AddressGTE(v string) predicate.Translator {
+// AddressShaGTE applies the GTE predicate on the "address_sha" field.
+func AddressShaGTE(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAddress), v))
+		s.Where(sql.GTE(s.C(FieldAddressSha), v))
 	})
 }
 
-// AddressLT applies the LT predicate on the "address" field.
-func AddressLT(v string) predicate.Translator {
+// AddressShaLT applies the LT predicate on the "address_sha" field.
+func AddressShaLT(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAddress), v))
+		s.Where(sql.LT(s.C(FieldAddressSha), v))
 	})
 }
 
-// AddressLTE applies the LTE predicate on the "address" field.
-func AddressLTE(v string) predicate.Translator {
+// AddressShaLTE applies the LTE predicate on the "address_sha" field.
+func AddressShaLTE(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAddress), v))
-	})
-}
-
-// AddressContains applies the Contains predicate on the "address" field.
-func AddressContains(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAddress), v))
-	})
-}
-
-// AddressHasPrefix applies the HasPrefix predicate on the "address" field.
-func AddressHasPrefix(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
-	})
-}
-
-// AddressHasSuffix applies the HasSuffix predicate on the "address" field.
-func AddressHasSuffix(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
-}
-
-// AddressEqualFold applies the EqualFold predicate on the "address" field.
-func AddressEqualFold(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAddress), v))
-	})
-}
-
-// AddressContainsFold applies the ContainsFold predicate on the "address" field.
-func AddressContainsFold(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
-	})
-}
-
-// ContactsEQ applies the EQ predicate on the "contacts" field.
-func ContactsEQ(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsNEQ applies the NEQ predicate on the "contacts" field.
-func ContactsNEQ(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsIn applies the In predicate on the "contacts" field.
-func ContactsIn(vs ...string) predicate.Translator {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldContacts), v...))
-	})
-}
-
-// ContactsNotIn applies the NotIn predicate on the "contacts" field.
-func ContactsNotIn(vs ...string) predicate.Translator {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldContacts), v...))
-	})
-}
-
-// ContactsGT applies the GT predicate on the "contacts" field.
-func ContactsGT(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsGTE applies the GTE predicate on the "contacts" field.
-func ContactsGTE(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsLT applies the LT predicate on the "contacts" field.
-func ContactsLT(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsLTE applies the LTE predicate on the "contacts" field.
-func ContactsLTE(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsContains applies the Contains predicate on the "contacts" field.
-func ContactsContains(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsHasPrefix applies the HasPrefix predicate on the "contacts" field.
-func ContactsHasPrefix(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsHasSuffix applies the HasSuffix predicate on the "contacts" field.
-func ContactsHasSuffix(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsEqualFold applies the EqualFold predicate on the "contacts" field.
-func ContactsEqualFold(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldContacts), v))
-	})
-}
-
-// ContactsContainsFold applies the ContainsFold predicate on the "contacts" field.
-func ContactsContainsFold(v string) predicate.Translator {
-	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldContacts), v))
+		s.Where(sql.LTE(s.C(FieldAddressSha), v))
 	})
 }
 

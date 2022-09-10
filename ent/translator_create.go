@@ -20,9 +20,9 @@ type TranslatorCreate struct {
 	hooks    []Hook
 }
 
-// SetName sets the "name" field.
-func (tc *TranslatorCreate) SetName(s string) *TranslatorCreate {
-	tc.mutation.SetName(s)
+// SetNameSha sets the "name_sha" field.
+func (tc *TranslatorCreate) SetNameSha(b []byte) *TranslatorCreate {
+	tc.mutation.SetNameSha(b)
 	return tc
 }
 
@@ -32,15 +32,9 @@ func (tc *TranslatorCreate) SetLanguage(s string) *TranslatorCreate {
 	return tc
 }
 
-// SetAddress sets the "address" field.
-func (tc *TranslatorCreate) SetAddress(s string) *TranslatorCreate {
-	tc.mutation.SetAddress(s)
-	return tc
-}
-
-// SetContacts sets the "contacts" field.
-func (tc *TranslatorCreate) SetContacts(s string) *TranslatorCreate {
-	tc.mutation.SetContacts(s)
+// SetAddressSha sets the "address_sha" field.
+func (tc *TranslatorCreate) SetAddressSha(b []byte) *TranslatorCreate {
+	tc.mutation.SetAddressSha(b)
 	return tc
 }
 
@@ -195,17 +189,14 @@ func (tc *TranslatorCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tc *TranslatorCreate) check() error {
-	if _, ok := tc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Translator.name"`)}
+	if _, ok := tc.mutation.NameSha(); !ok {
+		return &ValidationError{Name: "name_sha", err: errors.New(`ent: missing required field "Translator.name_sha"`)}
 	}
 	if _, ok := tc.mutation.Language(); !ok {
 		return &ValidationError{Name: "language", err: errors.New(`ent: missing required field "Translator.language"`)}
 	}
-	if _, ok := tc.mutation.Address(); !ok {
-		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "Translator.address"`)}
-	}
-	if _, ok := tc.mutation.Contacts(); !ok {
-		return &ValidationError{Name: "contacts", err: errors.New(`ent: missing required field "Translator.contacts"`)}
+	if _, ok := tc.mutation.AddressSha(); !ok {
+		return &ValidationError{Name: "address_sha", err: errors.New(`ent: missing required field "Translator.address_sha"`)}
 	}
 	if _, ok := tc.mutation.DetailsURL(); !ok {
 		return &ValidationError{Name: "details_url", err: errors.New(`ent: missing required field "Translator.details_url"`)}
@@ -237,13 +228,13 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
-	if value, ok := tc.mutation.Name(); ok {
+	if value, ok := tc.mutation.NameSha(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: translator.FieldName,
+			Column: translator.FieldNameSha,
 		})
-		_node.Name = value
+		_node.NameSha = value
 	}
 	if value, ok := tc.mutation.Language(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -253,21 +244,13 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 		})
 		_node.Language = value
 	}
-	if value, ok := tc.mutation.Address(); ok {
+	if value, ok := tc.mutation.AddressSha(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: translator.FieldAddress,
+			Column: translator.FieldAddressSha,
 		})
-		_node.Address = value
-	}
-	if value, ok := tc.mutation.Contacts(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldContacts,
-		})
-		_node.Contacts = value
+		_node.AddressSha = value
 	}
 	if value, ok := tc.mutation.DetailsURL(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

@@ -17,10 +17,9 @@ type Translator struct {
 // Fields of the Translator.
 func (Translator) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name"),
+		field.Bytes("name_sha"),
 		field.String("language"),
-		field.String("address"),
-		field.String("contacts"),
+		field.Bytes("address_sha"),
 		field.String("details_url"),
 		field.Float("latitude").Optional().SchemaType(map[string]string{
 			dialect.Postgres: "numeric",
@@ -35,7 +34,7 @@ func (Translator) Fields() []ent.Field {
 
 func (Translator) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name", "language").Unique(),
+		index.Fields("name_sha", "language").Unique(),
 	}
 }
 

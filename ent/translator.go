@@ -16,14 +16,12 @@ type Translator struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	// NameSha holds the value of the "name_sha" field.
+	NameSha []byte `json:"name_sha,omitempty"`
 	// Language holds the value of the "language" field.
 	Language string `json:"language,omitempty"`
-	// Address holds the value of the "address" field.
-	Address string `json:"address,omitempty"`
-	// Contacts holds the value of the "contacts" field.
-	Contacts string `json:"contacts,omitempty"`
+	// AddressSha holds the value of the "address_sha" field.
+	AddressSha []byte `json:"address_sha,omitempty"`
 	// DetailsURL holds the value of the "details_url" field.
 	DetailsURL string `json:"details_url,omitempty"`
 	// Latitude holds the value of the "latitude" field.
@@ -41,11 +39,13 @@ func (*Translator) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case translator.FieldNameSha, translator.FieldAddressSha:
+			values[i] = new([]byte)
 		case translator.FieldLatitude, translator.FieldLongitude:
 			values[i] = new(sql.NullFloat64)
 		case translator.FieldID:
 			values[i] = new(sql.NullInt64)
-		case translator.FieldName, translator.FieldLanguage, translator.FieldAddress, translator.FieldContacts, translator.FieldDetailsURL:
+		case translator.FieldLanguage, translator.FieldDetailsURL:
 			values[i] = new(sql.NullString)
 		case translator.FieldCreatedAt, translator.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -70,11 +70,11 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			t.ID = int(value.Int64)
-		case translator.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				t.Name = value.String
+		case translator.FieldNameSha:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field name_sha", values[i])
+			} else if value != nil {
+				t.NameSha = *value
 			}
 		case translator.FieldLanguage:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -82,17 +82,11 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				t.Language = value.String
 			}
-		case translator.FieldAddress:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field address", values[i])
-			} else if value.Valid {
-				t.Address = value.String
-			}
-		case translator.FieldContacts:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field contacts", values[i])
-			} else if value.Valid {
-				t.Contacts = value.String
+		case translator.FieldAddressSha:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field address_sha", values[i])
+			} else if value != nil {
+				t.AddressSha = *value
 			}
 		case translator.FieldDetailsURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -152,17 +146,14 @@ func (t *Translator) String() string {
 	var builder strings.Builder
 	builder.WriteString("Translator(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
-	builder.WriteString("name=")
-	builder.WriteString(t.Name)
+	builder.WriteString("name_sha=")
+	builder.WriteString(fmt.Sprintf("%v", t.NameSha))
 	builder.WriteString(", ")
 	builder.WriteString("language=")
 	builder.WriteString(t.Language)
 	builder.WriteString(", ")
-	builder.WriteString("address=")
-	builder.WriteString(t.Address)
-	builder.WriteString(", ")
-	builder.WriteString("contacts=")
-	builder.WriteString(t.Contacts)
+	builder.WriteString("address_sha=")
+	builder.WriteString(fmt.Sprintf("%v", t.AddressSha))
 	builder.WriteString(", ")
 	builder.WriteString("details_url=")
 	builder.WriteString(t.DetailsURL)

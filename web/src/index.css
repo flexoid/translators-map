@@ -5,3 +5,9 @@
 .info-window a:hover {
   text-decoration: underline;
 }
+
+.info-window a svg {
+  width: 1em;
+  height: 1em;
+  display: inline;
+}

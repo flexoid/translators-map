@@ -11,14 +11,12 @@ const (
 	Label = "translator"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
+	// FieldNameSha holds the string denoting the name_sha field in the database.
+	FieldNameSha = "name_sha"
 	// FieldLanguage holds the string denoting the language field in the database.
 	FieldLanguage = "language"
-	// FieldAddress holds the string denoting the address field in the database.
-	FieldAddress = "address"
-	// FieldContacts holds the string denoting the contacts field in the database.
-	FieldContacts = "contacts"
+	// FieldAddressSha holds the string denoting the address_sha field in the database.
+	FieldAddressSha = "address_sha"
 	// FieldDetailsURL holds the string denoting the details_url field in the database.
 	FieldDetailsURL = "details_url"
 	// FieldLatitude holds the string denoting the latitude field in the database.
@@ -36,10 +34,9 @@ const (
 // Columns holds all SQL columns for translator fields.
 var Columns = []string{
 	FieldID,
-	FieldName,
+	FieldNameSha,
 	FieldLanguage,
-	FieldAddress,
-	FieldContacts,
+	FieldAddressSha,
 	FieldDetailsURL,
 	FieldLatitude,
 	FieldLongitude,

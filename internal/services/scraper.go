@@ -1,7 +1,9 @@
 package services
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
 	"fmt"
 
 	"github.com/flexoid/translators-map-go/ent"
@@ -53,7 +55,9 @@ func (s *Scraper) handleTranslator(trans scraper.Translator) (*ent.Translator, e
 	var err error
 
 	model, err = s.db.Translator.Query().
-		Where(translator.Name(trans.Name), translator.Language(trans.Language.Name)).
+		Where(
+			translator.NameSha(s.hashSumFromString(trans.Name)),
+			translator.Language(trans.Language.Name)).
 		Only(context.TODO())
 
 	if ent.IsNotFound(err) {
@@ -75,22 +79,13 @@ func (s *Scraper) handleTranslator(trans scraper.Translator) (*ent.Translator, e
 func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, error) {
 	creator := s.db.Translator.Create()
 
-	creator.SetName(trans.Name)
 	creator.SetLanguage(trans.Language.Name)
-	s.setModelAttrs(creator.Mutation(), trans)
+	creator.SetDetailsURL(trans.DetailsURL)
 
-	geocodingResult, err := s.geocoding.GetCoordinatesForAddress(context.TODO(), trans.Address)
+	err := s.fillLocation(context.TODO(), creator.Mutation(), trans.Address)
 	if err != nil {
-		return nil, fmt.Errorf("geocoding error: %v", err)
+		return nil, err
 	}
-
-	lat := geocodingResult.Geometry.Location.Lat
-	lng := geocodingResult.Geometry.Location.Lng
-	s.logger.Debugw("Got location for address", "address", trans.Address, "latitude", lat, "longitude", lng)
-
-	creator.
-		SetLatitude(lat).
-		SetLongitude(lng)
 
 	model, err := creator.Save(context.TODO())
 
@@ -98,32 +93,52 @@ func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, e
 		return nil, fmt.Errorf("failed to create translator record: %w", err)
 	}
 
-	s.logger.Debugw("Created translator record",
-		"id", model.ID, "name", model.Name,
-		"language", model.Language, "model", model.String())
+	s.logger.Debugw("Created translator record", "model", model.String())
 
 	return model, nil
 }
 
 func (s *Scraper) updateTranslator(model *ent.Translator, trans scraper.Translator) (*ent.Translator, error) {
-	updater := model.Update()
-	s.setModelAttrs(updater.Mutation(), trans)
+	if bytes.Equal(model.AddressSha, s.hashSumFromString(trans.Address)) {
+		s.logger.Debugf("Address didn't change, skipping update")
+		return model, nil
+	}
 
-	model, err := updater.Save(context.TODO())
+	updater := model.Update()
+
+	err := s.fillLocation(context.TODO(), updater.Mutation(), trans.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	model, err = updater.Save(context.TODO())
 	if err != nil {
 		return nil, fmt.Errorf("failed to update translator record: %w", err)
 	}
 
-	s.logger.Debugw("Updated translator record",
-		"id", model.ID, "name", model.Name,
-		"language", model.Language, "model", model.String())
+	s.logger.Debugw("Updated translator record", "model", model.String())
 
 	return model, nil
 }
 
-func (s *Scraper) setModelAttrs(m *ent.TranslatorMutation, trans scraper.Translator) {
-	m.SetAddress(trans.Address)
+func (s *Scraper) hashSumFromString(str string) []byte {
+	sum := sha256.Sum256([]byte(str))
+	return sum[:]
+}
 
-	m.SetContacts(trans.Contacts)
-	m.SetDetailsURL(trans.DetailsURL)
+func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, address string) error {
+	geocodingResult, err := s.geocoding.GetCoordinatesForAddress(ctx, address)
+	if err != nil {
+		return fmt.Errorf("geocoding error: %v", err)
+	}
+
+	lat := geocodingResult.Geometry.Location.Lat
+	lng := geocodingResult.Geometry.Location.Lng
+	s.logger.Debugw("Got location for address", "address", address, "latitude", lat, "longitude", lng)
+
+	m.SetAddressSha(s.hashSumFromString(address))
+	m.SetLatitude(lat)
+	m.SetLongitude(lng)
+
+	return nil
 }

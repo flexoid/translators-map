@@ -28,9 +28,9 @@ func (tu *TranslatorUpdate) Where(ps ...predicate.Translator) *TranslatorUpdate 
 	return tu
 }
 
-// SetName sets the "name" field.
-func (tu *TranslatorUpdate) SetName(s string) *TranslatorUpdate {
-	tu.mutation.SetName(s)
+// SetNameSha sets the "name_sha" field.
+func (tu *TranslatorUpdate) SetNameSha(b []byte) *TranslatorUpdate {
+	tu.mutation.SetNameSha(b)
 	return tu
 }
 
@@ -40,15 +40,9 @@ func (tu *TranslatorUpdate) SetLanguage(s string) *TranslatorUpdate {
 	return tu
 }
 
-// SetAddress sets the "address" field.
-func (tu *TranslatorUpdate) SetAddress(s string) *TranslatorUpdate {
-	tu.mutation.SetAddress(s)
-	return tu
-}
-
-// SetContacts sets the "contacts" field.
-func (tu *TranslatorUpdate) SetContacts(s string) *TranslatorUpdate {
-	tu.mutation.SetContacts(s)
+// SetAddressSha sets the "address_sha" field.
+func (tu *TranslatorUpdate) SetAddressSha(b []byte) *TranslatorUpdate {
+	tu.mutation.SetAddressSha(b)
 	return tu
 }
 
@@ -210,11 +204,11 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := tu.mutation.Name(); ok {
+	if value, ok := tu.mutation.NameSha(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: translator.FieldName,
+			Column: translator.FieldNameSha,
 		})
 	}
 	if value, ok := tu.mutation.Language(); ok {
@@ -224,18 +218,11 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: translator.FieldLanguage,
 		})
 	}
-	if value, ok := tu.mutation.Address(); ok {
+	if value, ok := tu.mutation.AddressSha(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: translator.FieldAddress,
-		})
-	}
-	if value, ok := tu.mutation.Contacts(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldContacts,
+			Column: translator.FieldAddressSha,
 		})
 	}
 	if value, ok := tu.mutation.DetailsURL(); ok {
@@ -323,9 +310,9 @@ type TranslatorUpdateOne struct {
 	mutation *TranslatorMutation
 }
 
-// SetName sets the "name" field.
-func (tuo *TranslatorUpdateOne) SetName(s string) *TranslatorUpdateOne {
-	tuo.mutation.SetName(s)
+// SetNameSha sets the "name_sha" field.
+func (tuo *TranslatorUpdateOne) SetNameSha(b []byte) *TranslatorUpdateOne {
+	tuo.mutation.SetNameSha(b)
 	return tuo
 }
 
@@ -335,15 +322,9 @@ func (tuo *TranslatorUpdateOne) SetLanguage(s string) *TranslatorUpdateOne {
 	return tuo
 }
 
-// SetAddress sets the "address" field.
-func (tuo *TranslatorUpdateOne) SetAddress(s string) *TranslatorUpdateOne {
-	tuo.mutation.SetAddress(s)
-	return tuo
-}
-
-// SetContacts sets the "contacts" field.
-func (tuo *TranslatorUpdateOne) SetContacts(s string) *TranslatorUpdateOne {
-	tuo.mutation.SetContacts(s)
+// SetAddressSha sets the "address_sha" field.
+func (tuo *TranslatorUpdateOne) SetAddressSha(b []byte) *TranslatorUpdateOne {
+	tuo.mutation.SetAddressSha(b)
 	return tuo
 }
 
@@ -535,11 +516,11 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 			}
 		}
 	}
-	if value, ok := tuo.mutation.Name(); ok {
+	if value, ok := tuo.mutation.NameSha(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: translator.FieldName,
+			Column: translator.FieldNameSha,
 		})
 	}
 	if value, ok := tuo.mutation.Language(); ok {
@@ -549,18 +530,11 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 			Column: translator.FieldLanguage,
 		})
 	}
-	if value, ok := tuo.mutation.Address(); ok {
+	if value, ok := tuo.mutation.AddressSha(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeBytes,
 			Value:  value,
-			Column: translator.FieldAddress,
-		})
-	}
-	if value, ok := tuo.mutation.Contacts(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldContacts,
+			Column: translator.FieldAddressSha,
 		})
 	}
 	if value, ok := tuo.mutation.DetailsURL(); ok {
