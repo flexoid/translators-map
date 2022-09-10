@@ -1,0 +1,7 @@
+.info-window a {
+  color: #319795;
+}
+
+.info-window a:hover {
+  text-decoration: underline;
+}

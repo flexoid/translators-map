@@ -11,10 +11,11 @@ type TranslatorController struct {
 }
 
 type Translator struct {
-	Name     string             `json:"name"`
-	Address  string             `json:"address"`
-	Contacts string             `json:"contacts"`
-	Location TranslatorLocation `json:"location"`
+	Name       string             `json:"name"`
+	Address    string             `json:"address"`
+	Contacts   string             `json:"contacts"`
+	DetailsURL string             `json:"details_url"`
+	Location   TranslatorLocation `json:"location"`
 }
 
 type TranslatorLocation struct {
@@ -51,6 +52,7 @@ func (c *TranslatorController) GetTranslators(w http.ResponseWriter, r *http.Req
 				Latitude:  dbTranslator.Latitude,
 				Longitude: dbTranslator.Longitude,
 			},
+			DetailsURL: dbTranslator.DetailsURL,
 		})
 	}
 
