@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
@@ -50,8 +51,12 @@ func startServer(entClient *ent.Client, logger *zap.SugaredLogger, bindAddr stri
 }
 
 func startScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
-	logger.Info("Starting server")
-	services.NewScraper(entClient, logger, config.CLI.MapsBackendAPIKey).Run()
+	for {
+		logger.Info("Starting scraper")
+
+		services.NewScraper(entClient, logger, config.CLI.MapsBackendAPIKey).Run()
+		time.Sleep(24 * time.Hour)
+	}
 }
 
 func setupDatabase() (*ent.Client, error) {
