@@ -20,9 +20,9 @@ type TranslatorCreate struct {
 	hooks    []Hook
 }
 
-// SetNameSha sets the "name_sha" field.
-func (tc *TranslatorCreate) SetNameSha(b []byte) *TranslatorCreate {
-	tc.mutation.SetNameSha(b)
+// SetExternalID sets the "external_id" field.
+func (tc *TranslatorCreate) SetExternalID(i int) *TranslatorCreate {
+	tc.mutation.SetExternalID(i)
 	return tc
 }
 
@@ -189,8 +189,8 @@ func (tc *TranslatorCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tc *TranslatorCreate) check() error {
-	if _, ok := tc.mutation.NameSha(); !ok {
-		return &ValidationError{Name: "name_sha", err: errors.New(`ent: missing required field "Translator.name_sha"`)}
+	if _, ok := tc.mutation.ExternalID(); !ok {
+		return &ValidationError{Name: "external_id", err: errors.New(`ent: missing required field "Translator.external_id"`)}
 	}
 	if _, ok := tc.mutation.Language(); !ok {
 		return &ValidationError{Name: "language", err: errors.New(`ent: missing required field "Translator.language"`)}
@@ -228,13 +228,13 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
-	if value, ok := tc.mutation.NameSha(); ok {
+	if value, ok := tc.mutation.ExternalID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
+			Type:   field.TypeInt,
 			Value:  value,
-			Column: translator.FieldNameSha,
+			Column: translator.FieldExternalID,
 		})
-		_node.NameSha = value
+		_node.ExternalID = value
 	}
 	if value, ok := tc.mutation.Language(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

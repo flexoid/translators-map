@@ -28,9 +28,16 @@ func (tu *TranslatorUpdate) Where(ps ...predicate.Translator) *TranslatorUpdate 
 	return tu
 }
 
-// SetNameSha sets the "name_sha" field.
-func (tu *TranslatorUpdate) SetNameSha(b []byte) *TranslatorUpdate {
-	tu.mutation.SetNameSha(b)
+// SetExternalID sets the "external_id" field.
+func (tu *TranslatorUpdate) SetExternalID(i int) *TranslatorUpdate {
+	tu.mutation.ResetExternalID()
+	tu.mutation.SetExternalID(i)
+	return tu
+}
+
+// AddExternalID adds i to the "external_id" field.
+func (tu *TranslatorUpdate) AddExternalID(i int) *TranslatorUpdate {
+	tu.mutation.AddExternalID(i)
 	return tu
 }
 
@@ -204,11 +211,18 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := tu.mutation.NameSha(); ok {
+	if value, ok := tu.mutation.ExternalID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
+			Type:   field.TypeInt,
 			Value:  value,
-			Column: translator.FieldNameSha,
+			Column: translator.FieldExternalID,
+		})
+	}
+	if value, ok := tu.mutation.AddedExternalID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: translator.FieldExternalID,
 		})
 	}
 	if value, ok := tu.mutation.Language(); ok {
@@ -310,9 +324,16 @@ type TranslatorUpdateOne struct {
 	mutation *TranslatorMutation
 }
 
-// SetNameSha sets the "name_sha" field.
-func (tuo *TranslatorUpdateOne) SetNameSha(b []byte) *TranslatorUpdateOne {
-	tuo.mutation.SetNameSha(b)
+// SetExternalID sets the "external_id" field.
+func (tuo *TranslatorUpdateOne) SetExternalID(i int) *TranslatorUpdateOne {
+	tuo.mutation.ResetExternalID()
+	tuo.mutation.SetExternalID(i)
+	return tuo
+}
+
+// AddExternalID adds i to the "external_id" field.
+func (tuo *TranslatorUpdateOne) AddExternalID(i int) *TranslatorUpdateOne {
+	tuo.mutation.AddExternalID(i)
 	return tuo
 }
 
@@ -516,11 +537,18 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 			}
 		}
 	}
-	if value, ok := tuo.mutation.NameSha(); ok {
+	if value, ok := tuo.mutation.ExternalID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
+			Type:   field.TypeInt,
 			Value:  value,
-			Column: translator.FieldNameSha,
+			Column: translator.FieldExternalID,
+		})
+	}
+	if value, ok := tuo.mutation.AddedExternalID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: translator.FieldExternalID,
 		})
 	}
 	if value, ok := tuo.mutation.Language(); ok {

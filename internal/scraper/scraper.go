@@ -13,9 +13,10 @@ import (
 
 const baseUrl = "https://arch-bip.ms.gov.pl"
 
-var separatorOtherRegex = regexp.MustCompile("[\\pZ\\pC]")
+var idInUrlRegex = regexp.MustCompile(`\/translator\,(\d+)\.html`)
 
 type Translator struct {
+	ID         int
 	Name       string
 	Address    string
 	Contacts   string
@@ -129,6 +130,21 @@ func processTable(logger *zap.SugaredLogger, e *colly.HTMLElement, language Lang
 		// Having sequential number in logs is useful for debugging.
 		logger := logger.With("seq_num", seqNum)
 
+		link, err := extractLink(element)
+		if err != nil {
+			logger.Errorf("Failed to extract link: %v", err)
+			continue
+		}
+		translator.DetailsURL = link
+
+		translator.ID, err = extractIDFromURL(link)
+		if err != nil {
+			logger.Errorf("Failed to extract ID: %v", err)
+			continue
+		}
+
+		logger = logger.With("translator_id", translator.ID)
+
 		err = parseAddressCell(element, &translator)
 		if err != nil {
 			logger.Errorf("Failed to parse address cell: %v", err)
@@ -141,13 +157,6 @@ func processTable(logger *zap.SugaredLogger, e *colly.HTMLElement, language Lang
 			continue
 		}
 		translator.Name = name
-
-		link, err := extractLink(element)
-		if err != nil {
-			logger.Errorf("Failed to extract link: %v", err)
-			continue
-		}
-		translator.DetailsURL = link
 
 		cb(translator)
 	}
@@ -222,4 +231,18 @@ func parseAddressCell(tr *colly.HTMLElement, t *Translator) error {
 
 func nextPageLink(e *colly.HTMLElement) string {
 	return e.ChildAttr(".pager a.next", "href")
+}
+
+func extractIDFromURL(link string) (int, error) {
+	matches := idInUrlRegex.FindStringSubmatch(link)
+	if len(matches) != 2 {
+		return 0, errors.New("could not extract ID from URL")
+	}
+
+	id, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return 0, fmt.Errorf("ID is not a number: %s, %v", matches[1], err)
+	}
+
+	return id, nil
 }

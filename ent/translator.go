@@ -16,8 +16,8 @@ type Translator struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// NameSha holds the value of the "name_sha" field.
-	NameSha []byte `json:"name_sha,omitempty"`
+	// ExternalID holds the value of the "external_id" field.
+	ExternalID int `json:"external_id,omitempty"`
 	// Language holds the value of the "language" field.
 	Language string `json:"language,omitempty"`
 	// AddressSha holds the value of the "address_sha" field.
@@ -39,11 +39,11 @@ func (*Translator) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case translator.FieldNameSha, translator.FieldAddressSha:
+		case translator.FieldAddressSha:
 			values[i] = new([]byte)
 		case translator.FieldLatitude, translator.FieldLongitude:
 			values[i] = new(sql.NullFloat64)
-		case translator.FieldID:
+		case translator.FieldID, translator.FieldExternalID:
 			values[i] = new(sql.NullInt64)
 		case translator.FieldLanguage, translator.FieldDetailsURL:
 			values[i] = new(sql.NullString)
@@ -70,11 +70,11 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			t.ID = int(value.Int64)
-		case translator.FieldNameSha:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field name_sha", values[i])
-			} else if value != nil {
-				t.NameSha = *value
+		case translator.FieldExternalID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field external_id", values[i])
+			} else if value.Valid {
+				t.ExternalID = int(value.Int64)
 			}
 		case translator.FieldLanguage:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -146,8 +146,8 @@ func (t *Translator) String() string {
 	var builder strings.Builder
 	builder.WriteString("Translator(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
-	builder.WriteString("name_sha=")
-	builder.WriteString(fmt.Sprintf("%v", t.NameSha))
+	builder.WriteString("external_id=")
+	builder.WriteString(fmt.Sprintf("%v", t.ExternalID))
 	builder.WriteString(", ")
 	builder.WriteString("language=")
 	builder.WriteString(t.Language)

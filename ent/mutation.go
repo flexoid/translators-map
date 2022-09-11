@@ -30,23 +30,24 @@ const (
 // TranslatorMutation represents an operation that mutates the Translator nodes in the graph.
 type TranslatorMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	name_sha      *[]byte
-	language      *string
-	address_sha   *[]byte
-	details_url   *string
-	latitude      *float64
-	addlatitude   *float64
-	longitude     *float64
-	addlongitude  *float64
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Translator, error)
-	predicates    []predicate.Translator
+	op             Op
+	typ            string
+	id             *int
+	external_id    *int
+	addexternal_id *int
+	language       *string
+	address_sha    *[]byte
+	details_url    *string
+	latitude       *float64
+	addlatitude    *float64
+	longitude      *float64
+	addlongitude   *float64
+	created_at     *time.Time
+	updated_at     *time.Time
+	clearedFields  map[string]struct{}
+	done           bool
+	oldValue       func(context.Context) (*Translator, error)
+	predicates     []predicate.Translator
 }
 
 var _ ent.Mutation = (*TranslatorMutation)(nil)
@@ -147,40 +148,60 @@ func (m *TranslatorMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetNameSha sets the "name_sha" field.
-func (m *TranslatorMutation) SetNameSha(b []byte) {
-	m.name_sha = &b
+// SetExternalID sets the "external_id" field.
+func (m *TranslatorMutation) SetExternalID(i int) {
+	m.external_id = &i
+	m.addexternal_id = nil
 }
 
-// NameSha returns the value of the "name_sha" field in the mutation.
-func (m *TranslatorMutation) NameSha() (r []byte, exists bool) {
-	v := m.name_sha
+// ExternalID returns the value of the "external_id" field in the mutation.
+func (m *TranslatorMutation) ExternalID() (r int, exists bool) {
+	v := m.external_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNameSha returns the old "name_sha" field's value of the Translator entity.
+// OldExternalID returns the old "external_id" field's value of the Translator entity.
 // If the Translator object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TranslatorMutation) OldNameSha(ctx context.Context) (v []byte, err error) {
+func (m *TranslatorMutation) OldExternalID(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNameSha is only allowed on UpdateOne operations")
+		return v, errors.New("OldExternalID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNameSha requires an ID field in the mutation")
+		return v, errors.New("OldExternalID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNameSha: %w", err)
+		return v, fmt.Errorf("querying old value for OldExternalID: %w", err)
 	}
-	return oldValue.NameSha, nil
+	return oldValue.ExternalID, nil
 }
 
-// ResetNameSha resets all changes to the "name_sha" field.
-func (m *TranslatorMutation) ResetNameSha() {
-	m.name_sha = nil
+// AddExternalID adds i to the "external_id" field.
+func (m *TranslatorMutation) AddExternalID(i int) {
+	if m.addexternal_id != nil {
+		*m.addexternal_id += i
+	} else {
+		m.addexternal_id = &i
+	}
+}
+
+// AddedExternalID returns the value that was added to the "external_id" field in this mutation.
+func (m *TranslatorMutation) AddedExternalID() (r int, exists bool) {
+	v := m.addexternal_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetExternalID resets all changes to the "external_id" field.
+func (m *TranslatorMutation) ResetExternalID() {
+	m.external_id = nil
+	m.addexternal_id = nil
 }
 
 // SetLanguage sets the "language" field.
@@ -549,8 +570,8 @@ func (m *TranslatorMutation) Type() string {
 // AddedFields().
 func (m *TranslatorMutation) Fields() []string {
 	fields := make([]string, 0, 8)
-	if m.name_sha != nil {
-		fields = append(fields, translator.FieldNameSha)
+	if m.external_id != nil {
+		fields = append(fields, translator.FieldExternalID)
 	}
 	if m.language != nil {
 		fields = append(fields, translator.FieldLanguage)
@@ -581,8 +602,8 @@ func (m *TranslatorMutation) Fields() []string {
 // schema.
 func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case translator.FieldNameSha:
-		return m.NameSha()
+	case translator.FieldExternalID:
+		return m.ExternalID()
 	case translator.FieldLanguage:
 		return m.Language()
 	case translator.FieldAddressSha:
@@ -606,8 +627,8 @@ func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case translator.FieldNameSha:
-		return m.OldNameSha(ctx)
+	case translator.FieldExternalID:
+		return m.OldExternalID(ctx)
 	case translator.FieldLanguage:
 		return m.OldLanguage(ctx)
 	case translator.FieldAddressSha:
@@ -631,12 +652,12 @@ func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Val
 // type.
 func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case translator.FieldNameSha:
-		v, ok := value.([]byte)
+	case translator.FieldExternalID:
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNameSha(v)
+		m.SetExternalID(v)
 		return nil
 	case translator.FieldLanguage:
 		v, ok := value.(string)
@@ -695,6 +716,9 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *TranslatorMutation) AddedFields() []string {
 	var fields []string
+	if m.addexternal_id != nil {
+		fields = append(fields, translator.FieldExternalID)
+	}
 	if m.addlatitude != nil {
 		fields = append(fields, translator.FieldLatitude)
 	}
@@ -709,6 +733,8 @@ func (m *TranslatorMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *TranslatorMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case translator.FieldExternalID:
+		return m.AddedExternalID()
 	case translator.FieldLatitude:
 		return m.AddedLatitude()
 	case translator.FieldLongitude:
@@ -722,6 +748,13 @@ func (m *TranslatorMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *TranslatorMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case translator.FieldExternalID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddExternalID(v)
+		return nil
 	case translator.FieldLatitude:
 		v, ok := value.(float64)
 		if !ok {
@@ -790,8 +823,8 @@ func (m *TranslatorMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *TranslatorMutation) ResetField(name string) error {
 	switch name {
-	case translator.FieldNameSha:
-		m.ResetNameSha()
+	case translator.FieldExternalID:
+		m.ResetExternalID()
 		return nil
 	case translator.FieldLanguage:
 		m.ResetLanguage()

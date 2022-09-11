@@ -80,10 +80,10 @@ func IDLTE(id int) predicate.Translator {
 	})
 }
 
-// NameSha applies equality check predicate on the "name_sha" field. It's identical to NameShaEQ.
-func NameSha(v []byte) predicate.Translator {
+// ExternalID applies equality check predicate on the "external_id" field. It's identical to ExternalIDEQ.
+func ExternalID(v int) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNameSha), v))
+		s.Where(sql.EQ(s.C(FieldExternalID), v))
 	})
 }
 
@@ -136,67 +136,67 @@ func UpdatedAt(v time.Time) predicate.Translator {
 	})
 }
 
-// NameShaEQ applies the EQ predicate on the "name_sha" field.
-func NameShaEQ(v []byte) predicate.Translator {
+// ExternalIDEQ applies the EQ predicate on the "external_id" field.
+func ExternalIDEQ(v int) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNameSha), v))
+		s.Where(sql.EQ(s.C(FieldExternalID), v))
 	})
 }
 
-// NameShaNEQ applies the NEQ predicate on the "name_sha" field.
-func NameShaNEQ(v []byte) predicate.Translator {
+// ExternalIDNEQ applies the NEQ predicate on the "external_id" field.
+func ExternalIDNEQ(v int) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNameSha), v))
+		s.Where(sql.NEQ(s.C(FieldExternalID), v))
 	})
 }
 
-// NameShaIn applies the In predicate on the "name_sha" field.
-func NameShaIn(vs ...[]byte) predicate.Translator {
+// ExternalIDIn applies the In predicate on the "external_id" field.
+func ExternalIDIn(vs ...int) predicate.Translator {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldNameSha), v...))
+		s.Where(sql.In(s.C(FieldExternalID), v...))
 	})
 }
 
-// NameShaNotIn applies the NotIn predicate on the "name_sha" field.
-func NameShaNotIn(vs ...[]byte) predicate.Translator {
+// ExternalIDNotIn applies the NotIn predicate on the "external_id" field.
+func ExternalIDNotIn(vs ...int) predicate.Translator {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldNameSha), v...))
+		s.Where(sql.NotIn(s.C(FieldExternalID), v...))
 	})
 }
 
-// NameShaGT applies the GT predicate on the "name_sha" field.
-func NameShaGT(v []byte) predicate.Translator {
+// ExternalIDGT applies the GT predicate on the "external_id" field.
+func ExternalIDGT(v int) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldNameSha), v))
+		s.Where(sql.GT(s.C(FieldExternalID), v))
 	})
 }
 
-// NameShaGTE applies the GTE predicate on the "name_sha" field.
-func NameShaGTE(v []byte) predicate.Translator {
+// ExternalIDGTE applies the GTE predicate on the "external_id" field.
+func ExternalIDGTE(v int) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldNameSha), v))
+		s.Where(sql.GTE(s.C(FieldExternalID), v))
 	})
 }
 
-// NameShaLT applies the LT predicate on the "name_sha" field.
-func NameShaLT(v []byte) predicate.Translator {
+// ExternalIDLT applies the LT predicate on the "external_id" field.
+func ExternalIDLT(v int) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldNameSha), v))
+		s.Where(sql.LT(s.C(FieldExternalID), v))
 	})
 }
 
-// NameShaLTE applies the LTE predicate on the "name_sha" field.
-func NameShaLTE(v []byte) predicate.Translator {
+// ExternalIDLTE applies the LTE predicate on the "external_id" field.
+func ExternalIDLTE(v int) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldNameSha), v))
+		s.Where(sql.LTE(s.C(FieldExternalID), v))
 	})
 }
 

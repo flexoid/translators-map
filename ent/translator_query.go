@@ -253,12 +253,12 @@ func (tq *TranslatorQuery) Clone() *TranslatorQuery {
 // Example:
 //
 //	var v []struct {
-//		NameSha []byte `json:"name_sha,omitempty"`
+//		ExternalID int `json:"external_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Translator.Query().
-//		GroupBy(translator.FieldNameSha).
+//		GroupBy(translator.FieldExternalID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -282,11 +282,11 @@ func (tq *TranslatorQuery) GroupBy(field string, fields ...string) *TranslatorGr
 // Example:
 //
 //	var v []struct {
-//		NameSha []byte `json:"name_sha,omitempty"`
+//		ExternalID int `json:"external_id,omitempty"`
 //	}
 //
 //	client.Translator.Query().
-//		Select(translator.FieldNameSha).
+//		Select(translator.FieldExternalID).
 //		Scan(ctx, &v)
 //
 func (tq *TranslatorQuery) Select(fields ...string) *TranslatorSelect {

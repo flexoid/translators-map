@@ -17,7 +17,7 @@ type Translator struct {
 // Fields of the Translator.
 func (Translator) Fields() []ent.Field {
 	return []ent.Field{
-		field.Bytes("name_sha"),
+		field.Int("external_id"),
 		field.String("language"),
 		field.Bytes("address_sha"),
 		field.String("details_url"),
@@ -34,7 +34,7 @@ func (Translator) Fields() []ent.Field {
 
 func (Translator) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name_sha", "language").Unique(),
+		index.Fields("external_id", "language").Unique(),
 	}
 }
 

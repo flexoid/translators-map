@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/flexoid/translators-map-go/ent"
@@ -56,7 +57,7 @@ func (s *Scraper) handleTranslator(trans scraper.Translator) (*ent.Translator, e
 
 	model, err = s.db.Translator.Query().
 		Where(
-			translator.NameSha(s.hashSumFromString(trans.Name)),
+			translator.ExternalID(trans.ID),
 			translator.Language(trans.Language.Name)).
 		Only(context.TODO())
 
@@ -79,6 +80,7 @@ func (s *Scraper) handleTranslator(trans scraper.Translator) (*ent.Translator, e
 func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, error) {
 	creator := s.db.Translator.Create()
 
+	creator.SetExternalID(trans.ID)
 	creator.SetLanguage(trans.Language.Name)
 	creator.SetDetailsURL(trans.DetailsURL)
 
@@ -99,7 +101,11 @@ func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, e
 }
 
 func (s *Scraper) updateTranslator(model *ent.Translator, trans scraper.Translator) (*ent.Translator, error) {
-	if bytes.Equal(model.AddressSha, s.hashSumFromString(trans.Address)) {
+	addressSum := s.hashSumFromString(trans.Address)
+	s.logger.Debugf("Comparing address hashsum from database %x to scraped one %x",
+		addressSum, model.AddressSha)
+
+	if bytes.Equal(model.AddressSha, addressSum) {
 		s.logger.Debugf("Address didn't change, skipping update")
 		return model, nil
 	}
@@ -134,9 +140,11 @@ func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, a
 
 	lat := geocodingResult.Geometry.Location.Lat
 	lng := geocodingResult.Geometry.Location.Lng
-	s.logger.Debugw("Got location for address", "address", address, "latitude", lat, "longitude", lng)
+	addressSum := s.hashSumFromString(address)
+	s.logger.Debugw("Got location for address", "address", address,
+		"address_sha", hex.EncodeToString(addressSum), "latitude", lat, "longitude", lng)
 
-	m.SetAddressSha(s.hashSumFromString(address))
+	m.SetAddressSha(addressSum)
 	m.SetLatitude(lat)
 	m.SetLongitude(lng)
 
