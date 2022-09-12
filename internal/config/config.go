@@ -5,6 +5,7 @@ var CLI struct {
 	DatabaseURL       string `required:"" env:"DATABASE_URL" help:"Postgres database URL."`
 	MapsBackendAPIKey string `required:"" env:"MAPS_BACKEND_API_KEY" help:"Key for Google Maps backend API."`
 	MapsJSAPIKey      string `required:"" env:"MAPS_JS_API_KEY" help:"Key for Google Maps JavaScript API."`
+	GoogleAnalyticsID string `env:"GOOGLE_ANALYTICS_ID" help:"Google Analytics ID."`
 
 	Scraper struct {
 	} `cmd:"" help:"Run scraper."`

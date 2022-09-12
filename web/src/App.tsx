@@ -2,15 +2,13 @@ import { useState, useEffect } from "react"
 import { Flex, Box, Heading, Text, Spacer, Link } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
+import ReactGA from "react-ga"
+import { Config } from "./lib/api"
 
 import Map from "./components/Map"
 import "./App.css"
 import Form from "./components/Form"
 import { Language, Translator } from "./lib/api"
-
-type Config = {
-  maps_js_api_key: string
-}
 
 function App() {
   const [config, setConfig] = useState<Config | null>(null)
@@ -37,6 +35,13 @@ function App() {
         setLanguages(languages)
       })
   }, [])
+
+  useEffect(() => {
+    if (config && config.google_analytics_id) {
+      ReactGA.initialize(config.google_analytics_id)
+      ReactGA.pageview(window.location.pathname + window.location.search)
+    }
+  }, [config])
 
   const render = (status: Status) => {
     return <h1>{status}</h1>

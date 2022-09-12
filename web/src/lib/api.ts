@@ -14,3 +14,8 @@ export type Translator = {
   details_url: string
   location: TranslatorLocation
 }
+
+export type Config = {
+  maps_js_api_key: string
+  google_analytics_id: string
+}
