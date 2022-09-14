@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Flex, Box, Heading, Text, Spacer, Link } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
-import ReactGA from "react-ga"
+import ReactGA from "react-ga4"
 import { Config } from "./lib/api"
 
 import Map from "./components/Map"
@@ -39,7 +39,6 @@ function App() {
   useEffect(() => {
     if (config && config.google_analytics_id) {
       ReactGA.initialize(config.google_analytics_id)
-      ReactGA.pageview(window.location.pathname + window.location.search)
     }
   }, [config])
 
