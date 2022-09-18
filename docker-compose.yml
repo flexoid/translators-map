@@ -1,0 +1,32 @@
+---
+version: "3.9"
+
+x-common-variables: &common-variables
+  DATABASE_URL: postgres://postgres:postgres@db:5432/postgres?sslmode=disable
+  BIND_ADDR: 0.0.0.0:4000
+  MAPS_BACKEND_API_KEY:
+  MAPS_JS_API_KEY:
+  GOOGLE_ANALYTICS_ID:
+
+services:
+  server:
+    build: .
+    environment:
+       <<: *common-variables
+    command: server
+    restart: unless-stopped
+    ports:
+      - 4000:4000
+
+  scraper:
+    build: .
+    environment:
+       <<: *common-variables
+    command: scraper
+    restart: unless-stopped
+
+  db:
+   image: postgres
+   environment:
+      POSTGRES_PASSWORD: postgres
+   restart: unless-stopped
