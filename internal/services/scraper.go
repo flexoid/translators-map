@@ -101,6 +101,9 @@ func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, e
 }
 
 func (s *Scraper) updateTranslator(model *ent.Translator, trans scraper.Translator) (*ent.Translator, error) {
+	// TODO: Remove after filling database.
+	model.Update().SetAddress(trans.Address).SaveX(context.TODO())
+
 	addressSum := s.hashSumFromString(trans.Address)
 	s.logger.Debugf("Comparing address hashsum from database %x to scraped one %x",
 		addressSum, model.AddressSha)
