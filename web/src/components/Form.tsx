@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react"
-import { Flex, Box, Select } from "@chakra-ui/react"
-import { Language } from "../lib/api"
+import { Flex, Box, Select, Link } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Language, Translator } from "../lib/api"
 
 type FormProps = {
   currentLanguage: string | null
   languages: Language[]
+  visibleTranslators: Translator[]
   onLangChange: (lang: string) => void
 }
 
-function Form({ languages, onLangChange }: FormProps) {
+function Form({ languages, visibleTranslators, onLangChange }: FormProps) {
   return (
-    <Flex width="full" justifyContent="center">
+    <Flex
+      direction="column"
+      width="full"
+      justifyContent="center"
+      maxHeight={{ base: "80", md: "500" }}
+    >
       <Box p={2}>
         <Select
           placeholder="Select language"
@@ -21,6 +28,18 @@ function Form({ languages, onLangChange }: FormProps) {
           })}
         </Select>
       </Box>
+
+      <Flex direction="column" p={2} overflow="auto">
+        {visibleTranslators.map((translator, index) => {
+          return (
+            <Box key={index} p={3}>
+              <Link href={translator.details_url} isExternal>
+                {index + 1}. {translator.address} <ExternalLinkIcon mx="2px" />
+              </Link>
+            </Box>
+          )
+        })}
+      </Flex>
     </Flex>
   )
 }

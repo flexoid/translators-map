@@ -15,6 +15,7 @@ function App() {
   const [currentLanguage, setCurrentLanguage] = useState<string | null>(null)
   const [languages, setLanguages] = useState<Language[]>([])
   const [translators, setTranslators] = useState<Translator[]>([])
+  const [visibleTranslators, setVisibleTranslators] = useState<Translator[]>([])
 
   useEffect(() => {
     fetch("/api/config")
@@ -77,7 +78,7 @@ function App() {
         // minWidth="align-content"
         maxWidth={{ base: "auto", md: "md" }}
       >
-        <Heading size="md" pt={4}>
+        <Heading size="md" pt={4} flex="none">
           Polish sworn translators map
         </Heading>
         <Text p="4" align="center">
@@ -86,11 +87,12 @@ function App() {
         <Form
           currentLanguage={currentLanguage}
           languages={languages}
+          visibleTranslators={visibleTranslators}
           onLangChange={handleLangChange}
         />
         <Spacer />
 
-        <Text fontSize="sm" align="center">
+        <Text fontSize="sm" align="center" flex="none">
           All data used on this site is taken from the{" "}
           <Link
             color="teal.500"
@@ -110,12 +112,17 @@ function App() {
       <Spacer />
       <Box w="full" h={{ base: "xl", md: "full" }}>
         {config && (
-          <Wrapper apiKey={config.maps_js_api_key} render={render}>
+          <Wrapper
+            apiKey={config.maps_js_api_key}
+            render={render}
+            libraries={["geometry"]}
+          >
             <Map
               center={{ lat: 52.237049, lng: 21.017532 }}
               zoom={8}
               style={{ height: "100%" }}
               translators={translators}
+              onVisibleTranslatorsChange={setVisibleTranslators}
             />
           </Wrapper>
         )}
