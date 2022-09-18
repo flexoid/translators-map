@@ -13,6 +13,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "external_id", Type: field.TypeInt},
 		{Name: "language", Type: field.TypeString},
+		{Name: "address", Type: field.TypeString, Nullable: true},
 		{Name: "address_sha", Type: field.TypeBytes},
 		{Name: "details_url", Type: field.TypeString},
 		{Name: "latitude", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "numeric"}},

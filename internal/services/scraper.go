@@ -144,6 +144,7 @@ func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, a
 	s.logger.Debugw("Got location for address", "address", address,
 		"address_sha", hex.EncodeToString(addressSum), "latitude", lat, "longitude", lng)
 
+	m.SetAddress(address)
 	m.SetAddressSha(addressSum)
 	m.SetLatitude(lat)
 	m.SetLongitude(lng)

@@ -36,6 +36,7 @@ type TranslatorMutation struct {
 	external_id    *int
 	addexternal_id *int
 	language       *string
+	address        *string
 	address_sha    *[]byte
 	details_url    *string
 	latitude       *float64
@@ -238,6 +239,55 @@ func (m *TranslatorMutation) OldLanguage(ctx context.Context) (v string, err err
 // ResetLanguage resets all changes to the "language" field.
 func (m *TranslatorMutation) ResetLanguage() {
 	m.language = nil
+}
+
+// SetAddress sets the "address" field.
+func (m *TranslatorMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *TranslatorMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ClearAddress clears the value of the "address" field.
+func (m *TranslatorMutation) ClearAddress() {
+	m.address = nil
+	m.clearedFields[translator.FieldAddress] = struct{}{}
+}
+
+// AddressCleared returns if the "address" field was cleared in this mutation.
+func (m *TranslatorMutation) AddressCleared() bool {
+	_, ok := m.clearedFields[translator.FieldAddress]
+	return ok
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *TranslatorMutation) ResetAddress() {
+	m.address = nil
+	delete(m.clearedFields, translator.FieldAddress)
 }
 
 // SetAddressSha sets the "address_sha" field.
@@ -569,12 +619,15 @@ func (m *TranslatorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TranslatorMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.external_id != nil {
 		fields = append(fields, translator.FieldExternalID)
 	}
 	if m.language != nil {
 		fields = append(fields, translator.FieldLanguage)
+	}
+	if m.address != nil {
+		fields = append(fields, translator.FieldAddress)
 	}
 	if m.address_sha != nil {
 		fields = append(fields, translator.FieldAddressSha)
@@ -606,6 +659,8 @@ func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 		return m.ExternalID()
 	case translator.FieldLanguage:
 		return m.Language()
+	case translator.FieldAddress:
+		return m.Address()
 	case translator.FieldAddressSha:
 		return m.AddressSha()
 	case translator.FieldDetailsURL:
@@ -631,6 +686,8 @@ func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldExternalID(ctx)
 	case translator.FieldLanguage:
 		return m.OldLanguage(ctx)
+	case translator.FieldAddress:
+		return m.OldAddress(ctx)
 	case translator.FieldAddressSha:
 		return m.OldAddressSha(ctx)
 	case translator.FieldDetailsURL:
@@ -665,6 +722,13 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLanguage(v)
+		return nil
+	case translator.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
 		return nil
 	case translator.FieldAddressSha:
 		v, ok := value.([]byte)
@@ -777,6 +841,9 @@ func (m *TranslatorMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *TranslatorMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(translator.FieldAddress) {
+		fields = append(fields, translator.FieldAddress)
+	}
 	if m.FieldCleared(translator.FieldLatitude) {
 		fields = append(fields, translator.FieldLatitude)
 	}
@@ -803,6 +870,9 @@ func (m *TranslatorMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *TranslatorMutation) ClearField(name string) error {
 	switch name {
+	case translator.FieldAddress:
+		m.ClearAddress()
+		return nil
 	case translator.FieldLatitude:
 		m.ClearLatitude()
 		return nil
@@ -828,6 +898,9 @@ func (m *TranslatorMutation) ResetField(name string) error {
 		return nil
 	case translator.FieldLanguage:
 		m.ResetLanguage()
+		return nil
+	case translator.FieldAddress:
+		m.ResetAddress()
 		return nil
 	case translator.FieldAddressSha:
 		m.ResetAddressSha()

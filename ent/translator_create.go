@@ -32,6 +32,20 @@ func (tc *TranslatorCreate) SetLanguage(s string) *TranslatorCreate {
 	return tc
 }
 
+// SetAddress sets the "address" field.
+func (tc *TranslatorCreate) SetAddress(s string) *TranslatorCreate {
+	tc.mutation.SetAddress(s)
+	return tc
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableAddress(s *string) *TranslatorCreate {
+	if s != nil {
+		tc.SetAddress(*s)
+	}
+	return tc
+}
+
 // SetAddressSha sets the "address_sha" field.
 func (tc *TranslatorCreate) SetAddressSha(b []byte) *TranslatorCreate {
 	tc.mutation.SetAddressSha(b)
@@ -243,6 +257,14 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 			Column: translator.FieldLanguage,
 		})
 		_node.Language = value
+	}
+	if value, ok := tc.mutation.Address(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: translator.FieldAddress,
+		})
+		_node.Address = value
 	}
 	if value, ok := tc.mutation.AddressSha(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

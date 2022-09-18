@@ -15,6 +15,8 @@ const (
 	FieldExternalID = "external_id"
 	// FieldLanguage holds the string denoting the language field in the database.
 	FieldLanguage = "language"
+	// FieldAddress holds the string denoting the address field in the database.
+	FieldAddress = "address"
 	// FieldAddressSha holds the string denoting the address_sha field in the database.
 	FieldAddressSha = "address_sha"
 	// FieldDetailsURL holds the string denoting the details_url field in the database.
@@ -36,6 +38,7 @@ var Columns = []string{
 	FieldID,
 	FieldExternalID,
 	FieldLanguage,
+	FieldAddress,
 	FieldAddressSha,
 	FieldDetailsURL,
 	FieldLatitude,

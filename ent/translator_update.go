@@ -47,6 +47,26 @@ func (tu *TranslatorUpdate) SetLanguage(s string) *TranslatorUpdate {
 	return tu
 }
 
+// SetAddress sets the "address" field.
+func (tu *TranslatorUpdate) SetAddress(s string) *TranslatorUpdate {
+	tu.mutation.SetAddress(s)
+	return tu
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (tu *TranslatorUpdate) SetNillableAddress(s *string) *TranslatorUpdate {
+	if s != nil {
+		tu.SetAddress(*s)
+	}
+	return tu
+}
+
+// ClearAddress clears the value of the "address" field.
+func (tu *TranslatorUpdate) ClearAddress() *TranslatorUpdate {
+	tu.mutation.ClearAddress()
+	return tu
+}
+
 // SetAddressSha sets the "address_sha" field.
 func (tu *TranslatorUpdate) SetAddressSha(b []byte) *TranslatorUpdate {
 	tu.mutation.SetAddressSha(b)
@@ -232,6 +252,19 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: translator.FieldLanguage,
 		})
 	}
+	if value, ok := tu.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: translator.FieldAddress,
+		})
+	}
+	if tu.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: translator.FieldAddress,
+		})
+	}
 	if value, ok := tu.mutation.AddressSha(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBytes,
@@ -340,6 +373,26 @@ func (tuo *TranslatorUpdateOne) AddExternalID(i int) *TranslatorUpdateOne {
 // SetLanguage sets the "language" field.
 func (tuo *TranslatorUpdateOne) SetLanguage(s string) *TranslatorUpdateOne {
 	tuo.mutation.SetLanguage(s)
+	return tuo
+}
+
+// SetAddress sets the "address" field.
+func (tuo *TranslatorUpdateOne) SetAddress(s string) *TranslatorUpdateOne {
+	tuo.mutation.SetAddress(s)
+	return tuo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (tuo *TranslatorUpdateOne) SetNillableAddress(s *string) *TranslatorUpdateOne {
+	if s != nil {
+		tuo.SetAddress(*s)
+	}
+	return tuo
+}
+
+// ClearAddress clears the value of the "address" field.
+func (tuo *TranslatorUpdateOne) ClearAddress() *TranslatorUpdateOne {
+	tuo.mutation.ClearAddress()
 	return tuo
 }
 
@@ -556,6 +609,19 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 			Type:   field.TypeString,
 			Value:  value,
 			Column: translator.FieldLanguage,
+		})
+	}
+	if value, ok := tuo.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: translator.FieldAddress,
+		})
+	}
+	if tuo.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: translator.FieldAddress,
 		})
 	}
 	if value, ok := tuo.mutation.AddressSha(); ok {

@@ -94,6 +94,13 @@ func Language(v string) predicate.Translator {
 	})
 }
 
+// Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
+func Address(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddress), v))
+	})
+}
+
 // AddressSha applies equality check predicate on the "address_sha" field. It's identical to AddressShaEQ.
 func AddressSha(v []byte) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
@@ -296,6 +303,119 @@ func LanguageEqualFold(v string) predicate.Translator {
 func LanguageContainsFold(v string) predicate.Translator {
 	return predicate.Translator(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldLanguage), v))
+	})
+}
+
+// AddressEQ applies the EQ predicate on the "address" field.
+func AddressEQ(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddress), v))
+	})
+}
+
+// AddressNEQ applies the NEQ predicate on the "address" field.
+func AddressNEQ(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddress), v))
+	})
+}
+
+// AddressIn applies the In predicate on the "address" field.
+func AddressIn(vs ...string) predicate.Translator {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldAddress), v...))
+	})
+}
+
+// AddressNotIn applies the NotIn predicate on the "address" field.
+func AddressNotIn(vs ...string) predicate.Translator {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldAddress), v...))
+	})
+}
+
+// AddressGT applies the GT predicate on the "address" field.
+func AddressGT(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddress), v))
+	})
+}
+
+// AddressGTE applies the GTE predicate on the "address" field.
+func AddressGTE(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddress), v))
+	})
+}
+
+// AddressLT applies the LT predicate on the "address" field.
+func AddressLT(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddress), v))
+	})
+}
+
+// AddressLTE applies the LTE predicate on the "address" field.
+func AddressLTE(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddress), v))
+	})
+}
+
+// AddressContains applies the Contains predicate on the "address" field.
+func AddressContains(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddress), v))
+	})
+}
+
+// AddressHasPrefix applies the HasPrefix predicate on the "address" field.
+func AddressHasPrefix(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
+	})
+}
+
+// AddressHasSuffix applies the HasSuffix predicate on the "address" field.
+func AddressHasSuffix(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
+	})
+}
+
+// AddressIsNil applies the IsNil predicate on the "address" field.
+func AddressIsNil() predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddress)))
+	})
+}
+
+// AddressNotNil applies the NotNil predicate on the "address" field.
+func AddressNotNil() predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddress)))
+	})
+}
+
+// AddressEqualFold applies the EqualFold predicate on the "address" field.
+func AddressEqualFold(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddress), v))
+	})
+}
+
+// AddressContainsFold applies the ContainsFold predicate on the "address" field.
+func AddressContainsFold(v string) predicate.Translator {
+	return predicate.Translator(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
 	})
 }
 

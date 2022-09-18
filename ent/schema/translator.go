@@ -19,6 +19,7 @@ func (Translator) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("external_id"),
 		field.String("language"),
+		field.String("address").Optional(),
 		field.Bytes("address_sha"),
 		field.String("details_url"),
 		field.Float("latitude").Optional().SchemaType(map[string]string{

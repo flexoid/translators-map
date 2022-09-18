@@ -20,6 +20,8 @@ type Translator struct {
 	ExternalID int `json:"external_id,omitempty"`
 	// Language holds the value of the "language" field.
 	Language string `json:"language,omitempty"`
+	// Address holds the value of the "address" field.
+	Address string `json:"address,omitempty"`
 	// AddressSha holds the value of the "address_sha" field.
 	AddressSha []byte `json:"address_sha,omitempty"`
 	// DetailsURL holds the value of the "details_url" field.
@@ -45,7 +47,7 @@ func (*Translator) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case translator.FieldID, translator.FieldExternalID:
 			values[i] = new(sql.NullInt64)
-		case translator.FieldLanguage, translator.FieldDetailsURL:
+		case translator.FieldLanguage, translator.FieldAddress, translator.FieldDetailsURL:
 			values[i] = new(sql.NullString)
 		case translator.FieldCreatedAt, translator.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -81,6 +83,12 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field language", values[i])
 			} else if value.Valid {
 				t.Language = value.String
+			}
+		case translator.FieldAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field address", values[i])
+			} else if value.Valid {
+				t.Address = value.String
 			}
 		case translator.FieldAddressSha:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -151,6 +159,9 @@ func (t *Translator) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("language=")
 	builder.WriteString(t.Language)
+	builder.WriteString(", ")
+	builder.WriteString("address=")
+	builder.WriteString(t.Address)
 	builder.WriteString(", ")
 	builder.WriteString("address_sha=")
 	builder.WriteString(fmt.Sprintf("%v", t.AddressSha))
