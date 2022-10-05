@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/alecthomas/kong"
+	kongyaml "github.com/alecthomas/kong-yaml"
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/internal/api"
 	"github.com/flexoid/translators-map-go/internal/config"
@@ -22,7 +23,7 @@ func main() {
 	logger := setupLogger()
 	defer logger.Sync()
 
-	kongCtx := kong.Parse(&config.CLI)
+	kongCtx := kong.Parse(&config.CLI, kong.Configuration(kongyaml.Loader, "config/config.yml"))
 
 	entClient, err := setupDatabase()
 	if err != nil {
