@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -9,7 +10,6 @@ import (
 	"github.com/flexoid/translators-map-go/internal/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
@@ -22,7 +22,7 @@ func (s *Server) Start(bindAddr string) error {
 	router := s.setupRouter()
 
 	err := http.ListenAndServe(bindAddr, router)
-	return errors.Wrap(err, "unable to start the server")
+	return fmt.Errorf("unable to start the server: %w", err)
 }
 
 func (s *Server) setupRouter() *chi.Mux {

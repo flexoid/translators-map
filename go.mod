@@ -7,14 +7,14 @@ require (
 	github.com/alecthomas/kong v0.6.1
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/gocolly/colly v1.2.0
-	github.com/lib/pq v1.10.6
-	github.com/pkg/errors v0.8.1
+	github.com/lib/pq v1.10.5
 	go.uber.org/zap v1.23.0
 	googlemaps.github.io/maps v1.3.2
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
