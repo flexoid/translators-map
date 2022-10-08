@@ -16,9 +16,9 @@ function Form({ languages, visibleTranslators, onLangChange }: FormProps) {
       direction="column"
       width="full"
       justifyContent="center"
-      flex="auto"
-      overflowY="auto"
-      maxHeight={{ base: "80", md: "none" }}
+      flex="1 1 0"
+      minHeight={{ base: "auto", md: 0 }}
+      maxHeight={{ base: "80", md: "fit-content" }}
     >
       <Box p={2} flex="none">
         <Select
@@ -31,7 +31,7 @@ function Form({ languages, visibleTranslators, onLangChange }: FormProps) {
         </Select>
       </Box>
 
-      <Flex direction="column" p={2} flex="auto" overflowY="inherit">
+      <Flex direction="column" p={2} flex="auto" overflowY="auto">
         {visibleTranslators.map((translator, index) => {
           return (
             <Box key={index} p={3} flex="none">

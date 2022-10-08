@@ -67,30 +67,50 @@ function App() {
   }, [currentLanguage])
 
   return (
-    <Flex
-      height={{ base: "auto", md: "100vh" }}
-      direction={{ base: "column", md: "row" }}
-    >
-      <Flex
-        direction="column"
-        p="4"
-        alignItems="center"
-        maxWidth={{ base: "auto", md: "md" }}
-      >
-        <Heading size="md" pt={4} flex="none">
-          Polish sworn translators map
-        </Heading>
-        <Text p="4" align="center" flex="none">
-          Find sworn translator from any language to Polish and vice versa.
-        </Text>
-        <Form
-          currentLanguage={currentLanguage}
-          languages={languages}
-          visibleTranslators={visibleTranslators}
-          onLangChange={handleLangChange}
-        />
+    <Flex height={{ base: "auto", md: "100vh" }} direction="column">
+      <Flex direction={{ base: "column", md: "row" }} flex="auto">
+        <Flex
+          direction="column"
+          p="4"
+          alignItems="center"
+          maxWidth={{ base: "auto", md: "md" }}
+          flex="none"
+        >
+          <Heading size="md" pt={4} flex="none">
+            Polish sworn translators map
+          </Heading>
+          <Text p="4" align="center" flex="none">
+            Find sworn translator from any language to Polish and vice versa.
+          </Text>
+          <Form
+            currentLanguage={currentLanguage}
+            languages={languages}
+            visibleTranslators={visibleTranslators}
+            onLangChange={handleLangChange}
+          />
+        </Flex>
 
-        <Text fontSize="sm" align="center" flex="none" pt={20}>
+        <Box w="full" h={{ base: "xl", md: "full" }} flex="auto">
+          {config && (
+            <Wrapper
+              apiKey={config.maps_js_api_key}
+              render={render}
+              libraries={["geometry"]}
+            >
+              <Map
+                center={{ lat: 52.237049, lng: 21.017532 }}
+                zoom={8}
+                style={{ height: "100%" }}
+                translators={translators}
+                onVisibleTranslatorsChange={setVisibleTranslators}
+              />
+            </Wrapper>
+          )}
+        </Box>
+      </Flex>
+
+      <Box flex="none" p={4}>
+        <Text fontSize="sm" align="center" margin="auto">
           All data used on this site is taken from the{" "}
           <Link
             color="teal.500"
@@ -102,28 +122,11 @@ function App() {
               <ExternalLinkIcon mx="2px" />
             </span>
           </Link>{" "}
-          of the Ministry of Justice of the Republic of Poland. The data is
-          provided "as is" without warranty of any kind for informational
-          purposes only.
+          of the Ministry of Justice of the Republic of Poland.
+          <br />
+          The data is provided "as is" without warranty of any kind for
+          informational purposes only.
         </Text>
-      </Flex>
-
-      <Box w="full" h={{ base: "xl", md: "full" }}>
-        {config && (
-          <Wrapper
-            apiKey={config.maps_js_api_key}
-            render={render}
-            libraries={["geometry"]}
-          >
-            <Map
-              center={{ lat: 52.237049, lng: 21.017532 }}
-              zoom={8}
-              style={{ height: "100%" }}
-              translators={translators}
-              onVisibleTranslatorsChange={setVisibleTranslators}
-            />
-          </Wrapper>
-        )}
       </Box>
     </Flex>
   )
