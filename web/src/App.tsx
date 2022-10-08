@@ -98,8 +98,8 @@ function App() {
               libraries={["geometry"]}
             >
               <Map
-                center={{ lat: 52.237049, lng: 21.017532 }}
-                zoom={8}
+                center={{ lat: 51.919438, lng: 19.145136 }}
+                zoom={6}
                 style={{ height: "100%" }}
                 translators={translators}
                 onVisibleTranslatorsChange={setVisibleTranslators}
