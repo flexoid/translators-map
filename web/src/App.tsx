@@ -16,6 +16,7 @@ function App() {
   const [languages, setLanguages] = useState<Language[]>([])
   const [translators, setTranslators] = useState<Translator[]>([])
   const [visibleTranslators, setVisibleTranslators] = useState<Translator[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     fetch("/api/config")
@@ -52,17 +53,20 @@ function App() {
   }
 
   useEffect(() => {
+    setTranslators([])
+
     if (!currentLanguage) {
-      setTranslators([])
       return
     }
 
+    setLoading(true)
     fetch(`/api/translators?lang=${currentLanguage}`)
       .then((response) => {
         return response.json()
       })
       .then((data) => {
         setTranslators(data)
+        setLoading(false)
       })
   }, [currentLanguage])
 
@@ -86,6 +90,7 @@ function App() {
             currentLanguage={currentLanguage}
             languages={languages}
             visibleTranslators={visibleTranslators}
+            loading={loading}
             onLangChange={handleLangChange}
           />
         </Flex>

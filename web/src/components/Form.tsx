@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Flex, Box, Select, Link } from "@chakra-ui/react"
+import { Flex, Box, Select, Link, Spinner } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Language, Translator } from "../lib/api"
 
@@ -7,10 +7,16 @@ type FormProps = {
   currentLanguage: string | null
   languages: Language[]
   visibleTranslators: Translator[]
+  loading: boolean
   onLangChange: (lang: string) => void
 }
 
-function Form({ languages, visibleTranslators, onLangChange }: FormProps) {
+function Form({
+  languages,
+  visibleTranslators,
+  loading,
+  onLangChange,
+}: FormProps) {
   return (
     <Flex
       direction="column"
@@ -30,6 +36,8 @@ function Form({ languages, visibleTranslators, onLangChange }: FormProps) {
           })}
         </Select>
       </Box>
+
+      {loading && <Spinner size="lg" flex="none" alignSelf="center" />}
 
       <Flex direction="column" p={2} flex="auto" overflowY="auto">
         {visibleTranslators.map((translator, index) => {
