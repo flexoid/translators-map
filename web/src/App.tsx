@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Flex, Box, Heading, Text, Spacer, Link } from "@chakra-ui/react"
+import { Flex, Box, Heading, Text, Link } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
 import ReactGA from "react-ga4"
@@ -68,20 +68,19 @@ function App() {
 
   return (
     <Flex
-      h={{ base: "auto", md: "100vh" }}
+      height={{ base: "auto", md: "100vh" }}
       direction={{ base: "column", md: "row" }}
     >
       <Flex
         direction="column"
         p="4"
         alignItems="center"
-        // minWidth="align-content"
         maxWidth={{ base: "auto", md: "md" }}
       >
         <Heading size="md" pt={4} flex="none">
           Polish sworn translators map
         </Heading>
-        <Text p="4" align="center">
+        <Text p="4" align="center" flex="none">
           Find sworn translator from any language to Polish and vice versa.
         </Text>
         <Form
@@ -90,9 +89,8 @@ function App() {
           visibleTranslators={visibleTranslators}
           onLangChange={handleLangChange}
         />
-        <Spacer />
 
-        <Text fontSize="sm" align="center" flex="none">
+        <Text fontSize="sm" align="center" flex="none" pt={20}>
           All data used on this site is taken from the{" "}
           <Link
             color="teal.500"
@@ -109,7 +107,7 @@ function App() {
           purposes only.
         </Text>
       </Flex>
-      <Spacer />
+
       <Box w="full" h={{ base: "xl", md: "full" }}>
         {config && (
           <Wrapper

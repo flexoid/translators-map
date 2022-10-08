@@ -16,9 +16,11 @@ function Form({ languages, visibleTranslators, onLangChange }: FormProps) {
       direction="column"
       width="full"
       justifyContent="center"
-      maxHeight={{ base: "80", md: "500" }}
+      flex="auto"
+      overflowY="auto"
+      maxHeight={{ base: "80", md: "none" }}
     >
-      <Box p={2}>
+      <Box p={2} flex="none">
         <Select
           placeholder="Select language"
           onChange={(e) => onLangChange(e.target.value)}
@@ -29,10 +31,10 @@ function Form({ languages, visibleTranslators, onLangChange }: FormProps) {
         </Select>
       </Box>
 
-      <Flex direction="column" p={2} overflow="auto">
+      <Flex direction="column" p={2} flex="auto" overflowY="inherit">
         {visibleTranslators.map((translator, index) => {
           return (
-            <Box key={index} p={3}>
+            <Box key={index} p={3} flex="none">
               <Link href={translator.details_url} isExternal>
                 {index + 1}. {translator.address} <ExternalLinkIcon mx="2px" />
               </Link>
