@@ -9,7 +9,7 @@ import Map from "./components/Map"
 import "./App.css"
 import Form from "./components/Form"
 import { Language, Translator } from "./lib/api"
-import { Trans } from "@lingui/macro"
+import { Trans, t } from "@lingui/macro"
 
 function App() {
   const [config, setConfig] = useState<Config | null>(null)
@@ -44,6 +44,10 @@ function App() {
       ReactGA.initialize(config.google_analytics_id)
     }
   }, [config])
+
+  useEffect(() => {
+    document.title = t({ id: "title" })
+  }, [])
 
   const render = (status: Status) => {
     return <h1>{status}</h1>
