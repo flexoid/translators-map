@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2022-10-09 20:27+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ru\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: src/App.tsx:119
+msgid "<0>All data used on this site is taken from the <1><2>Bulletin of Public information archive <3/></2></1> of the Ministry of Justice of the Republic of Poland.<4/>The data is provided \"as is\" without warranty of any kind for informational purposes only.</0>"
+msgstr "<0>Все данные, используемые на этом сайте, взяты из <1><2>архива Бюллетеня общественной информации <3/></2></1> Министерства юстиции Республики Польши.<4/>Информация предоставлена \"как есть\" без каких-либо гарантий исключительно в ознакомительных целях.</0>"
+
+#: src/App.tsx:88
+msgid "Find sworn translator from or to Polish."
+msgstr "Найти присяжного переводчика с польского или на польский язык"
+
+#: src/components/Form.tsx:32
+msgid "Select language"
+msgstr "Выбрать язык"
+
+#: src/App.tsx:85
+msgid "Sworn translations on map"
+msgstr "Карта присяжных переводчиков"

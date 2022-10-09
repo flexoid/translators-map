@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Flex, Box, Select, Link, Spinner } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Language, Translator } from "../lib/api"
+import { Trans, t } from "@lingui/macro"
 
 type FormProps = {
   currentLanguage: string | null
@@ -28,7 +29,7 @@ function Form({
     >
       <Box p={2} flex="none">
         <Select
-          placeholder="Select language"
+          placeholder={t`Select language`}
           onChange={(e) => onLangChange(e.target.value)}
         >
           {languages.map((language, index) => {

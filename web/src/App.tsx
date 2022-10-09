@@ -9,6 +9,7 @@ import Map from "./components/Map"
 import "./App.css"
 import Form from "./components/Form"
 import { Language, Translator } from "./lib/api"
+import { Trans } from "@lingui/macro"
 
 function App() {
   const [config, setConfig] = useState<Config | null>(null)
@@ -81,10 +82,10 @@ function App() {
           flex="none"
         >
           <Heading size="md" pt={4} flex="none">
-            Polish sworn translators map
+            <Trans>Sworn translations on map</Trans>
           </Heading>
           <Text p="4" align="center" flex="none">
-            Find sworn translator from any language to Polish and vice versa.
+            <Trans>Find sworn translator from or to Polish.</Trans>
           </Text>
           <Form
             currentLanguage={currentLanguage}
@@ -115,23 +116,25 @@ function App() {
       </Flex>
 
       <Box flex="none" p={4}>
-        <Text fontSize="sm" align="center" margin="auto">
-          All data used on this site is taken from the{" "}
-          <Link
-            color="teal.500"
-            href="https://arch-bip.ms.gov.pl/pl/rejestry-i-ewidencje/tlumacze-przysiegli/lista-tlumaczy-przysieglych/search.html"
-            isExternal
-          >
-            <span style={{ whiteSpace: "nowrap" }}>
-              Bulletin of Public information archive{" "}
-              <ExternalLinkIcon mx="2px" />
-            </span>
-          </Link>{" "}
-          of the Ministry of Justice of the Republic of Poland.
-          <br />
-          The data is provided "as is" without warranty of any kind for
-          informational purposes only.
-        </Text>
+        <Trans>
+          <Text fontSize="sm" align="center" margin="auto">
+            All data used on this site is taken from the{" "}
+            <Link
+              color="teal.500"
+              href="https://arch-bip.ms.gov.pl/pl/rejestry-i-ewidencje/tlumacze-przysiegli/lista-tlumaczy-przysieglych/search.html"
+              isExternal
+            >
+              <span style={{ whiteSpace: "nowrap" }}>
+                Bulletin of Public information archive{" "}
+                <ExternalLinkIcon mx="2px" />
+              </span>
+            </Link>{" "}
+            of the Ministry of Justice of the Republic of Poland.
+            <br />
+            The data is provided "as is" without warranty of any kind for
+            informational purposes only.
+          </Text>
+        </Trans>
       </Box>
     </Flex>
   )
