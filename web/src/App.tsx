@@ -82,7 +82,7 @@ function App() {
           direction="column"
           p="4"
           alignItems="center"
-          maxWidth={{ base: "auto", md: "md" }}
+          width={{ base: "auto", md: "md" }}
           flex="none"
         >
           <Heading size="md" pt={4} flex="none">
