@@ -13,22 +13,19 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/App.tsx:123
-msgid "<0>All data used on this site is taken from the <1><2>Bulletin of Public information archive <3/></2></1> of the Ministry of Justice of the Republic of Poland.<4/>The data is provided \"as is\" without warranty of any kind for informational purposes only.</0>"
-msgstr "<0>Wszystkie dane użyte na tej stronie pochodzą z <1><2>archiwum Biuletynu Informacji Publicznej <3/></2></1> Ministerstwa Sprawiedliwości Rzeczypospolitej Polskiej.<4/>Dane są udostępniane \"tak jak jest\", bez żadnych gwarancji, wyłącznie w celach informacyjnych.</0>"
-
-#: src/App.tsx:92
-msgid "Find sworn translator from or to Polish."
-msgstr "Znajdź tłumacza przysięgłego z języka polskiego lub na język polski."
-
 #: src/components/Form.tsx:32
 msgid "Select language"
 msgstr "Wybierz język"
 
-#: src/App.tsx:89
-msgid "Sworn translations on map"
-msgstr "Mapa tłumaczy przysięgłych"
+#: src/App.tsx:124
+msgid "disclamer"
+msgstr "Wszystkie dane użyte na tej stronie pochodzą z <0><1>archiwum Biuletynu Informacji Publicznej <2/></1></0> Ministerstwa Sprawiedliwości Rzeczypospolitej Polskiej.<3/>Dane są udostępniane \"tak jak jest\", bez żadnych gwarancji, wyłącznie w celach informacyjnych."
+
+#: src/App.tsx:92
+msgid "subtitle"
+msgstr "Znajdź tłumacza przysięgłego języka polskiego."
 
 #: src/App.tsx:49
+#: src/App.tsx:89
 msgid "title"
-msgstr "Mapa tłumaczy"
+msgstr "Mapa tłumaczy przysięgłych języka polskiego"

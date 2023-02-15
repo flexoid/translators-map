@@ -85,11 +85,11 @@ function App() {
           width={{ base: "auto", md: "md" }}
           flex="none"
         >
-          <Heading size="md" pt={4} flex="none">
-            <Trans>Sworn translations on map</Trans>
+          <Heading size="md" pt={4} flex="none" textAlign="center">
+            <Trans id="title">Sworn translations on map</Trans>
           </Heading>
-          <Text p="4" align="center" flex="none">
-            <Trans>Find sworn translator from or to Polish.</Trans>
+          <Text p="4" flex="none">
+            <Trans id="subtitle">Find a certified Polish translator.</Trans>
           </Text>
           <Form
             currentLanguage={currentLanguage}
@@ -120,8 +120,8 @@ function App() {
       </Flex>
 
       <Box flex="none" p={4}>
-        <Trans>
-          <Text fontSize="sm" align="center" margin="auto">
+        <Text fontSize="sm" align="center" margin="auto">
+          <Trans id="disclamer">
             All data used on this site is taken from the{" "}
             <Link
               color="teal.500"
@@ -137,8 +137,8 @@ function App() {
             <br />
             The data is provided "as is" without warranty of any kind for
             informational purposes only.
-          </Text>
-        </Trans>
+          </Trans>
+        </Text>
       </Box>
     </Flex>
   )
