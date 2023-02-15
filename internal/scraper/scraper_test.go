@@ -1,3 +1,5 @@
+// The names and addresses in the test data are fictional, and do not represent real people or places.
+
 package scraper
 
 import (
