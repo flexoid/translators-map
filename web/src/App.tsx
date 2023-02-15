@@ -139,6 +139,13 @@ function App() {
             informational purposes only.
           </Trans>
         </Text>
+
+        <Text fontSize="sm" align="center" margin="auto" mt={4}>
+          <Trans>Get in touch</Trans>:{" "}
+          <Link href="mailto:contact@sworntranslatormap.com">
+            contact@sworntranslatormap.com
+          </Link>
+        </Text>
       </Box>
     </Flex>
   )

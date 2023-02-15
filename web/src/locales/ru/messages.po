@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/App.tsx:144
+msgid "Get in touch"
+msgstr "Связаться с нами"
+
 #: src/components/Form.tsx:32
 msgid "Select language"
 msgstr "Выбрать язык"
