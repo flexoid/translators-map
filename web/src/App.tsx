@@ -10,6 +10,7 @@ import "./App.css"
 import Form from "./components/Form"
 import { Language, Translator } from "./lib/api"
 import { Trans, t } from "@lingui/macro"
+import { I18nContext, useLingui } from "@lingui/react"
 
 function App() {
   const [config, setConfig] = useState<Config | null>(null)
@@ -18,6 +19,7 @@ function App() {
   const [translators, setTranslators] = useState<Translator[]>([])
   const [visibleTranslators, setVisibleTranslators] = useState<Translator[]>([])
   const [loading, setLoading] = useState<boolean>(false)
+  const { i18n } = useLingui()
 
   useEffect(() => {
     fetch("/api/config")
@@ -46,8 +48,10 @@ function App() {
   }, [config])
 
   useEffect(() => {
-    document.title = t({ id: "title" })
-  }, [])
+    document.title = t({
+      message: "Polish sworn translators on map",
+    })
+  }, [i18n.locale])
 
   const render = (status: Status) => {
     return <h1>{status}</h1>
@@ -86,10 +90,10 @@ function App() {
           flex="none"
         >
           <Heading size="md" pt={4} flex="none" textAlign="center">
-            <Trans id="title">Sworn translations on map</Trans>
+            <Trans>Polish sworn translators on map</Trans>
           </Heading>
           <Text p="4" flex="none">
-            <Trans id="subtitle">Find a certified Polish translator.</Trans>
+            <Trans>Find a certified Polish translator.</Trans>
           </Text>
           <Form
             currentLanguage={currentLanguage}
@@ -121,7 +125,7 @@ function App() {
 
       <Box flex="none" p={4}>
         <Text fontSize="sm" align="center" margin="auto">
-          <Trans id="disclamer">
+          <Trans>
             All data used on this site is taken from the{" "}
             <Link
               color="teal.500"

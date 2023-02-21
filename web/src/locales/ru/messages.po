@@ -13,23 +13,23 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/App.tsx:144
+#: src/App.tsx:128
+msgid "All data used on this site is taken from the <0><1>Bulletin of Public information archive <2/></1></0> of the Ministry of Justice of the Republic of Poland.<3/>The data is provided \"as is\" without warranty of any kind for informational purposes only."
+msgstr "Все данные, используемые на этом сайте, взяты из <0><1>архива Бюллетеня общественной информации <2/></1></0> Министерства юстиции Республики Польши.<3/>Информация предоставлена \"как есть\" без каких-либо гарантий исключительно в ознакомительных целях."
+
+#: src/App.tsx:96
+msgid "Find a certified Polish translator."
+msgstr "Найти присяжного переводчика польского языка."
+
+#: src/App.tsx:148
 msgid "Get in touch"
 msgstr "Связаться с нами"
+
+#: src/App.tsx:51
+#: src/App.tsx:93
+msgid "Polish sworn translators on map"
+msgstr "Присяжные переводчики польского языка на карте"
 
 #: src/components/Form.tsx:32
 msgid "Select language"
 msgstr "Выбрать язык"
-
-#: src/App.tsx:124
-msgid "disclamer"
-msgstr "Все данные, используемые на этом сайте, взяты из <0><1>архива Бюллетеня общественной информации <2/></1></0> Министерства юстиции Республики Польши.<3/>Информация предоставлена \"как есть\" без каких-либо гарантий исключительно в ознакомительных целях."
-
-#: src/App.tsx:92
-msgid "subtitle"
-msgstr "Найти присяжного переводчика польского языка."
-
-#: src/App.tsx:49
-#: src/App.tsx:89
-msgid "title"
-msgstr "Присяжные переводчики польского языка на карте"

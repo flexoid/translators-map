@@ -16,6 +16,8 @@ i18n.load({
   ru: ruMessages,
 })
 
+console.log(i18n)
+
 let detectedLocale = detect(fromNavigator())
 if (detectedLocale) {
   detectedLocale = detectedLocale.split("-")[0]
