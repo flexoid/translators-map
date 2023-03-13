@@ -1,16 +1,20 @@
-# Translators Map
+# Sworn translator map
 
-Map of certified sworn translators in Poland.
+Polish sworn translators on map.
 
-## Deployment
+https://sworntranslatormap.com
 
-See included [docker-compose.yml](./docker-compose.yml) for a deployment example.
+# Development
 
 ## Configuration
 
 Run with `--help` or check out [config.go](./internal/config/config.go) for configuration options.
 
-## Development
+## Deployment
+
+See included [docker-compose.yml](./docker-compose.yml) for a deployment example.
+
+## Local run
 
 Run the following processes:
 
