@@ -52,12 +52,19 @@ func startServer(entClient *ent.Client, logger *zap.SugaredLogger, bindAddr stri
 }
 
 func startScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
-	for {
-		logger.Info("Starting scraper")
+	logger.Info("Starting scraper service")
 
-		services.NewScraper(entClient, logger, config.CLI.MapsBackendAPIKey).Run()
-		time.Sleep(24 * time.Hour)
+	runScraper(entClient, logger)
+
+	for range time.Tick(time.Hour * 24) {
+		runScraper(entClient, logger)
 	}
+}
+
+func runScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
+	logger.Info("Running scraper")
+	services.NewScraper(entClient, logger, config.CLI.MapsBackendAPIKey).Run()
+	logger.Info("Scraper run finished, next run in 24h")
 }
 
 func setupDatabase() (*ent.Client, error) {

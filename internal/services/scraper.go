@@ -29,12 +29,13 @@ func (s *Scraper) Run() {
 	var err error
 	s.geocoding, err = maps.NewGeocoding(s.mapsBackendAPIKey)
 	if err != nil {
-		s.logger.Fatalf("failed to setup geocoding client: %v", err)
+		s.logger.Errorf("failed to setup geocoding client: %v", err)
+		return
 	}
 
 	languages, err := scraper.ScrapeLanguages(s.logger)
 	if err != nil {
-		s.logger.Fatalf("Failed to scrape languages: %v", err)
+		s.logger.Errorf("Failed to scrape languages: %v", err)
 		return
 	}
 
@@ -46,7 +47,8 @@ func (s *Scraper) Run() {
 			}
 		})
 		if err != nil {
-			s.logger.Fatalf("Error while scraping translators: %v", err)
+			s.logger.Errorf("Error while scraping translators: %v", err)
+			return
 		}
 	}
 }
