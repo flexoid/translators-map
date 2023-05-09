@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly"
 	"go.uber.org/zap"
@@ -31,6 +32,7 @@ type Language struct {
 
 func ScrapeTranslators(logger *zap.SugaredLogger, language Language, cb func(Translator)) (outerErr error) {
 	c := colly.NewCollector()
+	c.SetRequestTimeout(60 * time.Second)
 
 	logger = logger.With("language", language.Name)
 
