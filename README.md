@@ -4,6 +4,8 @@ Polish sworn translators on map.
 
 https://sworntranslatormap.com
 
+![Screen recording](./docs/screen-recording.gif)
+
 # Development
 
 ## Configuration
