@@ -1,0 +1,378 @@
+{
+  "afrykański": {
+    "en": "Afrikaans",
+    "ru": "Африкаанс"
+  },
+  "albański": {
+    "en": "Albanian",
+    "ru": "Албанский"
+  },
+  "amharski": {
+    "en": "Amharic",
+    "ru": "Амхарский"
+  },
+  "angielski": {
+    "en": "English",
+    "ru": "Английский"
+  },
+  "arabski": {
+    "en": "Arabic",
+    "ru": "Арабский"
+  },
+  "armeński": {
+    "en": "Armenian",
+    "ru": "Армянский"
+  },
+  "azerbejdżański": {
+    "en": "Azerbaijani",
+    "ru": "Азербайджанский"
+  },
+  "baskijski": {
+    "en": "Basque",
+    "ru": "Баскский"
+  },
+  "bengalski": {
+    "en": "Bengali",
+    "ru": "Бенгальский"
+  },
+  "białoruski": {
+    "en": "Belarusian",
+    "ru": "Белорусский"
+  },
+  "birmański": {
+    "en": "Burmese",
+    "ru": "Бирманский"
+  },
+  "bośniacki": {
+    "en": "Bosnian",
+    "ru": "Боснийский"
+  },
+  "bułgarski": {
+    "en": "Bulgarian",
+    "ru": "Болгарский"
+  },
+  "cebuano": {
+    "en": "Cebuano",
+    "ru": "Себуано"
+  },
+  "chiński": {
+    "en": "Chinese",
+    "ru": "Китайский"
+  },
+  "chorwacki": {
+    "en": "Croatian",
+    "ru": "Хорватский"
+  },
+  "czeski": {
+    "en": "Czech",
+    "ru": "Чешский"
+  },
+  "dari": {
+    "en": "Dari",
+    "ru": "Дари"
+  },
+  "duński": {
+    "en": "Danish",
+    "ru": "Датский"
+  },
+  "esperanto": {
+    "en": "Esperanto",
+    "ru": "Эсперанто"
+  },
+  "estoński": {
+    "en": "Estonian",
+    "ru": "Эстонский"
+  },
+  "fiński": {
+    "en": "Finnish",
+    "ru": "Финский"
+  },
+  "francuski": {
+    "en": "French",
+    "ru": "Французский"
+  },
+  "galicyjski": {
+    "en": "Galician",
+    "ru": "Галисийский"
+  },
+  "grecki": {
+    "en": "Greek",
+    "ru": "Греческий"
+  },
+  "greka starożytna": {
+    "en": "Ancient Greek",
+    "ru": "Древнегреческий"
+  },
+  "gruziński": {
+    "en": "Georgian",
+    "ru": "Грузинский"
+  },
+  "gujarati": {
+    "en": "Gujarati",
+    "ru": "Гуджарати"
+  },
+  "hebrajski": {
+    "en": "Hebrew",
+    "ru": "Иврит"
+  },
+  "hindi": {
+    "en": "Hindi",
+    "ru": "Хинди"
+  },
+  "hiszpański": {
+    "en": "Spanish",
+    "ru": "Испанский"
+  },
+  "holenderski": {
+    "en": "Dutch",
+    "ru": "Голландский"
+  },
+  "igbo": {
+    "en": "Igbo",
+    "ru": "Игбо"
+  },
+  "indonezyjski": {
+    "en": "Indonesian",
+    "ru": "Индонезийский"
+  },
+  "irlandzki": {
+    "en": "Irish",
+    "ru": "Ирландский"
+  },
+  "islandzki": {
+    "en": "Icelandic",
+    "ru": "Исландский"
+  },
+  "japoński": {
+    "en": "Japanese",
+    "ru": "Японский"
+  },
+  "joruba": {
+    "en": "Yoruba",
+    "ru": "Йоруба"
+  },
+  "kannada": {
+    "en": "Kannada",
+    "ru": "Каннада"
+  },
+  "kataloński": {
+    "en": "Catalan",
+    "ru": "Каталанский"
+  },
+  "kazachski": {
+    "en": "Kazakh",
+    "ru": "Казахский"
+  },
+  "khmerski": {
+    "en": "Khmer",
+    "ru": "Кхмерский"
+  },
+  "kirgiski": {
+    "en": "Kyrgyz",
+    "ru": "Киргизский"
+  },
+  "koreański": {
+    "en": "Korean",
+    "ru": "Корейский"
+  },
+  "kurdyjski": {
+    "en": "Kurdish",
+    "ru": "Курдский"
+  },
+  "łaciński": {
+    "en": "Latin",
+    "ru": "Латинский"
+  },
+  "laotański": {
+    "en": "Lao",
+    "ru": "Лаосский"
+  },
+  "litewski": {
+    "en": "Lithuanian",
+    "ru": "Литовский"
+  },
+  "łotewski": {
+    "en": "Latvian",
+    "ru": "Латышский"
+  },
+  "macedoński": {
+    "en": "Macedonian",
+    "ru": "Македонский"
+  },
+  "malajski": {
+    "en": "Malay",
+    "ru": "Малайский"
+  },
+  "malajalam": {
+    "en": "Malayalam",
+    "ru": "Малаялам"
+  },
+  "malgaski": {
+    "en": "Malagasy",
+    "ru": "Малагасийский"
+  },
+  "maoryski": {
+    "en": "Maori",
+    "ru": "Маори"
+  },
+  "marathi": {
+    "en": "Marathi",
+    "ru": "Маратхи"
+  },
+  "mołdawski": {
+    "en": "Moldovan",
+    "ru": "Молдавский"
+  },
+  "mongolski": {
+    "en": "Mongolian",
+    "ru": "Монгольский"
+  },
+  "nepalski": {
+    "en": "Nepali",
+    "ru": "Непальский"
+  },
+  "niderlandzki": {
+    "en": "Dutch",
+    "ru": "Нидерландский"
+  },
+  "niemiecki": {
+    "en": "German",
+    "ru": "Немецкий"
+  },
+  "norweski": {
+    "en": "Norwegian",
+    "ru": "Норвежский"
+  },
+  "odija": {
+    "en": "Odia (Oriya)",
+    "ru": "Ория"
+  },
+  "ormiański": {
+    "en": "Oromo",
+    "ru": "Оромо"
+  },
+  "paszto": {
+    "en": "Pashto",
+    "ru": "Пушту"
+  },
+  "perski": {
+    "en": "Persian",
+    "ru": "Персидский"
+  },
+  "portugalski": {
+    "en": "Portuguese",
+    "ru": "Португальский"
+  },
+  "pendżabi": {
+    "en": "Punjabi",
+    "ru": "Пенджаби"
+  },
+  "rosyjski": {
+    "en": "Russian",
+    "ru": "Русский"
+  },
+  "rumuński": {
+    "en": "Romanian",
+    "ru": "Румынский"
+  },
+  "sanskryt": {
+    "en": "Sanskrit",
+    "ru": "Санскрит"
+  },
+  "serbski": {
+    "en": "Serbian",
+    "ru": "Сербский"
+  },
+  "sindhi": {
+    "en": "Sindhi",
+    "ru": "Синдхи"
+  },
+  "słowacki": {
+    "en": "Slovak",
+    "ru": "Словацкий"
+  },
+  "słoweński": {
+    "en": "Slovenian",
+    "ru": "Словенский"
+  },
+  "somalijski": {
+    "en": "Somali",
+    "ru": "Сомалийский"
+  },
+  "suahili": {
+    "en": "Swahili",
+    "ru": "Суахили"
+  },
+  "sundajski": {
+    "en": "Sundanese",
+    "ru": "Сунданский"
+  },
+  "syngaleski": {
+    "en": "Sinhala",
+    "ru": "Сингальский"
+  },
+  "szwedzki": {
+    "en": "Swedish",
+    "ru": "Шведский"
+  },
+  "tagalski": {
+    "en": "Tagalog",
+    "ru": "Тагальский"
+  },
+  "tajski": {
+    "en": "Thai",
+    "ru": "Тайский"
+  },
+  "tamilski": {
+    "en": "Tamil",
+    "ru": "Тамильский"
+  },
+  "tatarski": {
+    "en": "Tatar",
+    "ru": "Татарский"
+  },
+  "telugu": {
+    "en": "Telugu",
+    "ru": "Телугу"
+  },
+  "turecki": {
+    "en": "Turkish",
+    "ru": "Турецкий"
+  },
+  "ukraiński": {
+    "en": "Ukrainian",
+    "ru": "Украинский"
+  },
+  "urdu": {
+    "en": "Urdu",
+    "ru": "Урду"
+  },
+  "uzbecki": {
+    "en": "Uzbek",
+    "ru": "Узбекский"
+  },
+  "walijski": {
+    "en": "Welsh",
+    "ru": "Валлийский"
+  },
+  "węgierski": {
+    "en": "Hungarian",
+    "ru": "Венгерский"
+  },
+  "wietnamski": {
+    "en": "Vietnamese",
+    "ru": "Вьетнамский"
+  },
+  "włoski": {
+    "en": "Italian",
+    "ru": "Итальянский"
+  },
+  "xhosa": {
+    "en": "Xhosa",
+    "ru": "Коса"
+  },
+  "zulu": {
+    "en": "Zulu",
+    "ru": "Зулу"
+  }
+}

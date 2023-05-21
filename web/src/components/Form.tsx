@@ -3,6 +3,8 @@ import { Flex, Box, Select, Link, Spinner } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Language, Translator } from "../lib/api"
 import { Trans, t } from "@lingui/macro"
+import { useLingui } from "@lingui/react"
+import languageNamesList from "../locales/language-names.json"
 
 type FormProps = {
   currentLanguage: string | null
@@ -12,12 +14,56 @@ type FormProps = {
   onLangChange: (lang: string) => void
 }
 
+interface LanguageMap {
+  [polishName: string]: {
+    [languageCode: string]: string
+  }
+}
+
+interface LanguageItem {
+  origName: string
+  prettyName: string
+}
+
+const languageMap: LanguageMap = languageNamesList
+
 function Form({
   languages,
   visibleTranslators,
   loading,
   onLangChange,
 }: FormProps) {
+  const { i18n } = useLingui()
+  const [languageItems, setlanguageItems] = useState<LanguageItem[]>([])
+
+  useEffect(() => {
+    const languageItems = languages.map((language) => {
+      // Get translated language name from the file.
+      let prettyName =
+        languageMap[language.language]?.[i18n.locale] || language.language
+      // Capitalize name.
+      prettyName = prettyName.charAt(0).toUpperCase() + prettyName.slice(1)
+
+      return {
+        origName: language.language,
+        prettyName: prettyName,
+      }
+    })
+
+    // Sort languages by pretty name.
+    languageItems.sort((a, b) => {
+      if (a.prettyName < b.prettyName) {
+        return -1
+      }
+      if (a.prettyName > b.prettyName) {
+        return 1
+      }
+      return 0
+    })
+
+    setlanguageItems(languageItems)
+  }, [languages, i18n.locale])
+
   return (
     <Flex
       direction="column"
@@ -32,8 +78,12 @@ function Form({
           placeholder={t`Select language`}
           onChange={(e) => onLangChange(e.target.value)}
         >
-          {languages.map((language, index) => {
-            return <option key={index}>{language.language}</option>
+          {languageItems.map((item, index) => {
+            return (
+              <option key={index} value={item.origName}>
+                {item.prettyName}
+              </option>
+            )
           })}
         </Select>
       </Box>
