@@ -6,11 +6,16 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/translator"
+	"github.com/flexoid/translators-map-go/internal/config"
 	"github.com/flexoid/translators-map-go/internal/maps"
+	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/scraper"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/push"
 	"go.uber.org/zap"
 )
 
@@ -19,13 +24,32 @@ type Scraper struct {
 	logger            *zap.SugaredLogger
 	geocoding         *maps.Geocoding
 	mapsBackendAPIKey string
+	metrics           *metrics.ScraperMetrics
 }
 
-func NewScraper(db *ent.Client, logger *zap.SugaredLogger, mapsBackendAPIKey string) *Scraper {
-	return &Scraper{db: db, logger: logger, mapsBackendAPIKey: mapsBackendAPIKey}
+func NewScraper(
+	db *ent.Client,
+	logger *zap.SugaredLogger,
+	mapsBackendAPIKey string,
+	metricset *metrics.ScraperMetrics,
+) *Scraper {
+	return &Scraper{
+		db:                db,
+		logger:            logger,
+		mapsBackendAPIKey: mapsBackendAPIKey,
+		metrics:           metricset,
+	}
 }
 
 func (s *Scraper) Run() {
+	startTime := time.Now()
+	successful := false
+
+	s.metrics.ResetBeforeRun()
+	defer func() {
+		s.sendMetrics(startTime, successful)
+	}()
+
 	var err error
 	s.geocoding, err = maps.NewGeocoding(s.mapsBackendAPIKey)
 	if err != nil {
@@ -39,6 +63,9 @@ func (s *Scraper) Run() {
 		return
 	}
 
+	s.logger.Debugf("Scraped %d languages", len(languages))
+	s.metrics.LanguagesScraped.Set(float64(len(languages)))
+
 	for _, language := range languages {
 		err := scraper.ScrapeTranslators(s.logger, language, func(t scraper.Translator) {
 			_, err := s.handleTranslator(t)
@@ -51,9 +78,14 @@ func (s *Scraper) Run() {
 			return
 		}
 	}
+
+	successful = true
+	s.metrics.SuccessTime.SetToCurrentTime()
 }
 
 func (s *Scraper) handleTranslator(trans scraper.Translator) (*ent.Translator, error) {
+	s.metrics.TranslatorsScraped.Inc()
+
 	var model *ent.Translator
 	var err error
 
@@ -98,6 +130,7 @@ func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, e
 	}
 
 	s.logger.Debugw("Created translator record", "model", model.String())
+	s.metrics.TranslatorsCreated.Inc()
 
 	return model, nil
 }
@@ -128,6 +161,7 @@ func (s *Scraper) updateTranslator(model *ent.Translator, trans scraper.Translat
 	}
 
 	s.logger.Debugw("Updated translator record", "model", model.String())
+	s.metrics.TranslatorsUpdated.Inc()
 
 	return model, nil
 }
@@ -155,4 +189,28 @@ func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, a
 	m.SetLongitude(lng)
 
 	return nil
+}
+
+func (s *Scraper) sendMetrics(startTime time.Time, successful bool) {
+	s.metrics.CompletionTime.SetToCurrentTime()
+	s.metrics.Duration.Set(time.Since(startTime).Seconds())
+
+	if config.CLI.MetricsPushgatewayURL == "" || config.CLI.MetricsInstance == "" {
+		s.logger.Debug("Skipping sending metrics to pushgateway")
+		return
+	}
+
+	pusher := push.New(config.CLI.MetricsPushgatewayURL, "translators_map").
+		Gatherer(prometheus.DefaultGatherer).
+		Grouping("instance", config.CLI.MetricsInstance)
+
+	if successful {
+		// Include success timestamp collector only if scraper succeeded.
+		pusher = pusher.Collector(s.metrics.SuccessTime)
+	}
+
+	err := pusher.Add()
+	if err != nil {
+		s.logger.Errorf("Failed to push metrics to pushgateway: %v", err)
+	}
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/flexoid/translators-map-go/internal/api"
 	"github.com/flexoid/translators-map-go/internal/config"
 	"github.com/flexoid/translators-map-go/internal/logging"
+	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/services"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
@@ -53,17 +54,18 @@ func startServer(entClient *ent.Client, logger *zap.SugaredLogger, bindAddr stri
 
 func startScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
 	logger.Info("Starting scraper service")
+	metricset := metrics.NewScraperMetrics()
 
-	runScraper(entClient, logger)
+	runScraper(entClient, logger, metricset)
 
 	for range time.Tick(time.Hour * 24) {
-		runScraper(entClient, logger)
+		runScraper(entClient, logger, metricset)
 	}
 }
 
-func runScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
+func runScraper(entClient *ent.Client, logger *zap.SugaredLogger, metricset *metrics.ScraperMetrics) {
 	logger.Info("Running scraper")
-	services.NewScraper(entClient, logger, config.CLI.MapsBackendAPIKey).Run()
+	services.NewScraper(entClient, logger, config.CLI.MapsBackendAPIKey, metricset).Run()
 	logger.Info("Scraper run finished, next run in 24h")
 }
 
