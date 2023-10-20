@@ -13,23 +13,31 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/App.tsx:128
+#: src/components/Footer.tsx:18
 msgid "All data used on this site is taken from the <0><1>Bulletin of Public information archive <2/></1></0> of the Ministry of Justice of the Republic of Poland.<3/>The data is provided \"as is\" without warranty of any kind for informational purposes only."
 msgstr "Все данные, используемые на этом сайте, взяты из <0><1>архива Бюллетеня общественной информации <2/></1></0> Министерства юстиции Республики Польши.<3/>Информация предоставлена \"как есть\" без каких-либо гарантий исключительно в ознакомительных целях."
 
 #: src/App.tsx:96
-msgid "Find a certified Polish translator."
-msgstr "Найти присяжного переводчика польского языка."
+#~ msgid "Find a certified Polish translator."
+#~ msgstr "Найти присяжного переводчика польского языка."
 
-#: src/App.tsx:148
+#: src/components/Footer.tsx:36
 msgid "Get in touch"
 msgstr "Связаться с нами"
 
-#: src/App.tsx:51
-#: src/App.tsx:93
-msgid "Polish sworn translators on map"
-msgstr "Присяжные переводчики польского языка на карте"
-
-#: src/components/Form.tsx:32
+#: src/components/Form.tsx:64
 msgid "Select language"
 msgstr "Выбрать язык"
+
+#: src/components/HeaderSection.tsx:15
+msgid "headerDescription"
+msgstr "Постоянно обновляемый каталог присяжных переводчиков польского языка, собранный из официальных источников. Мы предлагаем удобный быстрый поиск на карте, чтобы помочь найти идеального специалиста для ваших потребностей."
+
+#: src/components/Header.tsx:37
+msgid "subtitle"
+msgstr "Найдите присяжного переводчика польского языка"
+
+#: src/App.tsx:59
+#: src/components/Header.tsx:36
+msgid "title"
+msgstr "Карта присяжных переводчиков"

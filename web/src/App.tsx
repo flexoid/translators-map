@@ -1,16 +1,24 @@
+import "@fontsource/inter"
+
 import { useState, useEffect } from "react"
-import { Flex, Box, Heading, Text, Link } from "@chakra-ui/react"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
 import ReactGA from "react-ga4"
-import { Config } from "./lib/api"
+import { t } from "@lingui/macro"
+import { useLingui } from "@lingui/react"
+import { CssVarsProvider } from "@mui/joy/styles"
+import CssBaseline from "@mui/joy/CssBaseline"
+import Box from "@mui/joy/Box"
+import Stack from "@mui/joy/Stack"
 
+import { Config } from "./lib/api"
 import Map from "./components/Map"
 import "./App.css"
 import Form from "./components/Form"
 import { Language, Translator } from "./lib/api"
-import { Trans, t } from "@lingui/macro"
-import { I18nContext, useLingui } from "@lingui/react"
+import Header from "./components/Header"
+import HeaderSection from "./components/HeaderSection"
+import Footer from "./components/Footer"
+import Results from "./components/Results"
 
 function App() {
   const [config, setConfig] = useState<Config | null>(null)
@@ -49,6 +57,7 @@ function App() {
 
   useEffect(() => {
     document.title = t({
+      id: "title",
       message: "Polish sworn translators on map",
     })
   }, [i18n.locale])
@@ -80,31 +89,44 @@ function App() {
   }, [currentLanguage])
 
   return (
-    <Flex height={{ base: "auto", md: "100vh" }} direction="column">
-      <Flex direction={{ base: "column", md: "row" }} flex="auto">
-        <Flex
-          direction="column"
-          p="4"
-          alignItems="center"
-          width={{ base: "auto", md: "md" }}
-          flex="none"
+    <CssVarsProvider>
+      <CssBaseline />
+      <Header />
+
+      <Box
+        component="main"
+        sx={{
+          height: "calc(100vh - 55px)", // 55px is the height of the NavBar
+          display: "grid",
+          gridTemplateColumns: { xs: "auto", md: "40% 60%" },
+          gridTemplateRows: { xs: "auto 1fr auto auto", md: "auto 1fr auto" },
+        }}
+      >
+        <Stack
+          sx={{
+            backgroundColor: "background.surface",
+            px: { xs: 2, md: 4 },
+            py: 2,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+          }}
         >
-          <Heading size="md" pt={4} flex="none" textAlign="center">
-            <Trans>Polish sworn translators on map</Trans>
-          </Heading>
-          <Text p="4" flex="none">
-            <Trans>Find a certified Polish translator.</Trans>
-          </Text>
+          <HeaderSection />
           <Form
             currentLanguage={currentLanguage}
             languages={languages}
-            visibleTranslators={visibleTranslators}
-            loading={loading}
             onLangChange={handleLangChange}
           />
-        </Flex>
+        </Stack>
 
-        <Box w="full" h={{ base: "xl", md: "full" }} flex="auto">
+        <Box
+          sx={{
+            gridRow: { md: "span 2" },
+            width: "full",
+            height: { xs: "40vh", md: "auto" },
+            backgroundColor: "background.level1",
+          }}
+        >
           {config && (
             <Wrapper
               apiKey={config.maps_js_api_key}
@@ -121,37 +143,11 @@ function App() {
             </Wrapper>
           )}
         </Box>
-      </Flex>
 
-      <Box flex="none" p={4}>
-        <Text fontSize="sm" align="center" margin="auto">
-          <Trans>
-            All data used on this site is taken from the{" "}
-            <Link
-              color="teal.500"
-              href="https://arch-bip.ms.gov.pl/pl/rejestry-i-ewidencje/tlumacze-przysiegli/lista-tlumaczy-przysieglych/search.html"
-              isExternal
-            >
-              <span style={{ whiteSpace: "nowrap" }}>
-                Bulletin of Public information archive{" "}
-                <ExternalLinkIcon mx="2px" />
-              </span>
-            </Link>{" "}
-            of the Ministry of Justice of the Republic of Poland.
-            <br />
-            The data is provided "as is" without warranty of any kind for
-            informational purposes only.
-          </Trans>
-        </Text>
-
-        <Text fontSize="sm" align="center" margin="auto" mt={4}>
-          <Trans>Get in touch</Trans>:{" "}
-          <Link href="mailto:contact@sworntranslatormap.com">
-            contact@sworntranslatormap.com
-          </Link>
-        </Text>
+        <Results visibleTranslators={visibleTranslators} loading={loading} />
+        <Footer />
       </Box>
-    </Flex>
+    </CssVarsProvider>
   )
 }
 

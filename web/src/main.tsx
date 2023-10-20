@@ -1,6 +1,5 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
-import { ChakraProvider } from "@chakra-ui/react"
 import { i18n } from "@lingui/core"
 import { I18nProvider } from "@lingui/react"
 import { detect, fromNavigator } from "@lingui/detect-locale"
@@ -16,8 +15,6 @@ i18n.load({
   ru: ruMessages,
 })
 
-console.log(i18n)
-
 let detectedLocale = detect(fromNavigator())
 if (detectedLocale) {
   detectedLocale = detectedLocale.split("-")[0]
@@ -27,11 +24,9 @@ if (detectedLocale) {
 i18n.activate(detectedLocale)
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <ChakraProvider>
-    <I18nProvider i18n={i18n}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </I18nProvider>
-  </ChakraProvider>
+  <I18nProvider i18n={i18n}>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </I18nProvider>
 )

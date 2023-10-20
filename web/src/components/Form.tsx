@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react"
-import { Flex, Box, Select, Link, Spinner } from "@chakra-ui/react"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Language, Translator } from "../lib/api"
-import { Trans, t } from "@lingui/macro"
+import { t } from "@lingui/macro"
 import { useLingui } from "@lingui/react"
 import languageNamesList from "../locales/language-names.json"
+import Select from "@mui/joy/Select"
+import Option from "@mui/joy/Option"
+import { Box } from "@mui/joy"
 
 type FormProps = {
   currentLanguage: string | null
   languages: Language[]
-  visibleTranslators: Translator[]
-  loading: boolean
   onLangChange: (lang: string) => void
 }
 
@@ -27,12 +26,7 @@ interface LanguageItem {
 
 const languageMap: LanguageMap = languageNamesList
 
-function Form({
-  languages,
-  visibleTranslators,
-  loading,
-  onLangChange,
-}: FormProps) {
+function Form({ languages, onLangChange }: FormProps) {
   const { i18n } = useLingui()
   const [languageItems, setlanguageItems] = useState<LanguageItem[]>([])
 
@@ -65,43 +59,20 @@ function Form({
   }, [languages, i18n.locale])
 
   return (
-    <Flex
-      direction="column"
-      width="full"
-      justifyContent="center"
-      flex="1 1 0"
-      minHeight={{ base: "auto", md: 0 }}
-      maxHeight={{ base: "80", md: "fit-content" }}
-    >
-      <Box p={2} flex="none">
-        <Select
-          placeholder={t`Select language`}
-          onChange={(e) => onLangChange(e.target.value)}
-        >
-          {languageItems.map((item, index) => {
-            return (
-              <option key={index} value={item.origName}>
-                {item.prettyName}
-              </option>
-            )
-          })}
-        </Select>
-      </Box>
-
-      {loading && <Spinner size="lg" flex="none" alignSelf="center" />}
-
-      <Flex direction="column" p={2} flex="auto" overflowY="auto">
-        {visibleTranslators.map((translator, index) => {
+    <Box>
+      <Select
+        placeholder={t`Select language`}
+        onChange={(_, value: string | null) => value && onLangChange(value)}
+      >
+        {languageItems.map((item, index) => {
           return (
-            <Box key={index} p={3} flex="none">
-              <Link href={translator.details_url} isExternal>
-                {index + 1}. {translator.address} <ExternalLinkIcon mx="2px" />
-              </Link>
-            </Box>
+            <Option key={index} value={item.origName}>
+              {item.prettyName}
+            </Option>
           )
         })}
-      </Flex>
-    </Flex>
+      </Select>
+    </Box>
   )
 }
 

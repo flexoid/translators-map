@@ -13,23 +13,27 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/App.tsx:128
+#: src/components/Footer.tsx:18
 msgid "All data used on this site is taken from the <0><1>Bulletin of Public information archive <2/></1></0> of the Ministry of Justice of the Republic of Poland.<3/>The data is provided \"as is\" without warranty of any kind for informational purposes only."
 msgstr "All data used on this site is taken from the <0><1>Bulletin of Public information archive <2/></1></0> of the Ministry of Justice of the Republic of Poland.<3/>The data is provided \"as is\" without warranty of any kind for informational purposes only."
 
-#: src/App.tsx:96
-msgid "Find a certified Polish translator."
-msgstr "Find a certified Polish translator."
-
-#: src/App.tsx:148
+#: src/components/Footer.tsx:36
 msgid "Get in touch"
 msgstr "Get in touch"
 
-#: src/App.tsx:51
-#: src/App.tsx:93
-msgid "Polish sworn translators on map"
-msgstr "Polish sworn translators on map"
-
-#: src/components/Form.tsx:32
+#: src/components/Form.tsx:64
 msgid "Select language"
 msgstr "Select language"
+
+#: src/components/HeaderSection.tsx:15
+msgid "headerDescription"
+msgstr "Constantly updated catalog of sworn certified translators of the Polish language, compiled from official sources. We offer convenient and quick map search, to help you find the perfect specialist for your needs."
+
+#: src/components/Header.tsx:37
+msgid "subtitle"
+msgstr "Your directory of Polish Sworn Translators"
+
+#: src/App.tsx:59
+#: src/components/Header.tsx:36
+msgid "title"
+msgstr "Sworn Translator Map"

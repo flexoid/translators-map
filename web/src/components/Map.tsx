@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react"
 import { MarkerClusterer } from "@googlemaps/markerclusterer"
 import { renderToString } from "react-dom/server"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
 import { Translator } from "../lib/api"
 
 interface MapProps extends google.maps.MapOptions {
@@ -16,7 +16,7 @@ interface MarkerItem {
   marker: google.maps.Marker
 }
 
-function MapComponent({
+export default function MapComponent({
   center,
   zoom,
   style,
@@ -32,7 +32,7 @@ function MapComponent({
   )
   const markersRef = useRef<Map<google.maps.Marker, Translator>>(new Map())
 
-  const externalLinkIconStr = renderToString(<ExternalLinkIcon mx="2px" />)
+  const externalLinkIconStr = renderToString(<OpenInNewIcon />)
 
   function updateVisibleTranslators(map: google.maps.Map) {
     const markers = markersRef.current
@@ -121,5 +121,3 @@ function MapComponent({
 
   return <div ref={ref} style={style} />
 }
-
-export default MapComponent

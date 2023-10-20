@@ -13,23 +13,27 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/App.tsx:128
+#: src/components/Footer.tsx:18
 msgid "All data used on this site is taken from the <0><1>Bulletin of Public information archive <2/></1></0> of the Ministry of Justice of the Republic of Poland.<3/>The data is provided \"as is\" without warranty of any kind for informational purposes only."
 msgstr "Wszystkie dane użyte na tej stronie pochodzą z <0><1>archiwum Biuletynu Informacji Publicznej <2/></1></0> Ministerstwa Sprawiedliwości Rzeczypospolitej Polskiej.<3/>Dane są udostępniane \"tak jak jest\", bez żadnych gwarancji, wyłącznie w celach informacyjnych."
 
-#: src/App.tsx:96
-msgid "Find a certified Polish translator."
-msgstr "Znajdź tłumacza przysięgłego języka polskiego."
-
-#: src/App.tsx:148
+#: src/components/Footer.tsx:36
 msgid "Get in touch"
 msgstr "Skontaktuj się"
 
-#: src/App.tsx:51
-#: src/App.tsx:93
-msgid "Polish sworn translators on map"
-msgstr "Mapa tłumaczy przysięgłych języka polskiego"
-
-#: src/components/Form.tsx:32
+#: src/components/Form.tsx:64
 msgid "Select language"
 msgstr "Wybierz język"
+
+#: src/components/HeaderSection.tsx:15
+msgid "headerDescription"
+msgstr "Ciągle aktualizowany katalog przysięgłych tłumaczy języka polskiego, zebrany z oficjalnych źródeł. Oferujemy wygodne i szybkie wyszukiwanie na mapie, aby pomóc Ci znaleźć idealnego specjalistę dla Twoich potrzeb."
+
+#: src/components/Header.tsx:37
+msgid "subtitle"
+msgstr "Znajdź przysięgłego tłumacza języka polskiego"
+
+#: src/App.tsx:59
+#: src/components/Header.tsx:36
+msgid "title"
+msgstr "Mapa tłumaczy przysięgłych"

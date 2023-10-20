@@ -12,17 +12,17 @@
     "i18n:compile": "lingui compile --typescript"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.9",
-    "@chakra-ui/react": "^2.3.1",
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/inter": "^5.0.13",
     "@googlemaps/markerclusterer": "^2.0.10",
     "@googlemaps/react-wrapper": "^1.1.35",
     "@googlemaps/typescript-guards": "^2.0.2",
     "@lingui/detect-locale": "^3.14.0",
     "@lingui/react": "^3.14.0",
+    "@mui/icons-material": "^5.14.14",
+    "@mui/joy": "^5.0.0-beta.11",
     "fast-equals": "^4.0.3",
-    "framer-motion": "^6.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-ga4": "^1.4.1"
