@@ -71,7 +71,13 @@ export default function MapComponent({
 
   useEffect(() => {
     if (ref.current && !map) {
-      const map = new google.maps.Map(ref.current, { center, zoom })
+      const map = new google.maps.Map(ref.current, {
+        center,
+        zoom,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+      })
       setClusterer(new MarkerClusterer({ map }))
       setMap(map)
       setInfoWindow(new google.maps.InfoWindow())
