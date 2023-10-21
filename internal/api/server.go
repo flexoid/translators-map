@@ -62,4 +62,14 @@ func (s *Server) setupFileServer(router chi.Router, path string) {
 			w.Header().Set("Cache-Control", "must-revalidate")
 			fileServer.ServeHTTP(w, r)
 		}))
+
+	// Serve ignoring langauge prefix.
+	languages := []string{"en", "ru", "pl"}
+	for _, lang := range languages {
+		router.Get(fmt.Sprintf("/%s/*", lang), http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Cache-Control", "must-revalidate")
+			r.URL.Path = r.URL.Path[len(lang)+1:]
+			fileServer.ServeHTTP(w, r)
+		}))
+	}
 }

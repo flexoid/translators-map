@@ -2,7 +2,7 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { i18n } from "@lingui/core"
 import { I18nProvider } from "@lingui/react"
-import { detect, fromNavigator } from "@lingui/detect-locale"
+import { detect, fromNavigator, fromPath } from "@lingui/detect-locale"
 import { messages as enMessages } from "./locales/en/messages"
 import { messages as plMessages } from "./locales/pl/messages"
 import { messages as ruMessages } from "./locales/ru/messages"
@@ -15,7 +15,7 @@ i18n.load({
   ru: ruMessages,
 })
 
-let detectedLocale = detect(fromNavigator())
+let detectedLocale = detect(fromPath(0), fromNavigator())
 if (detectedLocale) {
   detectedLocale = detectedLocale.split("-")[0]
 } else {
