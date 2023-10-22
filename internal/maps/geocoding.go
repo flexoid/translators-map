@@ -55,8 +55,6 @@ func (g *Geocoding) GeocodingForAddress(ctx context.Context, address string) (*R
 		return nil, fmt.Errorf("cannot find coordinates for address: %s", address)
 	}
 
-	fmt.Printf("Geocoding result: %+v\n", result)
-
 	city, err := g.extractComponent(result[0], localityType)
 	if err != nil {
 		return nil, err

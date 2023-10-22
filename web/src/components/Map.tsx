@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react"
 import { MarkerClusterer } from "@googlemaps/markerclusterer"
 import { renderToString } from "react-dom/server"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import addCurrentLocation from "google-maps-current-location"
 import { Translator } from "../lib/api"
 
 interface MapProps extends google.maps.MapOptions {
@@ -79,6 +80,21 @@ export default function MapComponent({
         fullscreenControl: false,
       })
       setClusterer(new MarkerClusterer({ map }))
+
+      addCurrentLocation(map, {
+        watchPositionFn(successCallback, errorCallback, options) {
+          const successCallbackWrapper: PositionCallback = (position) => {
+            console.log("Current location", position)
+            successCallback(position)
+            map.setZoom(13)
+          }
+          return navigator.geolocation.watchPosition(
+            successCallbackWrapper,
+            errorCallback,
+            options
+          )
+        },
+      })
       setMap(map)
       setInfoWindow(new google.maps.InfoWindow())
 
