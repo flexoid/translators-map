@@ -4,6 +4,8 @@ package translator
 
 import (
 	"time"
+
+	"entgo.io/ent/dialect/sql"
 )
 
 const (
@@ -13,6 +15,8 @@ const (
 	FieldID = "id"
 	// FieldExternalID holds the string denoting the external_id field in the database.
 	FieldExternalID = "external_id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// FieldLanguage holds the string denoting the language field in the database.
 	FieldLanguage = "language"
 	// FieldAddress holds the string denoting the address field in the database.
@@ -37,6 +41,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldExternalID,
+	FieldName,
 	FieldLanguage,
 	FieldAddress,
 	FieldAddressSha,
@@ -65,3 +70,56 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
+
+// OrderOption defines the ordering options for the Translator queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByExternalID orders the results by the external_id field.
+func ByExternalID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldExternalID, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByLanguage orders the results by the language field.
+func ByLanguage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLanguage, opts...).ToFunc()
+}
+
+// ByAddress orders the results by the address field.
+func ByAddress(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAddress, opts...).ToFunc()
+}
+
+// ByDetailsURL orders the results by the details_url field.
+func ByDetailsURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDetailsURL, opts...).ToFunc()
+}
+
+// ByLatitude orders the results by the latitude field.
+func ByLatitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLatitude, opts...).ToFunc()
+}
+
+// ByLongitude orders the results by the longitude field.
+func ByLongitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLongitude, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}

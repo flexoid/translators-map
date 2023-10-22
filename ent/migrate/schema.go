@@ -12,6 +12,7 @@ var (
 	TranslatorsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "external_id", Type: field.TypeInt},
+		{Name: "name", Type: field.TypeString, Nullable: true},
 		{Name: "language", Type: field.TypeString},
 		{Name: "address", Type: field.TypeString, Nullable: true},
 		{Name: "address_sha", Type: field.TypeBytes},
@@ -30,7 +31,7 @@ var (
 			{
 				Name:    "translator_external_id_language",
 				Unique:  true,
-				Columns: []*schema.Column{TranslatorsColumns[1], TranslatorsColumns[2]},
+				Columns: []*schema.Column{TranslatorsColumns[1], TranslatorsColumns[3]},
 			},
 		},
 	}

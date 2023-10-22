@@ -7,13 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/flexoid/translators-map-go/ent/migrate"
 
-	"github.com/flexoid/translators-map-go/ent/translator"
-
+	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"github.com/flexoid/translators-map-go/ent/translator"
 )
 
 // Client is the client that holds all ent builders.
@@ -27,7 +28,7 @@ type Client struct {
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}}
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
 	cfg.options(opts...)
 	client := &Client{config: cfg}
 	client.init()
@@ -37,6 +38,55 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Translator = NewTranslatorClient(c.config)
+}
+
+type (
+	// config is the configuration for the client and its builder.
+	config struct {
+		// driver used for executing database requests.
+		driver dialect.Driver
+		// debug enable a debug logging.
+		debug bool
+		// log used for logging on debug mode.
+		log func(...any)
+		// hooks to execute on mutations.
+		hooks *hooks
+		// interceptors to execute on queries.
+		inters *inters
+	}
+	// Option function to configure the client.
+	Option func(*config)
+)
+
+// options applies the options on the config object.
+func (c *config) options(opts ...Option) {
+	for _, opt := range opts {
+		opt(c)
+	}
+	if c.debug {
+		c.driver = dialect.Debug(c.driver, c.log)
+	}
+}
+
+// Debug enables debug logging on the ent.Driver.
+func Debug() Option {
+	return func(c *config) {
+		c.debug = true
+	}
+}
+
+// Log sets the logging function for debug mode.
+func Log(fn func(...any)) Option {
+	return func(c *config) {
+		c.log = fn
+	}
+}
+
+// Driver configures the client driver.
+func Driver(driver dialect.Driver) Option {
+	return func(c *config) {
+		c.driver = driver
+	}
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -55,11 +105,14 @@ func Open(driverName, dataSourceName string, options ...Option) (*Client, error)
 	}
 }
 
+// ErrTxStarted is returned when trying to start a new transaction from a transactional client.
+var ErrTxStarted = errors.New("ent: cannot start a transaction within a transaction")
+
 // Tx returns a new transactional client. The provided context
 // is used until the transaction is committed or rolled back.
 func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	if _, ok := c.driver.(*txDriver); ok {
-		return nil, errors.New("ent: cannot start a transaction within a transaction")
+		return nil, ErrTxStarted
 	}
 	tx, err := newTx(ctx, c.driver)
 	if err != nil {
@@ -100,7 +153,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 //		Translator.
 //		Query().
 //		Count(ctx)
-//
 func (c *Client) Debug() *Client {
 	if c.debug {
 		return c
@@ -123,6 +175,22 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Translator.Use(hooks...)
 }
 
+// Intercept adds the query interceptors to all the entity clients.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Translator.Intercept(interceptors...)
+}
+
+// Mutate implements the ent.Mutator interface.
+func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
+	switch m := m.(type) {
+	case *TranslatorMutation:
+		return c.Translator.mutate(ctx, m)
+	default:
+		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
 // TranslatorClient is a client for the Translator schema.
 type TranslatorClient struct {
 	config
@@ -139,6 +207,12 @@ func (c *TranslatorClient) Use(hooks ...Hook) {
 	c.hooks.Translator = append(c.hooks.Translator, hooks...)
 }
 
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `translator.Intercept(f(g(h())))`.
+func (c *TranslatorClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Translator = append(c.inters.Translator, interceptors...)
+}
+
 // Create returns a builder for creating a Translator entity.
 func (c *TranslatorClient) Create() *TranslatorCreate {
 	mutation := newTranslatorMutation(c.config, OpCreate)
@@ -147,6 +221,21 @@ func (c *TranslatorClient) Create() *TranslatorCreate {
 
 // CreateBulk returns a builder for creating a bulk of Translator entities.
 func (c *TranslatorClient) CreateBulk(builders ...*TranslatorCreate) *TranslatorCreateBulk {
+	return &TranslatorCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TranslatorClient) MapCreateBulk(slice any, setFunc func(*TranslatorCreate, int)) *TranslatorCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TranslatorCreateBulk{err: fmt.Errorf("calling to TranslatorClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TranslatorCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &TranslatorCreateBulk{config: c.config, builders: builders}
 }
 
@@ -179,7 +268,7 @@ func (c *TranslatorClient) DeleteOne(t *Translator) *TranslatorDeleteOne {
 	return c.DeleteOneID(t.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *TranslatorClient) DeleteOneID(id int) *TranslatorDeleteOne {
 	builder := c.Delete().Where(translator.ID(id))
 	builder.mutation.id = &id
@@ -191,6 +280,8 @@ func (c *TranslatorClient) DeleteOneID(id int) *TranslatorDeleteOne {
 func (c *TranslatorClient) Query() *TranslatorQuery {
 	return &TranslatorQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeTranslator},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -212,3 +303,33 @@ func (c *TranslatorClient) GetX(ctx context.Context, id int) *Translator {
 func (c *TranslatorClient) Hooks() []Hook {
 	return c.hooks.Translator
 }
+
+// Interceptors returns the client interceptors.
+func (c *TranslatorClient) Interceptors() []Interceptor {
+	return c.inters.Translator
+}
+
+func (c *TranslatorClient) mutate(ctx context.Context, m *TranslatorMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TranslatorCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TranslatorUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TranslatorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TranslatorDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Translator mutation op: %q", m.Op())
+	}
+}
+
+// hooks and interceptors per client, for fast access.
+type (
+	hooks struct {
+		Translator []ent.Hook
+	}
+	inters struct {
+		Translator []ent.Interceptor
+	}
+)

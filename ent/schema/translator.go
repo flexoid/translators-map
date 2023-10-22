@@ -18,6 +18,7 @@ type Translator struct {
 func (Translator) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("external_id"),
+		field.String("name").Optional(),
 		field.String("language"),
 		field.String("address").Optional(),
 		field.Bytes("address_sha"),

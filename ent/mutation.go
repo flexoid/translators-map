@@ -9,10 +9,10 @@ import (
 	"sync"
 	"time"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
 	"github.com/flexoid/translators-map-go/ent/predicate"
 	"github.com/flexoid/translators-map-go/ent/translator"
-
-	"entgo.io/ent"
 )
 
 const (
@@ -35,6 +35,7 @@ type TranslatorMutation struct {
 	id             *int
 	external_id    *int
 	addexternal_id *int
+	name           *string
 	language       *string
 	address        *string
 	address_sha    *[]byte
@@ -203,6 +204,55 @@ func (m *TranslatorMutation) AddedExternalID() (r int, exists bool) {
 func (m *TranslatorMutation) ResetExternalID() {
 	m.external_id = nil
 	m.addexternal_id = nil
+}
+
+// SetName sets the "name" field.
+func (m *TranslatorMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *TranslatorMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *TranslatorMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[translator.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *TranslatorMutation) NameCleared() bool {
+	_, ok := m.clearedFields[translator.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *TranslatorMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, translator.FieldName)
 }
 
 // SetLanguage sets the "language" field.
@@ -605,9 +655,24 @@ func (m *TranslatorMutation) Where(ps ...predicate.Translator) {
 	m.predicates = append(m.predicates, ps...)
 }
 
+// WhereP appends storage-level predicates to the TranslatorMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TranslatorMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Translator, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
 // Op returns the operation name.
 func (m *TranslatorMutation) Op() Op {
 	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TranslatorMutation) SetOp(op Op) {
+	m.op = op
 }
 
 // Type returns the node type of this mutation (Translator).
@@ -619,9 +684,12 @@ func (m *TranslatorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TranslatorMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.external_id != nil {
 		fields = append(fields, translator.FieldExternalID)
+	}
+	if m.name != nil {
+		fields = append(fields, translator.FieldName)
 	}
 	if m.language != nil {
 		fields = append(fields, translator.FieldLanguage)
@@ -657,6 +725,8 @@ func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case translator.FieldExternalID:
 		return m.ExternalID()
+	case translator.FieldName:
+		return m.Name()
 	case translator.FieldLanguage:
 		return m.Language()
 	case translator.FieldAddress:
@@ -684,6 +754,8 @@ func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Val
 	switch name {
 	case translator.FieldExternalID:
 		return m.OldExternalID(ctx)
+	case translator.FieldName:
+		return m.OldName(ctx)
 	case translator.FieldLanguage:
 		return m.OldLanguage(ctx)
 	case translator.FieldAddress:
@@ -715,6 +787,13 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetExternalID(v)
+		return nil
+	case translator.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
 		return nil
 	case translator.FieldLanguage:
 		v, ok := value.(string)
@@ -841,6 +920,9 @@ func (m *TranslatorMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *TranslatorMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(translator.FieldName) {
+		fields = append(fields, translator.FieldName)
+	}
 	if m.FieldCleared(translator.FieldAddress) {
 		fields = append(fields, translator.FieldAddress)
 	}
@@ -870,6 +952,9 @@ func (m *TranslatorMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *TranslatorMutation) ClearField(name string) error {
 	switch name {
+	case translator.FieldName:
+		m.ClearName()
+		return nil
 	case translator.FieldAddress:
 		m.ClearAddress()
 		return nil
@@ -895,6 +980,9 @@ func (m *TranslatorMutation) ResetField(name string) error {
 	switch name {
 	case translator.FieldExternalID:
 		m.ResetExternalID()
+		return nil
+	case translator.FieldName:
+		m.ResetName()
 		return nil
 	case translator.FieldLanguage:
 		m.ResetLanguage()

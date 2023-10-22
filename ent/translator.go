@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/flexoid/translators-map-go/ent/translator"
 )
@@ -18,6 +19,8 @@ type Translator struct {
 	ID int `json:"id,omitempty"`
 	// ExternalID holds the value of the "external_id" field.
 	ExternalID int `json:"external_id,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
 	// Language holds the value of the "language" field.
 	Language string `json:"language,omitempty"`
 	// Address holds the value of the "address" field.
@@ -33,12 +36,13 @@ type Translator struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt    time.Time `json:"updated_at,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Translator) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*Translator) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case translator.FieldAddressSha:
@@ -47,12 +51,12 @@ func (*Translator) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case translator.FieldID, translator.FieldExternalID:
 			values[i] = new(sql.NullInt64)
-		case translator.FieldLanguage, translator.FieldAddress, translator.FieldDetailsURL:
+		case translator.FieldName, translator.FieldLanguage, translator.FieldAddress, translator.FieldDetailsURL:
 			values[i] = new(sql.NullString)
 		case translator.FieldCreatedAt, translator.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Translator", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -60,7 +64,7 @@ func (*Translator) scanValues(columns []string) ([]interface{}, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Translator fields.
-func (t *Translator) assignValues(columns []string, values []interface{}) error {
+func (t *Translator) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -77,6 +81,12 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field external_id", values[i])
 			} else if value.Valid {
 				t.ExternalID = int(value.Int64)
+			}
+		case translator.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				t.Name = value.String
 			}
 		case translator.FieldLanguage:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -126,16 +136,24 @@ func (t *Translator) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				t.UpdatedAt = value.Time
 			}
+		default:
+			t.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Translator.
+// This includes values selected through modifiers, order, etc.
+func (t *Translator) Value(name string) (ent.Value, error) {
+	return t.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this Translator.
 // Note that you need to call Translator.Unwrap() before calling this method if this Translator
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (t *Translator) Update() *TranslatorUpdateOne {
-	return (&TranslatorClient{config: t.config}).UpdateOne(t)
+	return NewTranslatorClient(t.config).UpdateOne(t)
 }
 
 // Unwrap unwraps the Translator entity that was returned from a transaction after it was closed,
@@ -156,6 +174,9 @@ func (t *Translator) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
 	builder.WriteString("external_id=")
 	builder.WriteString(fmt.Sprintf("%v", t.ExternalID))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(t.Name)
 	builder.WriteString(", ")
 	builder.WriteString("language=")
 	builder.WriteString(t.Language)
@@ -186,9 +207,3 @@ func (t *Translator) String() string {
 
 // Translators is a parsable slice of Translator.
 type Translators []*Translator
-
-func (t Translators) config(cfg config) {
-	for _i := range t {
-		t[_i].config = cfg
-	}
-}

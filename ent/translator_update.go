@@ -41,6 +41,26 @@ func (tu *TranslatorUpdate) AddExternalID(i int) *TranslatorUpdate {
 	return tu
 }
 
+// SetName sets the "name" field.
+func (tu *TranslatorUpdate) SetName(s string) *TranslatorUpdate {
+	tu.mutation.SetName(s)
+	return tu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (tu *TranslatorUpdate) SetNillableName(s *string) *TranslatorUpdate {
+	if s != nil {
+		tu.SetName(*s)
+	}
+	return tu
+}
+
+// ClearName clears the value of the "name" field.
+func (tu *TranslatorUpdate) ClearName() *TranslatorUpdate {
+	tu.mutation.ClearName()
+	return tu
+}
+
 // SetLanguage sets the "language" field.
 func (tu *TranslatorUpdate) SetLanguage(s string) *TranslatorUpdate {
 	tu.mutation.SetLanguage(s)
@@ -152,35 +172,8 @@ func (tu *TranslatorUpdate) Mutation() *TranslatorMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (tu *TranslatorUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	tu.defaults()
-	if len(tu.hooks) == 0 {
-		affected, err = tu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*TranslatorMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			tu.mutation = mutation
-			affected, err = tu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(tu.hooks) - 1; i >= 0; i-- {
-			if tu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = tu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, tu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks(ctx, tu.sqlSave, tu.mutation, tu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -214,16 +207,7 @@ func (tu *TranslatorUpdate) defaults() {
 }
 
 func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   translator.Table,
-			Columns: translator.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: translator.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(translator.Table, translator.Columns, sqlgraph.NewFieldSpec(translator.FieldID, field.TypeInt))
 	if ps := tu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -232,111 +216,58 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := tu.mutation.ExternalID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: translator.FieldExternalID,
-		})
+		_spec.SetField(translator.FieldExternalID, field.TypeInt, value)
 	}
 	if value, ok := tu.mutation.AddedExternalID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: translator.FieldExternalID,
-		})
+		_spec.AddField(translator.FieldExternalID, field.TypeInt, value)
+	}
+	if value, ok := tu.mutation.Name(); ok {
+		_spec.SetField(translator.FieldName, field.TypeString, value)
+	}
+	if tu.mutation.NameCleared() {
+		_spec.ClearField(translator.FieldName, field.TypeString)
 	}
 	if value, ok := tu.mutation.Language(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldLanguage,
-		})
+		_spec.SetField(translator.FieldLanguage, field.TypeString, value)
 	}
 	if value, ok := tu.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldAddress,
-		})
+		_spec.SetField(translator.FieldAddress, field.TypeString, value)
 	}
 	if tu.mutation.AddressCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: translator.FieldAddress,
-		})
+		_spec.ClearField(translator.FieldAddress, field.TypeString)
 	}
 	if value, ok := tu.mutation.AddressSha(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: translator.FieldAddressSha,
-		})
+		_spec.SetField(translator.FieldAddressSha, field.TypeBytes, value)
 	}
 	if value, ok := tu.mutation.DetailsURL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldDetailsURL,
-		})
+		_spec.SetField(translator.FieldDetailsURL, field.TypeString, value)
 	}
 	if value, ok := tu.mutation.Latitude(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLatitude,
-		})
+		_spec.SetField(translator.FieldLatitude, field.TypeFloat64, value)
 	}
 	if value, ok := tu.mutation.AddedLatitude(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLatitude,
-		})
+		_spec.AddField(translator.FieldLatitude, field.TypeFloat64, value)
 	}
 	if tu.mutation.LatitudeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: translator.FieldLatitude,
-		})
+		_spec.ClearField(translator.FieldLatitude, field.TypeFloat64)
 	}
 	if value, ok := tu.mutation.Longitude(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLongitude,
-		})
+		_spec.SetField(translator.FieldLongitude, field.TypeFloat64, value)
 	}
 	if value, ok := tu.mutation.AddedLongitude(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLongitude,
-		})
+		_spec.AddField(translator.FieldLongitude, field.TypeFloat64, value)
 	}
 	if tu.mutation.LongitudeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: translator.FieldLongitude,
-		})
+		_spec.ClearField(translator.FieldLongitude, field.TypeFloat64)
 	}
 	if tu.mutation.CreatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: translator.FieldCreatedAt,
-		})
+		_spec.ClearField(translator.FieldCreatedAt, field.TypeTime)
 	}
 	if value, ok := tu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: translator.FieldUpdatedAt,
-		})
+		_spec.SetField(translator.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if tu.mutation.UpdatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: translator.FieldUpdatedAt,
-		})
+		_spec.ClearField(translator.FieldUpdatedAt, field.TypeTime)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -346,6 +277,7 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	tu.mutation.done = true
 	return n, nil
 }
 
@@ -367,6 +299,26 @@ func (tuo *TranslatorUpdateOne) SetExternalID(i int) *TranslatorUpdateOne {
 // AddExternalID adds i to the "external_id" field.
 func (tuo *TranslatorUpdateOne) AddExternalID(i int) *TranslatorUpdateOne {
 	tuo.mutation.AddExternalID(i)
+	return tuo
+}
+
+// SetName sets the "name" field.
+func (tuo *TranslatorUpdateOne) SetName(s string) *TranslatorUpdateOne {
+	tuo.mutation.SetName(s)
+	return tuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (tuo *TranslatorUpdateOne) SetNillableName(s *string) *TranslatorUpdateOne {
+	if s != nil {
+		tuo.SetName(*s)
+	}
+	return tuo
+}
+
+// ClearName clears the value of the "name" field.
+func (tuo *TranslatorUpdateOne) ClearName() *TranslatorUpdateOne {
+	tuo.mutation.ClearName()
 	return tuo
 }
 
@@ -479,6 +431,12 @@ func (tuo *TranslatorUpdateOne) Mutation() *TranslatorMutation {
 	return tuo.mutation
 }
 
+// Where appends a list predicates to the TranslatorUpdate builder.
+func (tuo *TranslatorUpdateOne) Where(ps ...predicate.Translator) *TranslatorUpdateOne {
+	tuo.mutation.Where(ps...)
+	return tuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (tuo *TranslatorUpdateOne) Select(field string, fields ...string) *TranslatorUpdateOne {
@@ -488,41 +446,8 @@ func (tuo *TranslatorUpdateOne) Select(field string, fields ...string) *Translat
 
 // Save executes the query and returns the updated Translator entity.
 func (tuo *TranslatorUpdateOne) Save(ctx context.Context) (*Translator, error) {
-	var (
-		err  error
-		node *Translator
-	)
 	tuo.defaults()
-	if len(tuo.hooks) == 0 {
-		node, err = tuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*TranslatorMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			tuo.mutation = mutation
-			node, err = tuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(tuo.hooks) - 1; i >= 0; i-- {
-			if tuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = tuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, tuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Translator)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from TranslatorMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, tuo.sqlSave, tuo.mutation, tuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -556,16 +481,7 @@ func (tuo *TranslatorUpdateOne) defaults() {
 }
 
 func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   translator.Table,
-			Columns: translator.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: translator.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(translator.Table, translator.Columns, sqlgraph.NewFieldSpec(translator.FieldID, field.TypeInt))
 	id, ok := tuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Translator.id" for update`)}
@@ -591,111 +507,58 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 		}
 	}
 	if value, ok := tuo.mutation.ExternalID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: translator.FieldExternalID,
-		})
+		_spec.SetField(translator.FieldExternalID, field.TypeInt, value)
 	}
 	if value, ok := tuo.mutation.AddedExternalID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: translator.FieldExternalID,
-		})
+		_spec.AddField(translator.FieldExternalID, field.TypeInt, value)
+	}
+	if value, ok := tuo.mutation.Name(); ok {
+		_spec.SetField(translator.FieldName, field.TypeString, value)
+	}
+	if tuo.mutation.NameCleared() {
+		_spec.ClearField(translator.FieldName, field.TypeString)
 	}
 	if value, ok := tuo.mutation.Language(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldLanguage,
-		})
+		_spec.SetField(translator.FieldLanguage, field.TypeString, value)
 	}
 	if value, ok := tuo.mutation.Address(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldAddress,
-		})
+		_spec.SetField(translator.FieldAddress, field.TypeString, value)
 	}
 	if tuo.mutation.AddressCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: translator.FieldAddress,
-		})
+		_spec.ClearField(translator.FieldAddress, field.TypeString)
 	}
 	if value, ok := tuo.mutation.AddressSha(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: translator.FieldAddressSha,
-		})
+		_spec.SetField(translator.FieldAddressSha, field.TypeBytes, value)
 	}
 	if value, ok := tuo.mutation.DetailsURL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldDetailsURL,
-		})
+		_spec.SetField(translator.FieldDetailsURL, field.TypeString, value)
 	}
 	if value, ok := tuo.mutation.Latitude(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLatitude,
-		})
+		_spec.SetField(translator.FieldLatitude, field.TypeFloat64, value)
 	}
 	if value, ok := tuo.mutation.AddedLatitude(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLatitude,
-		})
+		_spec.AddField(translator.FieldLatitude, field.TypeFloat64, value)
 	}
 	if tuo.mutation.LatitudeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: translator.FieldLatitude,
-		})
+		_spec.ClearField(translator.FieldLatitude, field.TypeFloat64)
 	}
 	if value, ok := tuo.mutation.Longitude(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLongitude,
-		})
+		_spec.SetField(translator.FieldLongitude, field.TypeFloat64, value)
 	}
 	if value, ok := tuo.mutation.AddedLongitude(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLongitude,
-		})
+		_spec.AddField(translator.FieldLongitude, field.TypeFloat64, value)
 	}
 	if tuo.mutation.LongitudeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: translator.FieldLongitude,
-		})
+		_spec.ClearField(translator.FieldLongitude, field.TypeFloat64)
 	}
 	if tuo.mutation.CreatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: translator.FieldCreatedAt,
-		})
+		_spec.ClearField(translator.FieldCreatedAt, field.TypeTime)
 	}
 	if value, ok := tuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: translator.FieldUpdatedAt,
-		})
+		_spec.SetField(translator.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if tuo.mutation.UpdatedAtCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: translator.FieldUpdatedAt,
-		})
+		_spec.ClearField(translator.FieldUpdatedAt, field.TypeTime)
 	}
 	_node = &Translator{config: tuo.config}
 	_spec.Assign = _node.assignValues
@@ -708,5 +571,6 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 		}
 		return nil, err
 	}
+	tuo.mutation.done = true
 	return _node, nil
 }

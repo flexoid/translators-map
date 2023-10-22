@@ -113,6 +113,7 @@ func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, e
 	creator.SetExternalID(trans.ID)
 	creator.SetLanguage(trans.Language.Name)
 	creator.SetDetailsURL(trans.DetailsURL)
+	s.fillInfo(context.TODO(), nil, creator.Mutation(), &trans)
 
 	err := s.fillLocation(context.TODO(), creator.Mutation(), trans.Address)
 	if err != nil {
@@ -132,26 +133,25 @@ func (s *Scraper) createTranslator(trans scraper.Translator) (*ent.Translator, e
 }
 
 func (s *Scraper) updateTranslator(model *ent.Translator, trans scraper.Translator) (*ent.Translator, error) {
-	// TODO: Remove after filling database.
-	model.Update().SetAddress(trans.Address).SaveX(context.TODO())
+	updater := model.Update()
+	s.fillInfo(context.TODO(), model, updater.Mutation(), &trans)
 
 	addressSum := s.hashSumFromString(trans.Address)
 	s.logger.Debugf("Comparing address hashsum from database %x to scraped one %x",
 		addressSum, model.AddressSha)
 
-	if bytes.Equal(model.AddressSha, addressSum) {
+	if !bytes.Equal(model.AddressSha, addressSum) {
+		s.logger.Debug("Address changed, updating location with geocoding API")
+
+		err := s.fillLocation(context.TODO(), updater.Mutation(), trans.Address)
+		if err != nil {
+			return nil, err
+		}
+	} else {
 		s.logger.Debugf("Address didn't change, skipping update")
-		return model, nil
 	}
 
-	updater := model.Update()
-
-	err := s.fillLocation(context.TODO(), updater.Mutation(), trans.Address)
-	if err != nil {
-		return nil, err
-	}
-
-	model, err = updater.Save(context.TODO())
+	model, err := updater.Save(context.TODO())
 	if err != nil {
 		return nil, fmt.Errorf("failed to update translator record: %w", err)
 	}
@@ -165,6 +165,12 @@ func (s *Scraper) updateTranslator(model *ent.Translator, trans scraper.Translat
 func (s *Scraper) hashSumFromString(str string) []byte {
 	sum := sha256.Sum256([]byte(str))
 	return sum[:]
+}
+
+func (s *Scraper) fillInfo(ctx context.Context, model *ent.Translator, m *ent.TranslatorMutation, translator *scraper.Translator) {
+	if model == nil || model.Name != translator.Name {
+		m.SetName(translator.Name)
+	}
 }
 
 func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, address string) error {

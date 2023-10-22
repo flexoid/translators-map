@@ -17,11 +17,9 @@ import (
 // TranslatorQuery is the builder for querying Translator entities.
 type TranslatorQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
+	ctx        *QueryContext
+	order      []translator.OrderOption
+	inters     []Interceptor
 	predicates []predicate.Translator
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -34,27 +32,27 @@ func (tq *TranslatorQuery) Where(ps ...predicate.Translator) *TranslatorQuery {
 	return tq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (tq *TranslatorQuery) Limit(limit int) *TranslatorQuery {
-	tq.limit = &limit
+	tq.ctx.Limit = &limit
 	return tq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (tq *TranslatorQuery) Offset(offset int) *TranslatorQuery {
-	tq.offset = &offset
+	tq.ctx.Offset = &offset
 	return tq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (tq *TranslatorQuery) Unique(unique bool) *TranslatorQuery {
-	tq.unique = &unique
+	tq.ctx.Unique = &unique
 	return tq
 }
 
-// Order adds an order step to the query.
-func (tq *TranslatorQuery) Order(o ...OrderFunc) *TranslatorQuery {
+// Order specifies how the records should be ordered.
+func (tq *TranslatorQuery) Order(o ...translator.OrderOption) *TranslatorQuery {
 	tq.order = append(tq.order, o...)
 	return tq
 }
@@ -62,7 +60,7 @@ func (tq *TranslatorQuery) Order(o ...OrderFunc) *TranslatorQuery {
 // First returns the first Translator entity from the query.
 // Returns a *NotFoundError when no Translator was found.
 func (tq *TranslatorQuery) First(ctx context.Context) (*Translator, error) {
-	nodes, err := tq.Limit(1).All(ctx)
+	nodes, err := tq.Limit(1).All(setContextOp(ctx, tq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +83,7 @@ func (tq *TranslatorQuery) FirstX(ctx context.Context) *Translator {
 // Returns a *NotFoundError when no Translator ID was found.
 func (tq *TranslatorQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = tq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = tq.Limit(1).IDs(setContextOp(ctx, tq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -108,7 +106,7 @@ func (tq *TranslatorQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one Translator entity is found.
 // Returns a *NotFoundError when no Translator entities are found.
 func (tq *TranslatorQuery) Only(ctx context.Context) (*Translator, error) {
-	nodes, err := tq.Limit(2).All(ctx)
+	nodes, err := tq.Limit(2).All(setContextOp(ctx, tq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +134,7 @@ func (tq *TranslatorQuery) OnlyX(ctx context.Context) *Translator {
 // Returns a *NotFoundError when no entities are found.
 func (tq *TranslatorQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = tq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = tq.Limit(2).IDs(setContextOp(ctx, tq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -161,10 +159,12 @@ func (tq *TranslatorQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of Translators.
 func (tq *TranslatorQuery) All(ctx context.Context) ([]*Translator, error) {
+	ctx = setContextOp(ctx, tq.ctx, "All")
 	if err := tq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return tq.sqlAll(ctx)
+	qr := querierAll[[]*Translator, *TranslatorQuery]()
+	return withInterceptors[[]*Translator](ctx, tq, qr, tq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -177,9 +177,12 @@ func (tq *TranslatorQuery) AllX(ctx context.Context) []*Translator {
 }
 
 // IDs executes the query and returns a list of Translator IDs.
-func (tq *TranslatorQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := tq.Select(translator.FieldID).Scan(ctx, &ids); err != nil {
+func (tq *TranslatorQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if tq.ctx.Unique == nil && tq.path != nil {
+		tq.Unique(true)
+	}
+	ctx = setContextOp(ctx, tq.ctx, "IDs")
+	if err = tq.Select(translator.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -196,10 +199,11 @@ func (tq *TranslatorQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (tq *TranslatorQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, tq.ctx, "Count")
 	if err := tq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return tq.sqlCount(ctx)
+	return withInterceptors[int](ctx, tq, querierCount[*TranslatorQuery](), tq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -213,10 +217,15 @@ func (tq *TranslatorQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (tq *TranslatorQuery) Exist(ctx context.Context) (bool, error) {
-	if err := tq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, tq.ctx, "Exist")
+	switch _, err := tq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return tq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -236,14 +245,13 @@ func (tq *TranslatorQuery) Clone() *TranslatorQuery {
 	}
 	return &TranslatorQuery{
 		config:     tq.config,
-		limit:      tq.limit,
-		offset:     tq.offset,
-		order:      append([]OrderFunc{}, tq.order...),
+		ctx:        tq.ctx.Clone(),
+		order:      append([]translator.OrderOption{}, tq.order...),
+		inters:     append([]Interceptor{}, tq.inters...),
 		predicates: append([]predicate.Translator{}, tq.predicates...),
 		// clone intermediate query.
-		sql:    tq.sql.Clone(),
-		path:   tq.path,
-		unique: tq.unique,
+		sql:  tq.sql.Clone(),
+		path: tq.path,
 	}
 }
 
@@ -261,18 +269,12 @@ func (tq *TranslatorQuery) Clone() *TranslatorQuery {
 //		GroupBy(translator.FieldExternalID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-//
 func (tq *TranslatorQuery) GroupBy(field string, fields ...string) *TranslatorGroupBy {
-	grbuild := &TranslatorGroupBy{config: tq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := tq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return tq.sqlQuery(ctx), nil
-	}
+	tq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &TranslatorGroupBy{build: tq}
+	grbuild.flds = &tq.ctx.Fields
 	grbuild.label = translator.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -288,17 +290,31 @@ func (tq *TranslatorQuery) GroupBy(field string, fields ...string) *TranslatorGr
 //	client.Translator.Query().
 //		Select(translator.FieldExternalID).
 //		Scan(ctx, &v)
-//
 func (tq *TranslatorQuery) Select(fields ...string) *TranslatorSelect {
-	tq.fields = append(tq.fields, fields...)
-	selbuild := &TranslatorSelect{TranslatorQuery: tq}
-	selbuild.label = translator.Label
-	selbuild.flds, selbuild.scan = &tq.fields, selbuild.Scan
-	return selbuild
+	tq.ctx.Fields = append(tq.ctx.Fields, fields...)
+	sbuild := &TranslatorSelect{TranslatorQuery: tq}
+	sbuild.label = translator.Label
+	sbuild.flds, sbuild.scan = &tq.ctx.Fields, sbuild.Scan
+	return sbuild
+}
+
+// Aggregate returns a TranslatorSelect configured with the given aggregations.
+func (tq *TranslatorQuery) Aggregate(fns ...AggregateFunc) *TranslatorSelect {
+	return tq.Select().Aggregate(fns...)
 }
 
 func (tq *TranslatorQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range tq.fields {
+	for _, inter := range tq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, tq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range tq.ctx.Fields {
 		if !translator.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -318,10 +334,10 @@ func (tq *TranslatorQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*T
 		nodes = []*Translator{}
 		_spec = tq.querySpec()
 	)
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Translator).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &Translator{config: tq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
@@ -340,38 +356,22 @@ func (tq *TranslatorQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*T
 
 func (tq *TranslatorQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tq.querySpec()
-	_spec.Node.Columns = tq.fields
-	if len(tq.fields) > 0 {
-		_spec.Unique = tq.unique != nil && *tq.unique
+	_spec.Node.Columns = tq.ctx.Fields
+	if len(tq.ctx.Fields) > 0 {
+		_spec.Unique = tq.ctx.Unique != nil && *tq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, tq.driver, _spec)
 }
 
-func (tq *TranslatorQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := tq.sqlCount(ctx)
-	if err != nil {
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	}
-	return n > 0, nil
-}
-
 func (tq *TranslatorQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   translator.Table,
-			Columns: translator.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: translator.FieldID,
-			},
-		},
-		From:   tq.sql,
-		Unique: true,
-	}
-	if unique := tq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(translator.Table, translator.Columns, sqlgraph.NewFieldSpec(translator.FieldID, field.TypeInt))
+	_spec.From = tq.sql
+	if unique := tq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if tq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := tq.fields; len(fields) > 0 {
+	if fields := tq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, translator.FieldID)
 		for i := range fields {
@@ -387,10 +387,10 @@ func (tq *TranslatorQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := tq.limit; limit != nil {
+	if limit := tq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := tq.offset; offset != nil {
+	if offset := tq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := tq.order; len(ps) > 0 {
@@ -406,7 +406,7 @@ func (tq *TranslatorQuery) querySpec() *sqlgraph.QuerySpec {
 func (tq *TranslatorQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(tq.driver.Dialect())
 	t1 := builder.Table(translator.Table)
-	columns := tq.fields
+	columns := tq.ctx.Fields
 	if len(columns) == 0 {
 		columns = translator.Columns
 	}
@@ -415,7 +415,7 @@ func (tq *TranslatorQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = tq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if tq.unique != nil && *tq.unique {
+	if tq.ctx.Unique != nil && *tq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range tq.predicates {
@@ -424,12 +424,12 @@ func (tq *TranslatorQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range tq.order {
 		p(selector)
 	}
-	if offset := tq.offset; offset != nil {
+	if offset := tq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := tq.limit; limit != nil {
+	if limit := tq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -437,13 +437,8 @@ func (tq *TranslatorQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // TranslatorGroupBy is the group-by builder for Translator entities.
 type TranslatorGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *TranslatorQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -452,74 +447,77 @@ func (tgb *TranslatorGroupBy) Aggregate(fns ...AggregateFunc) *TranslatorGroupBy
 	return tgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
-func (tgb *TranslatorGroupBy) Scan(ctx context.Context, v interface{}) error {
-	query, err := tgb.path(ctx)
-	if err != nil {
+// Scan applies the selector query and scans the result into the given value.
+func (tgb *TranslatorGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, tgb.build.ctx, "GroupBy")
+	if err := tgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	tgb.sql = query
-	return tgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*TranslatorQuery, *TranslatorGroupBy](ctx, tgb.build, tgb, tgb.build.inters, v)
 }
 
-func (tgb *TranslatorGroupBy) sqlScan(ctx context.Context, v interface{}) error {
-	for _, f := range tgb.fields {
-		if !translator.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (tgb *TranslatorGroupBy) sqlScan(ctx context.Context, root *TranslatorQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(tgb.fns))
+	for _, fn := range tgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := tgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*tgb.flds)+len(tgb.fns))
+		for _, f := range *tgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*tgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := tgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := tgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (tgb *TranslatorGroupBy) sqlQuery() *sql.Selector {
-	selector := tgb.sql.Select()
-	aggregation := make([]string, 0, len(tgb.fns))
-	for _, fn := range tgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(tgb.fields)+len(tgb.fns))
-		for _, f := range tgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(tgb.fields...)...)
-}
-
 // TranslatorSelect is the builder for selecting fields of Translator entities.
 type TranslatorSelect struct {
 	*TranslatorQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
+}
+
+// Aggregate adds the given aggregation functions to the selector query.
+func (ts *TranslatorSelect) Aggregate(fns ...AggregateFunc) *TranslatorSelect {
+	ts.fns = append(ts.fns, fns...)
+	return ts
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ts *TranslatorSelect) Scan(ctx context.Context, v interface{}) error {
+func (ts *TranslatorSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, ts.ctx, "Select")
 	if err := ts.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ts.sql = ts.TranslatorQuery.sqlQuery(ctx)
-	return ts.sqlScan(ctx, v)
+	return scanWithInterceptors[*TranslatorQuery, *TranslatorSelect](ctx, ts.TranslatorQuery, ts, ts.inters, v)
 }
 
-func (ts *TranslatorSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ts *TranslatorSelect) sqlScan(ctx context.Context, root *TranslatorQuery, v any) error {
+	selector := root.sqlQuery(ctx)
+	aggregation := make([]string, 0, len(ts.fns))
+	for _, fn := range ts.fns {
+		aggregation = append(aggregation, fn(selector))
+	}
+	switch n := len(*ts.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		selector.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		selector.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
-	query, args := ts.sql.Query()
+	query, args := selector.Query()
 	if err := ts.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

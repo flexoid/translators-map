@@ -26,6 +26,20 @@ func (tc *TranslatorCreate) SetExternalID(i int) *TranslatorCreate {
 	return tc
 }
 
+// SetName sets the "name" field.
+func (tc *TranslatorCreate) SetName(s string) *TranslatorCreate {
+	tc.mutation.SetName(s)
+	return tc
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableName(s *string) *TranslatorCreate {
+	if s != nil {
+		tc.SetName(*s)
+	}
+	return tc
+}
+
 // SetLanguage sets the "language" field.
 func (tc *TranslatorCreate) SetLanguage(s string) *TranslatorCreate {
 	tc.mutation.SetLanguage(s)
@@ -121,50 +135,8 @@ func (tc *TranslatorCreate) Mutation() *TranslatorMutation {
 
 // Save creates the Translator in the database.
 func (tc *TranslatorCreate) Save(ctx context.Context) (*Translator, error) {
-	var (
-		err  error
-		node *Translator
-	)
 	tc.defaults()
-	if len(tc.hooks) == 0 {
-		if err = tc.check(); err != nil {
-			return nil, err
-		}
-		node, err = tc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*TranslatorMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = tc.check(); err != nil {
-				return nil, err
-			}
-			tc.mutation = mutation
-			if node, err = tc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(tc.hooks) - 1; i >= 0; i-- {
-			if tc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = tc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, tc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Translator)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from TranslatorMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks(ctx, tc.sqlSave, tc.mutation, tc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -219,6 +191,9 @@ func (tc *TranslatorCreate) check() error {
 }
 
 func (tc *TranslatorCreate) sqlSave(ctx context.Context) (*Translator, error) {
+	if err := tc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := tc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, tc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -228,90 +203,54 @@ func (tc *TranslatorCreate) sqlSave(ctx context.Context) (*Translator, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	tc.mutation.id = &_node.ID
+	tc.mutation.done = true
 	return _node, nil
 }
 
 func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Translator{config: tc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: translator.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: translator.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(translator.Table, sqlgraph.NewFieldSpec(translator.FieldID, field.TypeInt))
 	)
 	if value, ok := tc.mutation.ExternalID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: translator.FieldExternalID,
-		})
+		_spec.SetField(translator.FieldExternalID, field.TypeInt, value)
 		_node.ExternalID = value
 	}
+	if value, ok := tc.mutation.Name(); ok {
+		_spec.SetField(translator.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
 	if value, ok := tc.mutation.Language(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldLanguage,
-		})
+		_spec.SetField(translator.FieldLanguage, field.TypeString, value)
 		_node.Language = value
 	}
 	if value, ok := tc.mutation.Address(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldAddress,
-		})
+		_spec.SetField(translator.FieldAddress, field.TypeString, value)
 		_node.Address = value
 	}
 	if value, ok := tc.mutation.AddressSha(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBytes,
-			Value:  value,
-			Column: translator.FieldAddressSha,
-		})
+		_spec.SetField(translator.FieldAddressSha, field.TypeBytes, value)
 		_node.AddressSha = value
 	}
 	if value, ok := tc.mutation.DetailsURL(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: translator.FieldDetailsURL,
-		})
+		_spec.SetField(translator.FieldDetailsURL, field.TypeString, value)
 		_node.DetailsURL = value
 	}
 	if value, ok := tc.mutation.Latitude(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLatitude,
-		})
+		_spec.SetField(translator.FieldLatitude, field.TypeFloat64, value)
 		_node.Latitude = value
 	}
 	if value, ok := tc.mutation.Longitude(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: translator.FieldLongitude,
-		})
+		_spec.SetField(translator.FieldLongitude, field.TypeFloat64, value)
 		_node.Longitude = value
 	}
 	if value, ok := tc.mutation.CreatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: translator.FieldCreatedAt,
-		})
+		_spec.SetField(translator.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := tc.mutation.UpdatedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: translator.FieldUpdatedAt,
-		})
+		_spec.SetField(translator.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	return _node, _spec
@@ -320,11 +259,15 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 // TranslatorCreateBulk is the builder for creating many Translator entities in bulk.
 type TranslatorCreateBulk struct {
 	config
+	err      error
 	builders []*TranslatorCreate
 }
 
 // Save creates the Translator entities in the database.
 func (tcb *TranslatorCreateBulk) Save(ctx context.Context) ([]*Translator, error) {
+	if tcb.err != nil {
+		return nil, tcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
 	nodes := make([]*Translator, len(tcb.builders))
 	mutators := make([]Mutator, len(tcb.builders))
@@ -341,8 +284,8 @@ func (tcb *TranslatorCreateBulk) Save(ctx context.Context) ([]*Translator, error
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, tcb.builders[i+1].mutation)
 				} else {

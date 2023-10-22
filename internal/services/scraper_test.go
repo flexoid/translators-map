@@ -61,6 +61,7 @@ func TestHandleTranslator(t *testing.T) {
 		savedTrans, err := db.Translator.Query().First(context.Background())
 		assert.NoError(t, err)
 		assert.Equal(t, trans.ID, savedTrans.ExternalID)
+		assert.Equal(t, trans.Name, savedTrans.Name)
 		assert.Equal(t, trans.Address, savedTrans.Address)
 		assert.Equal(t, trans.Language.Name, savedTrans.Language)
 	})
@@ -94,6 +95,7 @@ func TestHandleTranslator(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.Equal(t, updatedTrans.ID, savedTrans.ExternalID)
+		assert.Equal(t, updatedTrans.Name, savedTrans.Name)
 		assert.Equal(t, updatedTrans.Address, savedTrans.Address)
 		assert.Equal(t, updatedTrans.Language.Name, savedTrans.Language)
 	})
