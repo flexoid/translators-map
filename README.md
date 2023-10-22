@@ -6,8 +6,6 @@ https://sworntranslatormap.com
 
 ![Screen recording](./docs/screen-recording.gif)
 
-# Development
-
 ## Configuration
 
 Run with `--help` or check out [config.go](./internal/config/config.go) for configuration options.
@@ -16,15 +14,26 @@ Run with `--help` or check out [config.go](./internal/config/config.go) for conf
 
 See included [docker-compose.yml](./docker-compose.yml) for a deployment example.
 
-## Local run
+## Development
 
-Run the following processes:
+Run backend process:
 
 ```
-./
 go run main.go server
-go run main.go scraper
 
+# or with hot reload using Air
+air
+```
+
+Run scraper:
+
+```
+go run main.go scraper
+```
+
+Run frontend dev server:
+
+```
 ./web
 npm run dev
 ```
