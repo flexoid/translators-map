@@ -23,6 +23,12 @@ const (
 	FieldAddress = "address"
 	// FieldAddressSha holds the string denoting the address_sha field in the database.
 	FieldAddressSha = "address_sha"
+	// FieldCity holds the string denoting the city field in the database.
+	FieldCity = "city"
+	// FieldAdministrativeArea holds the string denoting the administrative_area field in the database.
+	FieldAdministrativeArea = "administrative_area"
+	// FieldCountry holds the string denoting the country field in the database.
+	FieldCountry = "country"
 	// FieldDetailsURL holds the string denoting the details_url field in the database.
 	FieldDetailsURL = "details_url"
 	// FieldLatitude holds the string denoting the latitude field in the database.
@@ -45,6 +51,9 @@ var Columns = []string{
 	FieldLanguage,
 	FieldAddress,
 	FieldAddressSha,
+	FieldCity,
+	FieldAdministrativeArea,
+	FieldCountry,
 	FieldDetailsURL,
 	FieldLatitude,
 	FieldLongitude,
@@ -97,6 +106,21 @@ func ByLanguage(opts ...sql.OrderTermOption) OrderOption {
 // ByAddress orders the results by the address field.
 func ByAddress(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAddress, opts...).ToFunc()
+}
+
+// ByCity orders the results by the city field.
+func ByCity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCity, opts...).ToFunc()
+}
+
+// ByAdministrativeArea orders the results by the administrative_area field.
+func ByAdministrativeArea(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAdministrativeArea, opts...).ToFunc()
+}
+
+// ByCountry orders the results by the country field.
+func ByCountry(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCountry, opts...).ToFunc()
 }
 
 // ByDetailsURL orders the results by the details_url field.

@@ -2,29 +2,42 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/flexoid/translators-map-go/ent/enttest"
+	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/scraper"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
-	gmaps "googlemaps.github.io/maps"
 )
 
 type mockGeocoder struct {
 }
 
-func (m *mockGeocoder) GetCoordinatesForAddress(ctx context.Context, address string) (*gmaps.GeocodingResult, error) {
-	return &gmaps.GeocodingResult{
-		Geometry: gmaps.AddressGeometry{
-			Location: gmaps.LatLng{
-				Lat: 123,
-				Lng: 456,
-			},
-		},
-	}, nil
+func (m *mockGeocoder) GeocodingForAddress(ctx context.Context, address string) (*maps.Result, error) {
+	switch address {
+	case "123 Main St":
+		return &maps.Result{
+			Lat:                123,
+			Lng:                456,
+			City:               "Warszawa",
+			AdministrativeArea: "Mazowieckie",
+			Country:            "Poland",
+		}, nil
+	case "456 Main St":
+		return &maps.Result{
+			Lat:                456,
+			Lng:                789,
+			City:               "Kraków",
+			AdministrativeArea: "Małopolskie",
+			Country:            "Poland",
+		}, nil
+	default:
+		return nil, fmt.Errorf("unknown address: %s", address)
+	}
 }
 
 func TestHandleTranslator(t *testing.T) {
@@ -64,6 +77,9 @@ func TestHandleTranslator(t *testing.T) {
 		assert.Equal(t, trans.Name, savedTrans.Name)
 		assert.Equal(t, trans.Address, savedTrans.Address)
 		assert.Equal(t, trans.Language.Name, savedTrans.Language)
+		assert.Equal(t, "Warszawa", savedTrans.City)
+		assert.Equal(t, "Mazowieckie", savedTrans.AdministrativeArea)
+		assert.Equal(t, "Poland", savedTrans.Country)
 	})
 
 	t.Run("existing translator", func(t *testing.T) {
@@ -98,5 +114,8 @@ func TestHandleTranslator(t *testing.T) {
 		assert.Equal(t, updatedTrans.Name, savedTrans.Name)
 		assert.Equal(t, updatedTrans.Address, savedTrans.Address)
 		assert.Equal(t, updatedTrans.Language.Name, savedTrans.Language)
+		assert.Equal(t, "Kraków", savedTrans.City)
+		assert.Equal(t, "Małopolskie", savedTrans.AdministrativeArea)
+		assert.Equal(t, "Poland", savedTrans.Country)
 	})
 }

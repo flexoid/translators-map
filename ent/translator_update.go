@@ -93,6 +93,66 @@ func (tu *TranslatorUpdate) SetAddressSha(b []byte) *TranslatorUpdate {
 	return tu
 }
 
+// SetCity sets the "city" field.
+func (tu *TranslatorUpdate) SetCity(s string) *TranslatorUpdate {
+	tu.mutation.SetCity(s)
+	return tu
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (tu *TranslatorUpdate) SetNillableCity(s *string) *TranslatorUpdate {
+	if s != nil {
+		tu.SetCity(*s)
+	}
+	return tu
+}
+
+// ClearCity clears the value of the "city" field.
+func (tu *TranslatorUpdate) ClearCity() *TranslatorUpdate {
+	tu.mutation.ClearCity()
+	return tu
+}
+
+// SetAdministrativeArea sets the "administrative_area" field.
+func (tu *TranslatorUpdate) SetAdministrativeArea(s string) *TranslatorUpdate {
+	tu.mutation.SetAdministrativeArea(s)
+	return tu
+}
+
+// SetNillableAdministrativeArea sets the "administrative_area" field if the given value is not nil.
+func (tu *TranslatorUpdate) SetNillableAdministrativeArea(s *string) *TranslatorUpdate {
+	if s != nil {
+		tu.SetAdministrativeArea(*s)
+	}
+	return tu
+}
+
+// ClearAdministrativeArea clears the value of the "administrative_area" field.
+func (tu *TranslatorUpdate) ClearAdministrativeArea() *TranslatorUpdate {
+	tu.mutation.ClearAdministrativeArea()
+	return tu
+}
+
+// SetCountry sets the "country" field.
+func (tu *TranslatorUpdate) SetCountry(s string) *TranslatorUpdate {
+	tu.mutation.SetCountry(s)
+	return tu
+}
+
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (tu *TranslatorUpdate) SetNillableCountry(s *string) *TranslatorUpdate {
+	if s != nil {
+		tu.SetCountry(*s)
+	}
+	return tu
+}
+
+// ClearCountry clears the value of the "country" field.
+func (tu *TranslatorUpdate) ClearCountry() *TranslatorUpdate {
+	tu.mutation.ClearCountry()
+	return tu
+}
+
 // SetDetailsURL sets the "details_url" field.
 func (tu *TranslatorUpdate) SetDetailsURL(s string) *TranslatorUpdate {
 	tu.mutation.SetDetailsURL(s)
@@ -239,6 +299,24 @@ func (tu *TranslatorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := tu.mutation.AddressSha(); ok {
 		_spec.SetField(translator.FieldAddressSha, field.TypeBytes, value)
 	}
+	if value, ok := tu.mutation.City(); ok {
+		_spec.SetField(translator.FieldCity, field.TypeString, value)
+	}
+	if tu.mutation.CityCleared() {
+		_spec.ClearField(translator.FieldCity, field.TypeString)
+	}
+	if value, ok := tu.mutation.AdministrativeArea(); ok {
+		_spec.SetField(translator.FieldAdministrativeArea, field.TypeString, value)
+	}
+	if tu.mutation.AdministrativeAreaCleared() {
+		_spec.ClearField(translator.FieldAdministrativeArea, field.TypeString)
+	}
+	if value, ok := tu.mutation.Country(); ok {
+		_spec.SetField(translator.FieldCountry, field.TypeString, value)
+	}
+	if tu.mutation.CountryCleared() {
+		_spec.ClearField(translator.FieldCountry, field.TypeString)
+	}
 	if value, ok := tu.mutation.DetailsURL(); ok {
 		_spec.SetField(translator.FieldDetailsURL, field.TypeString, value)
 	}
@@ -351,6 +429,66 @@ func (tuo *TranslatorUpdateOne) ClearAddress() *TranslatorUpdateOne {
 // SetAddressSha sets the "address_sha" field.
 func (tuo *TranslatorUpdateOne) SetAddressSha(b []byte) *TranslatorUpdateOne {
 	tuo.mutation.SetAddressSha(b)
+	return tuo
+}
+
+// SetCity sets the "city" field.
+func (tuo *TranslatorUpdateOne) SetCity(s string) *TranslatorUpdateOne {
+	tuo.mutation.SetCity(s)
+	return tuo
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (tuo *TranslatorUpdateOne) SetNillableCity(s *string) *TranslatorUpdateOne {
+	if s != nil {
+		tuo.SetCity(*s)
+	}
+	return tuo
+}
+
+// ClearCity clears the value of the "city" field.
+func (tuo *TranslatorUpdateOne) ClearCity() *TranslatorUpdateOne {
+	tuo.mutation.ClearCity()
+	return tuo
+}
+
+// SetAdministrativeArea sets the "administrative_area" field.
+func (tuo *TranslatorUpdateOne) SetAdministrativeArea(s string) *TranslatorUpdateOne {
+	tuo.mutation.SetAdministrativeArea(s)
+	return tuo
+}
+
+// SetNillableAdministrativeArea sets the "administrative_area" field if the given value is not nil.
+func (tuo *TranslatorUpdateOne) SetNillableAdministrativeArea(s *string) *TranslatorUpdateOne {
+	if s != nil {
+		tuo.SetAdministrativeArea(*s)
+	}
+	return tuo
+}
+
+// ClearAdministrativeArea clears the value of the "administrative_area" field.
+func (tuo *TranslatorUpdateOne) ClearAdministrativeArea() *TranslatorUpdateOne {
+	tuo.mutation.ClearAdministrativeArea()
+	return tuo
+}
+
+// SetCountry sets the "country" field.
+func (tuo *TranslatorUpdateOne) SetCountry(s string) *TranslatorUpdateOne {
+	tuo.mutation.SetCountry(s)
+	return tuo
+}
+
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (tuo *TranslatorUpdateOne) SetNillableCountry(s *string) *TranslatorUpdateOne {
+	if s != nil {
+		tuo.SetCountry(*s)
+	}
+	return tuo
+}
+
+// ClearCountry clears the value of the "country" field.
+func (tuo *TranslatorUpdateOne) ClearCountry() *TranslatorUpdateOne {
+	tuo.mutation.ClearCountry()
 	return tuo
 }
 
@@ -529,6 +667,24 @@ func (tuo *TranslatorUpdateOne) sqlSave(ctx context.Context) (_node *Translator,
 	}
 	if value, ok := tuo.mutation.AddressSha(); ok {
 		_spec.SetField(translator.FieldAddressSha, field.TypeBytes, value)
+	}
+	if value, ok := tuo.mutation.City(); ok {
+		_spec.SetField(translator.FieldCity, field.TypeString, value)
+	}
+	if tuo.mutation.CityCleared() {
+		_spec.ClearField(translator.FieldCity, field.TypeString)
+	}
+	if value, ok := tuo.mutation.AdministrativeArea(); ok {
+		_spec.SetField(translator.FieldAdministrativeArea, field.TypeString, value)
+	}
+	if tuo.mutation.AdministrativeAreaCleared() {
+		_spec.ClearField(translator.FieldAdministrativeArea, field.TypeString)
+	}
+	if value, ok := tuo.mutation.Country(); ok {
+		_spec.SetField(translator.FieldCountry, field.TypeString, value)
+	}
+	if tuo.mutation.CountryCleared() {
+		_spec.ClearField(translator.FieldCountry, field.TypeString)
 	}
 	if value, ok := tuo.mutation.DetailsURL(); ok {
 		_spec.SetField(translator.FieldDetailsURL, field.TypeString, value)

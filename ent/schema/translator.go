@@ -22,6 +22,9 @@ func (Translator) Fields() []ent.Field {
 		field.String("language"),
 		field.String("address").Optional(),
 		field.Bytes("address_sha"),
+		field.String("city").Optional(),
+		field.String("administrative_area").Optional(),
+		field.String("country").Optional(),
 		field.String("details_url"),
 		field.Float("latitude").Optional().SchemaType(map[string]string{
 			dialect.Postgres: "numeric",

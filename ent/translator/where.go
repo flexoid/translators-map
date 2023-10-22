@@ -79,6 +79,21 @@ func AddressSha(v []byte) predicate.Translator {
 	return predicate.Translator(sql.FieldEQ(FieldAddressSha, v))
 }
 
+// City applies equality check predicate on the "city" field. It's identical to CityEQ.
+func City(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEQ(FieldCity, v))
+}
+
+// AdministrativeArea applies equality check predicate on the "administrative_area" field. It's identical to AdministrativeAreaEQ.
+func AdministrativeArea(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEQ(FieldAdministrativeArea, v))
+}
+
+// Country applies equality check predicate on the "country" field. It's identical to CountryEQ.
+func Country(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEQ(FieldCountry, v))
+}
+
 // DetailsURL applies equality check predicate on the "details_url" field. It's identical to DetailsURLEQ.
 func DetailsURL(v string) predicate.Translator {
 	return predicate.Translator(sql.FieldEQ(FieldDetailsURL, v))
@@ -397,6 +412,231 @@ func AddressShaLT(v []byte) predicate.Translator {
 // AddressShaLTE applies the LTE predicate on the "address_sha" field.
 func AddressShaLTE(v []byte) predicate.Translator {
 	return predicate.Translator(sql.FieldLTE(FieldAddressSha, v))
+}
+
+// CityEQ applies the EQ predicate on the "city" field.
+func CityEQ(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEQ(FieldCity, v))
+}
+
+// CityNEQ applies the NEQ predicate on the "city" field.
+func CityNEQ(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldNEQ(FieldCity, v))
+}
+
+// CityIn applies the In predicate on the "city" field.
+func CityIn(vs ...string) predicate.Translator {
+	return predicate.Translator(sql.FieldIn(FieldCity, vs...))
+}
+
+// CityNotIn applies the NotIn predicate on the "city" field.
+func CityNotIn(vs ...string) predicate.Translator {
+	return predicate.Translator(sql.FieldNotIn(FieldCity, vs...))
+}
+
+// CityGT applies the GT predicate on the "city" field.
+func CityGT(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldGT(FieldCity, v))
+}
+
+// CityGTE applies the GTE predicate on the "city" field.
+func CityGTE(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldGTE(FieldCity, v))
+}
+
+// CityLT applies the LT predicate on the "city" field.
+func CityLT(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldLT(FieldCity, v))
+}
+
+// CityLTE applies the LTE predicate on the "city" field.
+func CityLTE(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldLTE(FieldCity, v))
+}
+
+// CityContains applies the Contains predicate on the "city" field.
+func CityContains(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldContains(FieldCity, v))
+}
+
+// CityHasPrefix applies the HasPrefix predicate on the "city" field.
+func CityHasPrefix(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldHasPrefix(FieldCity, v))
+}
+
+// CityHasSuffix applies the HasSuffix predicate on the "city" field.
+func CityHasSuffix(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldHasSuffix(FieldCity, v))
+}
+
+// CityIsNil applies the IsNil predicate on the "city" field.
+func CityIsNil() predicate.Translator {
+	return predicate.Translator(sql.FieldIsNull(FieldCity))
+}
+
+// CityNotNil applies the NotNil predicate on the "city" field.
+func CityNotNil() predicate.Translator {
+	return predicate.Translator(sql.FieldNotNull(FieldCity))
+}
+
+// CityEqualFold applies the EqualFold predicate on the "city" field.
+func CityEqualFold(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEqualFold(FieldCity, v))
+}
+
+// CityContainsFold applies the ContainsFold predicate on the "city" field.
+func CityContainsFold(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldContainsFold(FieldCity, v))
+}
+
+// AdministrativeAreaEQ applies the EQ predicate on the "administrative_area" field.
+func AdministrativeAreaEQ(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEQ(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaNEQ applies the NEQ predicate on the "administrative_area" field.
+func AdministrativeAreaNEQ(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldNEQ(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaIn applies the In predicate on the "administrative_area" field.
+func AdministrativeAreaIn(vs ...string) predicate.Translator {
+	return predicate.Translator(sql.FieldIn(FieldAdministrativeArea, vs...))
+}
+
+// AdministrativeAreaNotIn applies the NotIn predicate on the "administrative_area" field.
+func AdministrativeAreaNotIn(vs ...string) predicate.Translator {
+	return predicate.Translator(sql.FieldNotIn(FieldAdministrativeArea, vs...))
+}
+
+// AdministrativeAreaGT applies the GT predicate on the "administrative_area" field.
+func AdministrativeAreaGT(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldGT(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaGTE applies the GTE predicate on the "administrative_area" field.
+func AdministrativeAreaGTE(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldGTE(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaLT applies the LT predicate on the "administrative_area" field.
+func AdministrativeAreaLT(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldLT(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaLTE applies the LTE predicate on the "administrative_area" field.
+func AdministrativeAreaLTE(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldLTE(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaContains applies the Contains predicate on the "administrative_area" field.
+func AdministrativeAreaContains(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldContains(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaHasPrefix applies the HasPrefix predicate on the "administrative_area" field.
+func AdministrativeAreaHasPrefix(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldHasPrefix(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaHasSuffix applies the HasSuffix predicate on the "administrative_area" field.
+func AdministrativeAreaHasSuffix(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldHasSuffix(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaIsNil applies the IsNil predicate on the "administrative_area" field.
+func AdministrativeAreaIsNil() predicate.Translator {
+	return predicate.Translator(sql.FieldIsNull(FieldAdministrativeArea))
+}
+
+// AdministrativeAreaNotNil applies the NotNil predicate on the "administrative_area" field.
+func AdministrativeAreaNotNil() predicate.Translator {
+	return predicate.Translator(sql.FieldNotNull(FieldAdministrativeArea))
+}
+
+// AdministrativeAreaEqualFold applies the EqualFold predicate on the "administrative_area" field.
+func AdministrativeAreaEqualFold(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEqualFold(FieldAdministrativeArea, v))
+}
+
+// AdministrativeAreaContainsFold applies the ContainsFold predicate on the "administrative_area" field.
+func AdministrativeAreaContainsFold(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldContainsFold(FieldAdministrativeArea, v))
+}
+
+// CountryEQ applies the EQ predicate on the "country" field.
+func CountryEQ(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEQ(FieldCountry, v))
+}
+
+// CountryNEQ applies the NEQ predicate on the "country" field.
+func CountryNEQ(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldNEQ(FieldCountry, v))
+}
+
+// CountryIn applies the In predicate on the "country" field.
+func CountryIn(vs ...string) predicate.Translator {
+	return predicate.Translator(sql.FieldIn(FieldCountry, vs...))
+}
+
+// CountryNotIn applies the NotIn predicate on the "country" field.
+func CountryNotIn(vs ...string) predicate.Translator {
+	return predicate.Translator(sql.FieldNotIn(FieldCountry, vs...))
+}
+
+// CountryGT applies the GT predicate on the "country" field.
+func CountryGT(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldGT(FieldCountry, v))
+}
+
+// CountryGTE applies the GTE predicate on the "country" field.
+func CountryGTE(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldGTE(FieldCountry, v))
+}
+
+// CountryLT applies the LT predicate on the "country" field.
+func CountryLT(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldLT(FieldCountry, v))
+}
+
+// CountryLTE applies the LTE predicate on the "country" field.
+func CountryLTE(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldLTE(FieldCountry, v))
+}
+
+// CountryContains applies the Contains predicate on the "country" field.
+func CountryContains(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldContains(FieldCountry, v))
+}
+
+// CountryHasPrefix applies the HasPrefix predicate on the "country" field.
+func CountryHasPrefix(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldHasPrefix(FieldCountry, v))
+}
+
+// CountryHasSuffix applies the HasSuffix predicate on the "country" field.
+func CountryHasSuffix(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldHasSuffix(FieldCountry, v))
+}
+
+// CountryIsNil applies the IsNil predicate on the "country" field.
+func CountryIsNil() predicate.Translator {
+	return predicate.Translator(sql.FieldIsNull(FieldCountry))
+}
+
+// CountryNotNil applies the NotNil predicate on the "country" field.
+func CountryNotNil() predicate.Translator {
+	return predicate.Translator(sql.FieldNotNull(FieldCountry))
+}
+
+// CountryEqualFold applies the EqualFold predicate on the "country" field.
+func CountryEqualFold(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldEqualFold(FieldCountry, v))
+}
+
+// CountryContainsFold applies the ContainsFold predicate on the "country" field.
+func CountryContainsFold(v string) predicate.Translator {
+	return predicate.Translator(sql.FieldContainsFold(FieldCountry, v))
 }
 
 // DetailsURLEQ applies the EQ predicate on the "details_url" field.

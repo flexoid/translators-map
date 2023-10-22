@@ -66,6 +66,48 @@ func (tc *TranslatorCreate) SetAddressSha(b []byte) *TranslatorCreate {
 	return tc
 }
 
+// SetCity sets the "city" field.
+func (tc *TranslatorCreate) SetCity(s string) *TranslatorCreate {
+	tc.mutation.SetCity(s)
+	return tc
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableCity(s *string) *TranslatorCreate {
+	if s != nil {
+		tc.SetCity(*s)
+	}
+	return tc
+}
+
+// SetAdministrativeArea sets the "administrative_area" field.
+func (tc *TranslatorCreate) SetAdministrativeArea(s string) *TranslatorCreate {
+	tc.mutation.SetAdministrativeArea(s)
+	return tc
+}
+
+// SetNillableAdministrativeArea sets the "administrative_area" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableAdministrativeArea(s *string) *TranslatorCreate {
+	if s != nil {
+		tc.SetAdministrativeArea(*s)
+	}
+	return tc
+}
+
+// SetCountry sets the "country" field.
+func (tc *TranslatorCreate) SetCountry(s string) *TranslatorCreate {
+	tc.mutation.SetCountry(s)
+	return tc
+}
+
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (tc *TranslatorCreate) SetNillableCountry(s *string) *TranslatorCreate {
+	if s != nil {
+		tc.SetCountry(*s)
+	}
+	return tc
+}
+
 // SetDetailsURL sets the "details_url" field.
 func (tc *TranslatorCreate) SetDetailsURL(s string) *TranslatorCreate {
 	tc.mutation.SetDetailsURL(s)
@@ -232,6 +274,18 @@ func (tc *TranslatorCreate) createSpec() (*Translator, *sqlgraph.CreateSpec) {
 	if value, ok := tc.mutation.AddressSha(); ok {
 		_spec.SetField(translator.FieldAddressSha, field.TypeBytes, value)
 		_node.AddressSha = value
+	}
+	if value, ok := tc.mutation.City(); ok {
+		_spec.SetField(translator.FieldCity, field.TypeString, value)
+		_node.City = value
+	}
+	if value, ok := tc.mutation.AdministrativeArea(); ok {
+		_spec.SetField(translator.FieldAdministrativeArea, field.TypeString, value)
+		_node.AdministrativeArea = value
+	}
+	if value, ok := tc.mutation.Country(); ok {
+		_spec.SetField(translator.FieldCountry, field.TypeString, value)
+		_node.Country = value
 	}
 	if value, ok := tc.mutation.DetailsURL(); ok {
 		_spec.SetField(translator.FieldDetailsURL, field.TypeString, value)

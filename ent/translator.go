@@ -27,6 +27,12 @@ type Translator struct {
 	Address string `json:"address,omitempty"`
 	// AddressSha holds the value of the "address_sha" field.
 	AddressSha []byte `json:"address_sha,omitempty"`
+	// City holds the value of the "city" field.
+	City string `json:"city,omitempty"`
+	// AdministrativeArea holds the value of the "administrative_area" field.
+	AdministrativeArea string `json:"administrative_area,omitempty"`
+	// Country holds the value of the "country" field.
+	Country string `json:"country,omitempty"`
 	// DetailsURL holds the value of the "details_url" field.
 	DetailsURL string `json:"details_url,omitempty"`
 	// Latitude holds the value of the "latitude" field.
@@ -51,7 +57,7 @@ func (*Translator) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case translator.FieldID, translator.FieldExternalID:
 			values[i] = new(sql.NullInt64)
-		case translator.FieldName, translator.FieldLanguage, translator.FieldAddress, translator.FieldDetailsURL:
+		case translator.FieldName, translator.FieldLanguage, translator.FieldAddress, translator.FieldCity, translator.FieldAdministrativeArea, translator.FieldCountry, translator.FieldDetailsURL:
 			values[i] = new(sql.NullString)
 		case translator.FieldCreatedAt, translator.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -105,6 +111,24 @@ func (t *Translator) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field address_sha", values[i])
 			} else if value != nil {
 				t.AddressSha = *value
+			}
+		case translator.FieldCity:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field city", values[i])
+			} else if value.Valid {
+				t.City = value.String
+			}
+		case translator.FieldAdministrativeArea:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field administrative_area", values[i])
+			} else if value.Valid {
+				t.AdministrativeArea = value.String
+			}
+		case translator.FieldCountry:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field country", values[i])
+			} else if value.Valid {
+				t.Country = value.String
 			}
 		case translator.FieldDetailsURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -186,6 +210,15 @@ func (t *Translator) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("address_sha=")
 	builder.WriteString(fmt.Sprintf("%v", t.AddressSha))
+	builder.WriteString(", ")
+	builder.WriteString("city=")
+	builder.WriteString(t.City)
+	builder.WriteString(", ")
+	builder.WriteString("administrative_area=")
+	builder.WriteString(t.AdministrativeArea)
+	builder.WriteString(", ")
+	builder.WriteString("country=")
+	builder.WriteString(t.Country)
 	builder.WriteString(", ")
 	builder.WriteString("details_url=")
 	builder.WriteString(t.DetailsURL)

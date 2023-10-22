@@ -11,12 +11,12 @@ import (
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/translator"
 	"github.com/flexoid/translators-map-go/internal/config"
+	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/scraper"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"go.uber.org/zap"
-	gmaps "googlemaps.github.io/maps"
 )
 
 type Scraper struct {
@@ -27,7 +27,7 @@ type Scraper struct {
 }
 
 type Geocoder interface {
-	GetCoordinatesForAddress(ctx context.Context, address string) (*gmaps.GeocodingResult, error)
+	GeocodingForAddress(ctx context.Context, address string) (*maps.Result, error)
 }
 
 func NewScraper(
@@ -174,21 +174,22 @@ func (s *Scraper) fillInfo(ctx context.Context, model *ent.Translator, m *ent.Tr
 }
 
 func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, address string) error {
-	geocodingResult, err := s.geocoding.GetCoordinatesForAddress(ctx, address)
+	geocodingResult, err := s.geocoding.GeocodingForAddress(ctx, address)
 	if err != nil {
 		return fmt.Errorf("geocoding error: %v", err)
 	}
 
-	lat := geocodingResult.Geometry.Location.Lat
-	lng := geocodingResult.Geometry.Location.Lng
 	addressSum := s.hashSumFromString(address)
-	s.logger.Debugw("Got location for address", "address", address,
-		"address_sha", hex.EncodeToString(addressSum), "latitude", lat, "longitude", lng)
+	s.logger.Debugw("Got geocoding result for address", "address", address,
+		"address_sha", hex.EncodeToString(addressSum), "geocoding", geocodingResult)
 
 	m.SetAddress(address)
 	m.SetAddressSha(addressSum)
-	m.SetLatitude(lat)
-	m.SetLongitude(lng)
+	m.SetLatitude(geocodingResult.Lat)
+	m.SetLongitude(geocodingResult.Lng)
+	m.SetCity(geocodingResult.City)
+	m.SetAdministrativeArea(geocodingResult.AdministrativeArea)
+	m.SetCountry(geocodingResult.Country)
 
 	return nil
 }

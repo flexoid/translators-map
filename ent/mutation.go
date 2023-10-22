@@ -30,26 +30,29 @@ const (
 // TranslatorMutation represents an operation that mutates the Translator nodes in the graph.
 type TranslatorMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *int
-	external_id    *int
-	addexternal_id *int
-	name           *string
-	language       *string
-	address        *string
-	address_sha    *[]byte
-	details_url    *string
-	latitude       *float64
-	addlatitude    *float64
-	longitude      *float64
-	addlongitude   *float64
-	created_at     *time.Time
-	updated_at     *time.Time
-	clearedFields  map[string]struct{}
-	done           bool
-	oldValue       func(context.Context) (*Translator, error)
-	predicates     []predicate.Translator
+	op                  Op
+	typ                 string
+	id                  *int
+	external_id         *int
+	addexternal_id      *int
+	name                *string
+	language            *string
+	address             *string
+	address_sha         *[]byte
+	city                *string
+	administrative_area *string
+	country             *string
+	details_url         *string
+	latitude            *float64
+	addlatitude         *float64
+	longitude           *float64
+	addlongitude        *float64
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	done                bool
+	oldValue            func(context.Context) (*Translator, error)
+	predicates          []predicate.Translator
 }
 
 var _ ent.Mutation = (*TranslatorMutation)(nil)
@@ -376,6 +379,153 @@ func (m *TranslatorMutation) ResetAddressSha() {
 	m.address_sha = nil
 }
 
+// SetCity sets the "city" field.
+func (m *TranslatorMutation) SetCity(s string) {
+	m.city = &s
+}
+
+// City returns the value of the "city" field in the mutation.
+func (m *TranslatorMutation) City() (r string, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCity returns the old "city" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldCity(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCity: %w", err)
+	}
+	return oldValue.City, nil
+}
+
+// ClearCity clears the value of the "city" field.
+func (m *TranslatorMutation) ClearCity() {
+	m.city = nil
+	m.clearedFields[translator.FieldCity] = struct{}{}
+}
+
+// CityCleared returns if the "city" field was cleared in this mutation.
+func (m *TranslatorMutation) CityCleared() bool {
+	_, ok := m.clearedFields[translator.FieldCity]
+	return ok
+}
+
+// ResetCity resets all changes to the "city" field.
+func (m *TranslatorMutation) ResetCity() {
+	m.city = nil
+	delete(m.clearedFields, translator.FieldCity)
+}
+
+// SetAdministrativeArea sets the "administrative_area" field.
+func (m *TranslatorMutation) SetAdministrativeArea(s string) {
+	m.administrative_area = &s
+}
+
+// AdministrativeArea returns the value of the "administrative_area" field in the mutation.
+func (m *TranslatorMutation) AdministrativeArea() (r string, exists bool) {
+	v := m.administrative_area
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAdministrativeArea returns the old "administrative_area" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldAdministrativeArea(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAdministrativeArea is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAdministrativeArea requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAdministrativeArea: %w", err)
+	}
+	return oldValue.AdministrativeArea, nil
+}
+
+// ClearAdministrativeArea clears the value of the "administrative_area" field.
+func (m *TranslatorMutation) ClearAdministrativeArea() {
+	m.administrative_area = nil
+	m.clearedFields[translator.FieldAdministrativeArea] = struct{}{}
+}
+
+// AdministrativeAreaCleared returns if the "administrative_area" field was cleared in this mutation.
+func (m *TranslatorMutation) AdministrativeAreaCleared() bool {
+	_, ok := m.clearedFields[translator.FieldAdministrativeArea]
+	return ok
+}
+
+// ResetAdministrativeArea resets all changes to the "administrative_area" field.
+func (m *TranslatorMutation) ResetAdministrativeArea() {
+	m.administrative_area = nil
+	delete(m.clearedFields, translator.FieldAdministrativeArea)
+}
+
+// SetCountry sets the "country" field.
+func (m *TranslatorMutation) SetCountry(s string) {
+	m.country = &s
+}
+
+// Country returns the value of the "country" field in the mutation.
+func (m *TranslatorMutation) Country() (r string, exists bool) {
+	v := m.country
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCountry returns the old "country" field's value of the Translator entity.
+// If the Translator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TranslatorMutation) OldCountry(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCountry is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCountry requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCountry: %w", err)
+	}
+	return oldValue.Country, nil
+}
+
+// ClearCountry clears the value of the "country" field.
+func (m *TranslatorMutation) ClearCountry() {
+	m.country = nil
+	m.clearedFields[translator.FieldCountry] = struct{}{}
+}
+
+// CountryCleared returns if the "country" field was cleared in this mutation.
+func (m *TranslatorMutation) CountryCleared() bool {
+	_, ok := m.clearedFields[translator.FieldCountry]
+	return ok
+}
+
+// ResetCountry resets all changes to the "country" field.
+func (m *TranslatorMutation) ResetCountry() {
+	m.country = nil
+	delete(m.clearedFields, translator.FieldCountry)
+}
+
 // SetDetailsURL sets the "details_url" field.
 func (m *TranslatorMutation) SetDetailsURL(s string) {
 	m.details_url = &s
@@ -684,7 +834,7 @@ func (m *TranslatorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TranslatorMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 13)
 	if m.external_id != nil {
 		fields = append(fields, translator.FieldExternalID)
 	}
@@ -699,6 +849,15 @@ func (m *TranslatorMutation) Fields() []string {
 	}
 	if m.address_sha != nil {
 		fields = append(fields, translator.FieldAddressSha)
+	}
+	if m.city != nil {
+		fields = append(fields, translator.FieldCity)
+	}
+	if m.administrative_area != nil {
+		fields = append(fields, translator.FieldAdministrativeArea)
+	}
+	if m.country != nil {
+		fields = append(fields, translator.FieldCountry)
 	}
 	if m.details_url != nil {
 		fields = append(fields, translator.FieldDetailsURL)
@@ -733,6 +892,12 @@ func (m *TranslatorMutation) Field(name string) (ent.Value, bool) {
 		return m.Address()
 	case translator.FieldAddressSha:
 		return m.AddressSha()
+	case translator.FieldCity:
+		return m.City()
+	case translator.FieldAdministrativeArea:
+		return m.AdministrativeArea()
+	case translator.FieldCountry:
+		return m.Country()
 	case translator.FieldDetailsURL:
 		return m.DetailsURL()
 	case translator.FieldLatitude:
@@ -762,6 +927,12 @@ func (m *TranslatorMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldAddress(ctx)
 	case translator.FieldAddressSha:
 		return m.OldAddressSha(ctx)
+	case translator.FieldCity:
+		return m.OldCity(ctx)
+	case translator.FieldAdministrativeArea:
+		return m.OldAdministrativeArea(ctx)
+	case translator.FieldCountry:
+		return m.OldCountry(ctx)
 	case translator.FieldDetailsURL:
 		return m.OldDetailsURL(ctx)
 	case translator.FieldLatitude:
@@ -815,6 +986,27 @@ func (m *TranslatorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAddressSha(v)
+		return nil
+	case translator.FieldCity:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCity(v)
+		return nil
+	case translator.FieldAdministrativeArea:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAdministrativeArea(v)
+		return nil
+	case translator.FieldCountry:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCountry(v)
 		return nil
 	case translator.FieldDetailsURL:
 		v, ok := value.(string)
@@ -926,6 +1118,15 @@ func (m *TranslatorMutation) ClearedFields() []string {
 	if m.FieldCleared(translator.FieldAddress) {
 		fields = append(fields, translator.FieldAddress)
 	}
+	if m.FieldCleared(translator.FieldCity) {
+		fields = append(fields, translator.FieldCity)
+	}
+	if m.FieldCleared(translator.FieldAdministrativeArea) {
+		fields = append(fields, translator.FieldAdministrativeArea)
+	}
+	if m.FieldCleared(translator.FieldCountry) {
+		fields = append(fields, translator.FieldCountry)
+	}
 	if m.FieldCleared(translator.FieldLatitude) {
 		fields = append(fields, translator.FieldLatitude)
 	}
@@ -957,6 +1158,15 @@ func (m *TranslatorMutation) ClearField(name string) error {
 		return nil
 	case translator.FieldAddress:
 		m.ClearAddress()
+		return nil
+	case translator.FieldCity:
+		m.ClearCity()
+		return nil
+	case translator.FieldAdministrativeArea:
+		m.ClearAdministrativeArea()
+		return nil
+	case translator.FieldCountry:
+		m.ClearCountry()
 		return nil
 	case translator.FieldLatitude:
 		m.ClearLatitude()
@@ -992,6 +1202,15 @@ func (m *TranslatorMutation) ResetField(name string) error {
 		return nil
 	case translator.FieldAddressSha:
 		m.ResetAddressSha()
+		return nil
+	case translator.FieldCity:
+		m.ResetCity()
+		return nil
+	case translator.FieldAdministrativeArea:
+		m.ResetAdministrativeArea()
+		return nil
+	case translator.FieldCountry:
+		m.ResetCountry()
 		return nil
 	case translator.FieldDetailsURL:
 		m.ResetDetailsURL()

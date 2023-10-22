@@ -16,11 +16,11 @@ func init() {
 	translatorFields := schema.Translator{}.Fields()
 	_ = translatorFields
 	// translatorDescCreatedAt is the schema descriptor for created_at field.
-	translatorDescCreatedAt := translatorFields[8].Descriptor()
+	translatorDescCreatedAt := translatorFields[11].Descriptor()
 	// translator.DefaultCreatedAt holds the default value on creation for the created_at field.
 	translator.DefaultCreatedAt = translatorDescCreatedAt.Default.(func() time.Time)
 	// translatorDescUpdatedAt is the schema descriptor for updated_at field.
-	translatorDescUpdatedAt := translatorFields[9].Descriptor()
+	translatorDescUpdatedAt := translatorFields[12].Descriptor()
 	// translator.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	translator.DefaultUpdatedAt = translatorDescUpdatedAt.Default.(func() time.Time)
 	// translator.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
