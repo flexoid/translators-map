@@ -11,14 +11,18 @@ type TranslatorController struct {
 }
 
 type Translator struct {
+	Name       string             `json:"name"`
 	Address    string             `json:"address"`
 	DetailsURL string             `json:"details_url"`
 	Location   TranslatorLocation `json:"location"`
 }
 
 type TranslatorLocation struct {
-	Latitude  float64 `json:"lat"`
-	Longitude float64 `json:"lng"`
+	Latitude           float64 `json:"lat"`
+	Longitude          float64 `json:"lng"`
+	Country            string  `json:"country"`
+	AdministrativeArea string  `json:"administrative_area"`
+	City               string  `json:"city"`
 }
 
 func (c *TranslatorController) GetTranslators(w http.ResponseWriter, r *http.Request) {
@@ -43,10 +47,14 @@ func (c *TranslatorController) GetTranslators(w http.ResponseWriter, r *http.Req
 
 	for _, dbTranslator := range dbTranslators {
 		translators = append(translators, Translator{
+			Name:    dbTranslator.Name,
 			Address: dbTranslator.Address,
 			Location: TranslatorLocation{
-				Latitude:  dbTranslator.Latitude,
-				Longitude: dbTranslator.Longitude,
+				Latitude:           dbTranslator.Latitude,
+				Longitude:          dbTranslator.Longitude,
+				Country:            dbTranslator.Country,
+				AdministrativeArea: dbTranslator.AdministrativeArea,
+				City:               dbTranslator.City,
 			},
 			DetailsURL: dbTranslator.DetailsURL,
 		})

@@ -1,4 +1,12 @@
-import { CircularProgress, Stack, Card, CardContent, Link, Box } from "@mui/joy"
+import {
+  CircularProgress,
+  Stack,
+  Card,
+  CardContent,
+  Link,
+  Box,
+  Typography,
+} from "@mui/joy"
 import { Translator } from "../lib/api"
 
 type ResultsProps = {
@@ -38,9 +46,17 @@ export default function Results({ visibleTranslators, loading }: ResultsProps) {
             }}
           >
             <CardContent>
-              <Link href={translator.details_url} target="_blank" overlay>
-                {translator.address}
-              </Link>
+              <Stack>
+                <Typography level="title-md">
+                  <Link href={translator.details_url} target="_blank" overlay>
+                    {translator.name}
+                  </Link>
+                </Typography>
+                <Typography>{translator.address}</Typography>
+                <Typography level="body-sm">
+                  {translator.location.country}
+                </Typography>
+              </Stack>
             </CardContent>
           </Card>
         )

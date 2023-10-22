@@ -5,6 +5,9 @@ export type Language = {
 type TranslatorLocation = {
   lat: number
   lng: number
+  city: string
+  administrative_area: string
+  country: string
 }
 
 export type Translator = {
