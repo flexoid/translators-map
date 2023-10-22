@@ -30,6 +30,12 @@ type Geocoder interface {
 	GeocodingForAddress(ctx context.Context, address string) (*maps.Result, error)
 }
 
+const ScraperRunInterval = 24 * time.Hour
+const DeleteOldTranslatorsInterval = 3 * ScraperRunInterval
+
+// Sets the threshold to consider scraper run successful.
+const percentToSuccess = 0.9
+
 func NewScraper(
 	db *ent.Client,
 	logger *zap.SugaredLogger,
@@ -47,6 +53,8 @@ func NewScraper(
 func (s *Scraper) Run() {
 	startTime := time.Now()
 	successful := false
+	translatorsScraped := 0
+	translatorsFailed := 0
 
 	s.metrics.ResetBeforeRun()
 	defer func() {
@@ -64,9 +72,12 @@ func (s *Scraper) Run() {
 
 	for _, language := range languages {
 		err := scraper.ScrapeTranslators(s.logger, language, func(t scraper.Translator) {
+			translatorsScraped++
 			_, err := s.handleTranslator(t)
 			if err != nil {
 				s.logger.Errorf("Failed to save translator to db: %v", err)
+				s.metrics.TranslatorsFailed.Inc()
+				translatorsFailed++
 			}
 		})
 		if err != nil {
@@ -75,8 +86,12 @@ func (s *Scraper) Run() {
 		}
 	}
 
-	successful = true
+	successful = s.isRunSuccessful(translatorsScraped, translatorsFailed)
 	s.metrics.SuccessTime.SetToCurrentTime()
+
+	if successful {
+		s.deleteOldTranslators()
+	}
 }
 
 func (s *Scraper) handleTranslator(trans scraper.Translator) (*ent.Translator, error) {
@@ -191,6 +206,29 @@ func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, a
 	m.SetAdministrativeArea(geocodingResult.AdministrativeArea)
 	m.SetCountry(geocodingResult.Country)
 
+	return nil
+}
+
+func (s *Scraper) isRunSuccessful(total, failed int) bool {
+	if total == 0 {
+		return false
+	}
+
+	successful := float64(total-failed) / float64(total)
+	return successful >= percentToSuccess
+}
+
+// Delete translators that were not updated during last N runs.
+func (s *Scraper) deleteOldTranslators() error {
+	affected, err := s.db.Translator.Delete().Where(
+		translator.UpdatedAtLT(time.Now().Add(-DeleteOldTranslatorsInterval)),
+	).Exec(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed to delete old translators: %w", err)
+	}
+
+	s.logger.Debugf("Deleted %d translators", affected)
+	s.metrics.TranslatorsDeleted.Set(float64(affected))
 	return nil
 }
 

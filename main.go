@@ -18,6 +18,7 @@ import (
 	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/services"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 )
 
@@ -55,11 +56,11 @@ func startServer(entClient *ent.Client, logger *zap.SugaredLogger, bindAddr stri
 
 func startScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
 	logger.Info("Starting scraper service")
-	metricset := metrics.NewScraperMetrics()
+	metricset := metrics.NewScraperMetrics(prometheus.DefaultRegisterer)
 
 	runScraper(entClient, logger, metricset)
 
-	for range time.Tick(time.Hour * 24) {
+	for range time.Tick(services.ScraperRunInterval) {
 		runScraper(entClient, logger, metricset)
 	}
 }

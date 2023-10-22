@@ -4,13 +4,18 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
+	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/enttest"
+	"github.com/flexoid/translators-map-go/ent/translator"
 	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/scraper"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
@@ -45,7 +50,7 @@ func TestHandleTranslator(t *testing.T) {
 	defer db.Close()
 
 	logger := zap.NewNop().Sugar()
-	metrics := metrics.NewScraperMetrics()
+	metrics := metrics.NewScraperMetrics(prometheus.NewRegistry())
 
 	s := NewScraper(db, logger, &mockGeocoder{}, metrics)
 
@@ -118,4 +123,50 @@ func TestHandleTranslator(t *testing.T) {
 		assert.Equal(t, "Małopolskie", savedTrans.AdministrativeArea)
 		assert.Equal(t, "Poland", savedTrans.Country)
 	})
+}
+
+func TestDeleteOldTranslators(t *testing.T) {
+	db := enttest.Open(t, "sqlite3", "file:ent?mode=memory&_fk=1")
+	defer db.Close()
+
+	s := NewScraper(db, zap.NewNop().Sugar(), &mockGeocoder{},
+		metrics.NewScraperMetrics(prometheus.NewRegistry()))
+
+	externalIDs := []int{10, 11, 12, 13, 14}
+	_, err := db.Translator.MapCreateBulk(externalIDs, func(tc *ent.TranslatorCreate, i int) {
+		tc.SetExternalID(externalIDs[i]).
+			SetLanguage("English").
+			SetName("John Doe").
+			SetAddress("123 Main St").
+			SetAddressSha([]byte("")).
+			SetDetailsURL("https://example.com").
+			SetCity("Warszawa").
+			SetAdministrativeArea("Mazowieckie").
+			SetCountry("Poland")
+	}).Save(context.Background())
+	require.NoError(t, err)
+
+	translators, _ := db.Translator.Query().Order(ent.Asc(translator.FieldExternalID)).
+		All(context.Background())
+
+	translators[0].Update().SetUpdatedAt(time.Now().Add(-DeleteOldTranslatorsInterval/3 - 5*time.Minute)).
+		Save(context.Background())
+	translators[1].Update().SetUpdatedAt(time.Now().Add(-DeleteOldTranslatorsInterval*2 - 5*time.Minute)).
+		Save(context.Background())
+	translators[2].Update().SetUpdatedAt(time.Now().Add(-DeleteOldTranslatorsInterval - 5*time.Minute)).
+		Save(context.Background())
+	translators[4].Update().SetUpdatedAt(time.Now().Add(-DeleteOldTranslatorsInterval/2 - 5*time.Minute)).
+		Save(context.Background())
+
+	s.deleteOldTranslators()
+
+	translatorsLeft, err := db.Translator.Query().Order(ent.Asc(translator.FieldExternalID)).
+		All(context.Background())
+
+	require.NoError(t, err)
+	require.Len(t, translatorsLeft, 3)
+
+	assert.Equal(t, 10, translatorsLeft[0].ExternalID)
+	assert.Equal(t, 13, translatorsLeft[1].ExternalID)
+	assert.Equal(t, 14, translatorsLeft[2].ExternalID)
 }
