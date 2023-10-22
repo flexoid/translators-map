@@ -14,6 +14,7 @@ import (
 	"github.com/flexoid/translators-map-go/internal/api"
 	"github.com/flexoid/translators-map-go/internal/config"
 	"github.com/flexoid/translators-map-go/internal/logging"
+	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/services"
 	_ "github.com/lib/pq"
@@ -65,7 +66,14 @@ func startScraper(entClient *ent.Client, logger *zap.SugaredLogger) {
 
 func runScraper(entClient *ent.Client, logger *zap.SugaredLogger, metricset *metrics.ScraperMetrics) {
 	logger.Info("Running scraper")
-	services.NewScraper(entClient, logger, config.CLI.MapsBackendAPIKey, metricset).Run()
+
+	geocoding, err := maps.NewGeocoding(config.CLI.MapsBackendAPIKey)
+	if err != nil {
+		logger.Errorf("failed to setup geocoding client: %v", err)
+		return
+	}
+
+	services.NewScraper(entClient, logger, geocoding, metricset).Run()
 	logger.Info("Scraper run finished, next run in 24h")
 }
 

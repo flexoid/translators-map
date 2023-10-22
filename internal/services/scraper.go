@@ -11,33 +11,36 @@ import (
 	"github.com/flexoid/translators-map-go/ent"
 	"github.com/flexoid/translators-map-go/ent/translator"
 	"github.com/flexoid/translators-map-go/internal/config"
-	"github.com/flexoid/translators-map-go/internal/maps"
 	"github.com/flexoid/translators-map-go/internal/metrics"
 	"github.com/flexoid/translators-map-go/internal/scraper"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
 	"go.uber.org/zap"
+	gmaps "googlemaps.github.io/maps"
 )
 
 type Scraper struct {
-	db                *ent.Client
-	logger            *zap.SugaredLogger
-	geocoding         *maps.Geocoding
-	mapsBackendAPIKey string
-	metrics           *metrics.ScraperMetrics
+	db        *ent.Client
+	logger    *zap.SugaredLogger
+	geocoding Geocoder
+	metrics   *metrics.ScraperMetrics
+}
+
+type Geocoder interface {
+	GetCoordinatesForAddress(ctx context.Context, address string) (*gmaps.GeocodingResult, error)
 }
 
 func NewScraper(
 	db *ent.Client,
 	logger *zap.SugaredLogger,
-	mapsBackendAPIKey string,
+	geocoding Geocoder,
 	metricset *metrics.ScraperMetrics,
 ) *Scraper {
 	return &Scraper{
-		db:                db,
-		logger:            logger,
-		mapsBackendAPIKey: mapsBackendAPIKey,
-		metrics:           metricset,
+		db:        db,
+		logger:    logger,
+		geocoding: geocoding,
+		metrics:   metricset,
 	}
 }
 
@@ -49,13 +52,6 @@ func (s *Scraper) Run() {
 	defer func() {
 		s.sendMetrics(startTime, successful)
 	}()
-
-	var err error
-	s.geocoding, err = maps.NewGeocoding(s.mapsBackendAPIKey)
-	if err != nil {
-		s.logger.Errorf("failed to setup geocoding client: %v", err)
-		return
-	}
 
 	languages, err := scraper.ScrapeLanguages(s.logger)
 	if err != nil {
