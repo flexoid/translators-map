@@ -58,17 +58,24 @@ func ScrapeTranslators(logger *zap.SugaredLogger, language Language, cb func(Tra
 		"%s/pl/rejestry-i-ewidencje/tlumacze-przysiegli/lista-tlumaczy-przysieglych/search.html?Language=%d",
 		baseUrl, language.Code)
 
-	c.Visit(url)
+	outerErr = c.Visit(url)
+	if outerErr != nil {
+		return
+	}
+
 	c.Wait()
 
 	for nextPage != "" {
 		url = baseUrl + nextPage
 		nextPage = ""
 
-		c.Visit(url)
+		outerErr = c.Visit(url)
+		if outerErr != nil {
+			return
+		}
 	}
 
-	return outerErr
+	return
 }
 
 func ScrapeLanguages(logger *zap.SugaredLogger) (languages []Language, outerErr error) {
@@ -102,10 +109,14 @@ func ScrapeLanguages(logger *zap.SugaredLogger) (languages []Language, outerErr 
 		languages = append(languages, lang)
 	})
 
-	c.Visit(baseUrl + "/pl/rejestry-i-ewidencje/tlumacze-przysiegli/lista-tlumaczy-przysieglych/search.html")
+	outerErr = c.Visit(baseUrl + "/pl/rejestry-i-ewidencje/tlumacze-przysiegli/lista-tlumaczy-przysieglych/search.html")
+	if outerErr != nil {
+		return
+	}
+
 	c.Wait()
 
-	return languages, nil
+	return
 }
 
 func processTable(logger *zap.SugaredLogger, e *colly.HTMLElement, language Language, cb func(Translator)) {
