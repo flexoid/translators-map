@@ -1,8 +1,10 @@
 package scraper
 
 import (
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -33,6 +35,9 @@ type Language struct {
 func ScrapeTranslators(logger *zap.SugaredLogger, language Language, cb func(Translator)) (outerErr error) {
 	c := colly.NewCollector()
 	c.SetRequestTimeout(60 * time.Second)
+	c.WithTransport(&http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
 
 	logger = logger.With("language", language.Name)
 
@@ -80,6 +85,9 @@ func ScrapeTranslators(logger *zap.SugaredLogger, language Language, cb func(Tra
 
 func ScrapeLanguages(logger *zap.SugaredLogger) (languages []Language, outerErr error) {
 	c := colly.NewCollector()
+	c.WithTransport(&http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	})
 
 	c.OnRequest(func(r *colly.Request) {
 		logger.Debugf("Visiting %s", r.URL)
