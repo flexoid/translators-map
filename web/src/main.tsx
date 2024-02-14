@@ -7,6 +7,7 @@ import { messages as enMessages } from "./locales/en/messages"
 import { messages as plMessages } from "./locales/pl/messages"
 import { messages as ruMessages } from "./locales/ru/messages"
 import App from "./App"
+import "react-virtualized/styles.css"
 import "./index.css"
 
 i18n.load({

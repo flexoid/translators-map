@@ -1,3 +1,4 @@
+import { AutoSizer, List } from "react-virtualized"
 import {
   CircularProgress,
   Stack,
@@ -29,38 +30,56 @@ export default function Results({ visibleTranslators, loading }: ResultsProps) {
         {loading && <CircularProgress size="lg" />}
       </Box>
 
-      {visibleTranslators.map((translator, index) => {
-        return (
-          <Card
-            key={index}
-            orientation="horizontal"
-            sx={{
-              bgcolor: "neutral.softBg",
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              "&:hover": {
-                boxShadow: "lg",
-                borderColor:
-                  "var(--joy-palette-neutral-outlinedDisabledBorder)",
-              },
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            width={width}
+            height={height}
+            rowCount={visibleTranslators.length}
+            rowHeight={130}
+            rowRenderer={({ key, index, style }) => {
+              const translator = visibleTranslators[index]
+              return (
+                <Box sx={{ paddingBottom: "10px" }} style={style}>
+                  <Card
+                    key={key}
+                    orientation="horizontal"
+                    sx={{
+                      height: "120px",
+                      bgcolor: "neutral.softBg",
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      "&:hover": {
+                        boxShadow: "lg",
+                        borderColor:
+                          "var(--joy-palette-neutral-outlinedDisabledBorder)",
+                      },
+                    }}
+                  >
+                    <CardContent>
+                      <Stack>
+                        <Typography level="title-md">
+                          <Link
+                            href={translator.details_url}
+                            target="_blank"
+                            overlay
+                          >
+                            {translator.name}
+                          </Link>
+                        </Typography>
+                        <Typography>{translator.address}</Typography>
+                        <Typography level="body-sm">
+                          {translator.location.country}
+                        </Typography>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Box>
+              )
             }}
-          >
-            <CardContent>
-              <Stack>
-                <Typography level="title-md">
-                  <Link href={translator.details_url} target="_blank" overlay>
-                    {translator.name}
-                  </Link>
-                </Typography>
-                <Typography>{translator.address}</Typography>
-                <Typography level="body-sm">
-                  {translator.location.country}
-                </Typography>
-              </Stack>
-            </CardContent>
-          </Card>
-        )
-      })}
+          />
+        )}
+      </AutoSizer>
     </Stack>
   )
 }
