@@ -21,24 +21,21 @@ function TranslatorItem(translator: Translator) {
       orientation="horizontal"
       sx={{
         height: "100%",
-        bgcolor: "neutral.softBg",
         display: "flex",
         flexDirection: { xs: "column", sm: "row" },
-        "&:hover": {
-          boxShadow: "lg",
-          borderColor: "var(--joy-palette-neutral-outlinedDisabledBorder)",
-        },
+        paddingY: 0,
+        justifyContent: "center",
       }}
     >
-      <CardContent>
+      <CardContent sx={{ justifyContent: "center" }}>
         <Stack>
           <Typography level="title-sm">
             <Link href={translator.details_url} target="_blank" overlay>
               {translator.name}
             </Link>
           </Typography>
-          <Typography>{translator.address}</Typography>
-          <Typography level="body-sm">{translator.location.country}</Typography>
+          <Typography level="body-sm">{translator.address}</Typography>
+          <Typography level="body-xs">{translator.location.country}</Typography>
         </Stack>
       </CardContent>
     </Card>
@@ -48,16 +45,16 @@ function TranslatorItem(translator: Translator) {
 export default function Results({ visibleTranslators, loading }: ResultsProps) {
   return (
     <Stack
-      spacing={2}
+      spacing={0}
       sx={{
-        px: { xs: 2, md: 0 },
-        py: 2,
         height: { xs: "40vh", md: "auto" },
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-        {loading && <CircularProgress size="lg" />}
-      </Box>
+      {loading && (
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress size="lg" />
+        </Box>
+      )}
 
       <AutoSizer>
         {({ height, width }) => (
@@ -70,7 +67,11 @@ export default function Results({ visibleTranslators, loading }: ResultsProps) {
               const translator = visibleTranslators[index]
               return (
                 <Box
-                  sx={{ height: "100px", paddingBottom: "5px" }}
+                  sx={{
+                    height: "100px",
+                    paddingBottom: "5px",
+                    paddingX: "5px",
+                  }}
                   style={style}
                   key={key}
                 >

@@ -107,8 +107,6 @@ function App() {
             backgroundColor: "background.surface",
             px: { xs: 2, md: 4 },
             py: 2,
-            borderBottom: "1px solid",
-            borderColor: "divider",
           }}
         >
           <HeaderSection />
