@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/flexoid/translators-map-go/internal/logging"
 	gmaps "googlemaps.github.io/maps"
 )
 
@@ -24,6 +25,7 @@ type Result struct {
 }
 
 const localityType = "locality"
+const postalTownType = "postal_town"
 const administrativeAreaType = "administrative_area_level_1"
 const countryType = "country"
 
@@ -55,20 +57,15 @@ func (g *Geocoding) GeocodingForAddress(ctx context.Context, address string) (*R
 		return nil, fmt.Errorf("cannot find coordinates for address: %s", address)
 	}
 
-	city, err := g.extractComponent(result[0], localityType)
-	if err != nil {
-		return nil, err
+	logging.Ctx(ctx).Debugf("Geocoding result: %+v", result[0])
+
+	city := g.extractComponent(result[0], localityType)
+	if city == "" {
+		city = g.extractComponent(result[0], postalTownType)
 	}
 
-	administrativeArea, err := g.extractComponent(result[0], administrativeAreaType)
-	if err != nil {
-		return nil, err
-	}
-
-	country, err := g.extractComponent(result[0], countryType)
-	if err != nil {
-		return nil, err
-	}
+	administrativeArea := g.extractComponent(result[0], administrativeAreaType)
+	country := g.extractComponent(result[0], countryType)
 
 	return &Result{
 		Lat:                result[0].Geometry.Location.Lat,
@@ -79,14 +76,14 @@ func (g *Geocoding) GeocodingForAddress(ctx context.Context, address string) (*R
 	}, nil
 }
 
-func (g *Geocoding) extractComponent(result gmaps.GeocodingResult, componentType string) (string, error) {
+func (g *Geocoding) extractComponent(result gmaps.GeocodingResult, componentType string) string {
 	for _, component := range result.AddressComponents {
 		for _, t := range component.Types {
 			if t == componentType {
-				return component.LongName, nil
+				return component.LongName
 			}
 		}
 	}
 
-	return "", fmt.Errorf("cannot find address component type %s", componentType)
+	return ""
 }

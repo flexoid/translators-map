@@ -202,9 +202,16 @@ func (s *Scraper) fillLocation(ctx context.Context, m *ent.TranslatorMutation, a
 	m.SetAddressSha(addressSum)
 	m.SetLatitude(geocodingResult.Lat)
 	m.SetLongitude(geocodingResult.Lng)
-	m.SetCity(geocodingResult.City)
-	m.SetAdministrativeArea(geocodingResult.AdministrativeArea)
-	m.SetCountry(geocodingResult.Country)
+
+	if geocodingResult.City != "" {
+		m.SetCity(geocodingResult.City)
+	}
+	if geocodingResult.AdministrativeArea != "" {
+		m.SetAdministrativeArea(geocodingResult.AdministrativeArea)
+	}
+	if geocodingResult.Country != "" {
+		m.SetCountry(geocodingResult.Country)
+	}
 
 	return nil
 }
