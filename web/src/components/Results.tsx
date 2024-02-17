@@ -15,14 +15,43 @@ type ResultsProps = {
   loading: boolean
 }
 
+function TranslatorItem(translator: Translator) {
+  return (
+    <Card
+      orientation="horizontal"
+      sx={{
+        height: "100%",
+        bgcolor: "neutral.softBg",
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
+        "&:hover": {
+          boxShadow: "lg",
+          borderColor: "var(--joy-palette-neutral-outlinedDisabledBorder)",
+        },
+      }}
+    >
+      <CardContent>
+        <Stack>
+          <Typography level="title-sm">
+            <Link href={translator.details_url} target="_blank" overlay>
+              {translator.name}
+            </Link>
+          </Typography>
+          <Typography>{translator.address}</Typography>
+          <Typography level="body-sm">{translator.location.country}</Typography>
+        </Stack>
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function Results({ visibleTranslators, loading }: ResultsProps) {
   return (
     <Stack
       spacing={2}
       sx={{
-        overflow: "auto",
-        px: { xs: 2, md: 4 },
-        py: { xs: 4, md: 2 },
+        px: { xs: 2, md: 0 },
+        py: 2,
         height: { xs: "40vh", md: "auto" },
       }}
     >
@@ -36,44 +65,16 @@ export default function Results({ visibleTranslators, loading }: ResultsProps) {
             width={width}
             height={height}
             rowCount={visibleTranslators.length}
-            rowHeight={130}
+            rowHeight={105}
             rowRenderer={({ key, index, style }) => {
               const translator = visibleTranslators[index]
               return (
-                <Box sx={{ paddingBottom: "10px" }} style={style}>
-                  <Card
-                    key={key}
-                    orientation="horizontal"
-                    sx={{
-                      height: "120px",
-                      bgcolor: "neutral.softBg",
-                      display: "flex",
-                      flexDirection: { xs: "column", sm: "row" },
-                      "&:hover": {
-                        boxShadow: "lg",
-                        borderColor:
-                          "var(--joy-palette-neutral-outlinedDisabledBorder)",
-                      },
-                    }}
-                  >
-                    <CardContent>
-                      <Stack>
-                        <Typography level="title-md">
-                          <Link
-                            href={translator.details_url}
-                            target="_blank"
-                            overlay
-                          >
-                            {translator.name}
-                          </Link>
-                        </Typography>
-                        <Typography>{translator.address}</Typography>
-                        <Typography level="body-sm">
-                          {translator.location.country}
-                        </Typography>
-                      </Stack>
-                    </CardContent>
-                  </Card>
+                <Box
+                  sx={{ height: "100px", paddingBottom: "5px" }}
+                  style={style}
+                  key={key}
+                >
+                  <TranslatorItem {...translator} />
                 </Box>
               )
             }}
